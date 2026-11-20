@@ -4,7 +4,7 @@
 {% block page %}
 <div class="page-head"><div><h1>Sellers</h1><p>Review applications and manage seller accounts.</p></div></div>
 
-<div id="list-region" class="card" hx-get="{{ request.get_full_path }}" hx-trigger="sellers-changed from:body"
+<div id="list-region" hx-disinherit="hx-select hx-target hx-swap" class="card" hx-get="{{ request.get_full_path }}" hx-trigger="sellers-changed from:body"
      hx-select="#list-region" hx-target="this" hx-swap="outerHTML">
   <nav class="tabs" aria-label="Filter by status">
     {% for value, label, n in tabs %}

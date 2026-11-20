@@ -3,7 +3,7 @@
 {% block title %}Orders · Day Loop sellers{% endblock %}
 {% block page %}
 <div class="page-head"><div><h1>Orders</h1><p>Only your own shipments are shown here.</p></div></div>
-<div id="list-region" class="card" hx-get="{{ request.get_full_path }}" hx-trigger="orders-changed from:body" hx-select="#list-region" hx-target="this" hx-swap="outerHTML">
+<div id="list-region" hx-disinherit="hx-select hx-target hx-swap" class="card" hx-get="{{ request.get_full_path }}" hx-trigger="orders-changed from:body" hx-select="#list-region" hx-target="this" hx-swap="outerHTML">
   <nav class="tabs" aria-label="Filter by status">{% for v, label, n in tabs %}<a class="tab" href="{% qs status=v page=None %}" {% if f.status == v or not f.status and not v %}aria-current="true"{% endif %}>{{ label }} <span class="chip neutral">{{ n }}</span></a>{% endfor %}</nav>
   <form method="get" class="filter-grid" role="search" aria-label="Filter orders">
     {% if f.status %}<input type="hidden" name="status" value="{{ f.status }}">{% endif %}

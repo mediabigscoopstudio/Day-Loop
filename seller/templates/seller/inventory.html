@@ -9,7 +9,7 @@
   <a class="card mini" href="{% qs filter='expiring' page=None %}"><span class="cat-meta">Expiring soon</span><strong>{{ n_expiring }}</strong></a>
   <a class="card mini" href="{% qs filter='expired' page=None %}"><span class="cat-meta">Expired</span><strong>{{ n_expired }}</strong></a>
 </div>
-<div id="list-region" class="card" hx-get="{{ request.get_full_path }}" hx-trigger="inventory-changed from:body" hx-select="#list-region" hx-target="this" hx-swap="outerHTML">
+<div id="list-region" hx-disinherit="hx-select hx-target hx-swap" class="card" hx-get="{{ request.get_full_path }}" hx-trigger="inventory-changed from:body" hx-select="#list-region" hx-target="this" hx-swap="outerHTML">
   <nav class="tabs" aria-label="Filter">{% for v, label in filters %}<a class="tab" href="{% qs filter=v page=None %}" {% if f.filter == v or not f.filter and not v %}aria-current="true"{% endif %}>{{ label }}</a>{% endfor %}</nav>
   <form method="get" class="filters inline-filters" role="search">
     {% if f.filter %}<input type="hidden" name="filter" value="{{ f.filter }}">{% endif %}

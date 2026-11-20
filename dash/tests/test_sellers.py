@@ -166,3 +166,18 @@ class SellerApplicationReviewTests(DashTestCase):
         r = self.client.post(f'/sellers/{self.seller.pk}/approve/', **HX)
         self.assertEqual(r.status_code, 204)
         self.seller.refresh_from_db(); self.assertEqual(self.seller.status, 'approved')
+
+
+class SellerRowClickTests(DashTestCase):
+    """Rows must open the profile popup. The list container must not pass its hx-select to the rows."""
+
+    def test_rows_open_the_detail_popup_and_the_container_does_not_leak_hx_select(self):
+        self.login_as(self.superuser)
+        seller = f.make_seller('Row Click Co')
+        r = self.client.get('/sellers/')
+        self.assertContains(r, 'id="list-region"')
+        self.assertContains(r, 'hx-disinherit="hx-select hx-target hx-swap"')
+        self.assertContains(r, f'<tr class="clickable" tabindex="0" hx-get="/sellers/{seller.pk}/" hx-target="#modal-root"')
+        popup = self.client.get(f'/sellers/{seller.pk}/', **HX)
+        self.assertEqual(popup.status_code, 200)
+        self.assertContains(popup, 'Row Click Co'); self.assertContains(popup, '<dialog')

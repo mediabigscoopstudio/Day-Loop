@@ -8,7 +8,7 @@
 </div>
 {% include "dash/partials/products_tabs.html" with section="categories" %}
 
-<div id="list-region" hx-get="/products/categories/" hx-trigger="categories-changed from:body" hx-select="#list-region" hx-target="this" hx-swap="outerHTML">
+<div id="list-region" hx-disinherit="hx-select hx-target hx-swap" hx-get="/products/categories/" hx-trigger="categories-changed from:body" hx-select="#list-region" hx-target="this" hx-swap="outerHTML">
 {% for c in categories %}
   <section class="card cat-card" aria-label="{{ c.name }}">
     <div class="cat-head">

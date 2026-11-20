@@ -3,7 +3,7 @@
 {% block title %}Customers · Day Loop admin{% endblock %}
 {% block page %}
 <div class="page-head"><div><h1>Customers</h1><p>Everyone who has placed an order.</p></div></div>
-<div id="list-region" class="card">
+<div id="list-region" hx-disinherit="hx-select hx-target hx-swap" class="card">
   <form method="get" class="filters inline-filters" role="search">
     <input class="input" type="search" name="q" value="{{ f.q }}" placeholder="Search name or email" aria-label="Search customers" style="min-width:260px">
     <select class="select" name="repeat" aria-label="Repeat customers">

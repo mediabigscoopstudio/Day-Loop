@@ -3,7 +3,7 @@
 {% block title %}Orders · Day Loop admin{% endblock %}
 {% block page %}
 <div class="page-head"><div><h1>Orders</h1><p>Track and manage orders placed on the storefront.</p></div></div>
-<div id="list-region" class="card" hx-get="{{ request.get_full_path }}" hx-trigger="orders-changed from:body"
+<div id="list-region" hx-disinherit="hx-select hx-target hx-swap" class="card" hx-get="{{ request.get_full_path }}" hx-trigger="orders-changed from:body"
      hx-select="#list-region" hx-target="this" hx-swap="outerHTML">
   <form method="get" class="filter-grid" role="search" aria-label="Filter orders">
     <div class="field"><label for="o-q">Search</label><input class="input" id="o-q" type="search" name="q" value="{{ f.q }}" placeholder="Order no., customer name or email"></div>

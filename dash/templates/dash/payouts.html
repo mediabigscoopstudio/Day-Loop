@@ -3,7 +3,7 @@
 {% block title %}Payouts · Day Loop admin{% endblock %}
 {% block page %}
 <div class="page-head"><div><h1>Payouts</h1><p>Settle what sellers have earned from delivered orders. Total awaiting payout: <strong>{{ total_pending|inr:2 }}</strong></p></div></div>
-<div id="list-region" hx-get="/payouts/" hx-trigger="payouts-changed from:body" hx-select="#list-region" hx-target="this" hx-swap="outerHTML">
+<div id="list-region" hx-disinherit="hx-select hx-target hx-swap" hx-get="/payouts/" hx-trigger="payouts-changed from:body" hx-select="#list-region" hx-target="this" hx-swap="outerHTML">
 <section class="card"><div class="card-head"><h2>Awaiting settlement</h2></div>
 {% if rows %}<div class="table-wrap"><table class="table"><thead><tr><th>Seller</th><th class="num">Entries</th><th class="num">Credits</th><th class="num">Debits</th><th class="num">Pending</th><th></th></tr></thead><tbody>
   {% for r in rows %}<tr><td><strong>{{ r.name }}</strong></td><td class="num">{{ r.entries }}</td><td class="num">{{ r.credits|inr:2 }}</td><td class="num">{{ r.debits|inr:2 }}</td>

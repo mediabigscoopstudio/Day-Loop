@@ -6,7 +6,7 @@
   <a class="btn primary" href="/products/new/">{% icon 'plus' 18 %} Add product</a></div>
 {% if notice %}<div class="saved-note" role="status">{{ notice }}</div>{% endif %}
 
-<div id="list-region" class="card" hx-get="{{ request.get_full_path }}" hx-trigger="products-changed from:body" hx-select="#list-region" hx-target="this" hx-swap="outerHTML">
+<div id="list-region" hx-disinherit="hx-select hx-target hx-swap" class="card" hx-get="{{ request.get_full_path }}" hx-trigger="products-changed from:body" hx-select="#list-region" hx-target="this" hx-swap="outerHTML">
   <nav class="tabs" aria-label="Filter by status">{% for value, label, n in tabs %}<a class="tab" href="{% qs status=value page=None notice=None submitted=None resubmitted=None %}" {% if f.status == value or not f.status and not value %}aria-current="true"{% endif %}>{{ label }} <span class="chip neutral">{{ n }}</span></a>{% endfor %}</nav>
   <form method="get" class="filters inline-filters" role="search">
     {% if f.status %}<input type="hidden" name="status" value="{{ f.status }}">{% endif %}
