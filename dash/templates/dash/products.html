@@ -21,8 +21,7 @@
       </select></div>
     <div class="field"><label for="f-status">Status</label>
       <select class="select" id="f-status" name="status"><option value="">Any</option>
-        <option value="active" {% if f.status == 'active' %}selected{% endif %}>Active</option>
-        <option value="inactive" {% if f.status == 'inactive' %}selected{% endif %}>Inactive</option></select></div>
+        {% for v, l in statuses %}<option value="{{ v }}" {% if f.status == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
     <div class="field"><label for="f-stock">Stock</label>
       <select class="select" id="f-stock" name="stock"><option value="">Any</option>
         {% for v, label in stock_levels %}<option value="{{ v }}" {% if f.stock == v %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
@@ -56,11 +55,11 @@
           {% if p.brand %}<br><small class="cat-meta">{{ p.brand }}</small>{% endif %}</td>
         <td>{{ p.seller.business_name }}</td>
         <td>{{ p.subcategory.parent.name }} <span class="cat-meta">/ {{ p.subcategory.name }}</span></td>
-        <td class="num">{{ p.price|inr }}</td>
-        <td class="num">{% if p.stock == 0 %}<span class="chip danger">Out</span>{% elif p.stock <= low_stock %}<span class="chip amber">{{ p.stock }} low</span>{% else %}{{ p.stock }}{% endif %}</td>
-        <td><span class="chip {% if p.is_active %}up{% else %}neutral{% endif %}">{% if p.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+        <td class="num">{% if p.min_price is None %}—{% else %}{{ p.min_price|inr }}{% endif %}</td>
+        <td class="num">{% if p.total_stock == 0 %}<span class="chip danger">Out</span>{% elif p.total_stock <= low_stock %}<span class="chip amber">{{ p.total_stock }} low</span>{% else %}{{ p.total_stock }}{% endif %}</td>
+        <td><span class="chip {{ p.status|status_chip }}">{{ p.get_status_display }}</span></td>
         <td>{{ p.created_at|date:"M j, Y" }}</td>
-        <td><button class="btn sm" type="button" hx-get="/products/{{ p.pk }}/toggle/" hx-target="#modal-root" hx-swap="innerHTML">{% if p.is_active %}Deactivate{% else %}Activate{% endif %}</button></td>
+        <td>{% if p.status == 'live' or p.status == 'inactive' %}<button class="btn sm" type="button" hx-get="/products/{{ p.pk }}/toggle/" hx-target="#modal-root" hx-swap="innerHTML">{% if p.is_live %}Deactivate{% else %}Activate{% endif %}</button>{% else %}<button class="btn sm" type="button" hx-get="/products/{{ p.pk }}/" hx-target="#modal-root" hx-swap="innerHTML">View</button>{% endif %}</td>
       </tr>
     {% endfor %}
     </tbody></table></div>

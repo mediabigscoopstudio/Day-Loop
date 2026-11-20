@@ -1,20 +1,23 @@
 {% extends "ui/modal_base.html" %}
 {% load ui_tags %}
 {% block title %}{{ product.name }}{% endblock %}
-{% block subtitle %}<p><span class="chip {% if product.is_active %}up{% else %}neutral{% endif %}">{% if product.is_active %}Active{% else %}Inactive{% endif %}</span> · {{ product.seller.business_name }}</p>{% endblock %}
+{% block subtitle %}<p><span class="chip {{ product.status|status_chip }}">{{ product.get_status_display }}</span> · {{ product.seller.business_name }}</p>{% endblock %}
 {% block body %}
 <dl class="kv">
   <dt>Category</dt><dd>{{ product.subcategory.parent.name }} / {{ product.subcategory.name }}</dd>
   <dt>Brand</dt><dd>{{ product.brand|default:"—" }}</dd>
-  <dt>SKU</dt><dd>{{ product.sku|default:"—" }}</dd>
-  <dt>Price</dt><dd>{{ product.price|inr:2 }}</dd>
-  <dt>Stock</dt><dd>{{ product.stock }}{% if product.stock == 0 %} <span class="chip danger">Out of stock</span>{% elif product.stock <= low_stock %} <span class="chip amber">Low</span>{% endif %}</dd>
   <dt>Units ordered</dt><dd>{{ sold }}</dd>
   <dt>Added</dt><dd>{{ product.created_at|date:"M j, Y" }}</dd>
   <dt>Description</dt><dd style="font-weight:500">{{ product.description|default:"—"|linebreaksbr }}</dd>
 </dl>
+<h3 style="margin:16px 0 8px">Variants</h3>
+{% if variants %}<div class="table-wrap"><table class="table"><thead><tr><th>Variant</th><th>SKU</th><th class="num">Price</th><th class="num">Stock</th><th>Expiry</th></tr></thead><tbody>
+  {% for v in variants %}<tr><td>{{ v.label }}</td><td>{{ v.sku }}</td><td class="num">{{ v.price|inr:2 }}</td>
+    <td class="num">{% if v.stock == 0 %}<span class="chip danger">Out</span>{% elif v.stock <= v.low_stock_threshold %}<span class="chip amber">{{ v.stock }} low</span>{% else %}{{ v.stock }}{% endif %}</td>
+    <td>{{ v.expires_on|date:"M j, Y"|default:"—" }}</td></tr>{% endfor %}</tbody></table></div>
+{% else %}<p style="color:var(--muted)">No variants yet.</p>{% endif %}
 {% endblock %}
 {% block footer %}
   <button type="button" class="btn left" data-modal-close>Close</button>
-  <button type="button" class="btn" hx-get="/products/{{ product.pk }}/toggle/" hx-target="#modal-root" hx-swap="innerHTML">{% if product.is_active %}Deactivate{% else %}Activate{% endif %}</button>
+  {% if product.status == 'live' or product.status == 'inactive' %}<button type="button" class="btn" hx-get="/products/{{ product.pk }}/toggle/" hx-target="#modal-root" hx-swap="innerHTML">{% if product.is_live %}Deactivate{% else %}Activate{% endif %}</button>{% endif %}
 {% endblock %}

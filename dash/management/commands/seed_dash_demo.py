@@ -17,7 +17,9 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from catalog.models import Category, Product
+from datetime import date
+
+from catalog.models import Category, Product, ProductVariant
 from orders.models import Order, OrderItem
 from sellers.models import SellerProfile
 
@@ -70,9 +72,12 @@ class Command(BaseCommand):
         for s in approved:
             for name in rnd.sample(PRODUCTS, 4):
                 p, _ = Product.objects.get_or_create(seller=s, name=name, defaults=dict(
-                    subcategory=rnd.choice(subs), brand=s.business_name.split()[0], price=Decimal(rnd.choice([299, 499, 799, 1299, 1899])),
-                    stock=rnd.choice([0, 4, 25, 80, 200]), sku=f'{s.pk}-{name[:3].upper()}'))
-                products.append(p)
+                    subcategory=rnd.choice(subs), brand=s.business_name.split()[0], status='live'))
+                price = Decimal(rnd.choice([299, 499, 799, 1299, 1899]))
+                v, _ = ProductVariant.objects.get_or_create(product=p, seller=s, sku=f'{s.pk}-{name[:3].upper()}', defaults=dict(
+                    label='Standard', mrp=price + 100, price=price, stock=rnd.choice([0, 4, 25, 80, 200]),
+                    expires_on=date.today().replace(year=date.today().year + 1), length_cm=12, width_cm=8, height_cm=8, weight_g=400))
+                products.append(v)
 
         if not customers:
             self.stdout.write(self.style.WARNING('No spare accounts left to act as customers, so orders were skipped.'))
@@ -89,8 +94,8 @@ class Command(BaseCommand):
                     ship_name=c.get_full_name() or c.get_username(), ship_line1='12 Demo Street', ship_city=rnd.choice(CITIES),
                     ship_state='Maharashtra', ship_pincode='400001')
                 total = Decimal(0)
-                for p in rnd.sample(products, k=rnd.randint(1, min(3, len(products)))):
-                    it = OrderItem.objects.create(order=o, product=p, quantity=rnd.randint(1, 3), unit_price=p.price)
+                for v in rnd.sample(products, k=rnd.randint(1, min(3, len(products)))):
+                    it = OrderItem.objects.create(order=o, product=v.product, variant=v, quantity=rnd.randint(1, 3), unit_price=v.price)
                     total += it.line_total
                 o.total = total
                 o.save(update_fields=['total'])

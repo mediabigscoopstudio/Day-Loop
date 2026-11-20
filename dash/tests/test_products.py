@@ -92,7 +92,7 @@ class ProductActionTests(DashTestCase):
         self.assertContains(page, 'no longer be able to see or buy')
         r = self.client.post(f'/products/{self.p1.pk}/toggle/', **HX)
         self.assertEqual(r.status_code, 204)
-        self.p1.refresh_from_db(); self.assertFalse(self.p1.is_active)
+        self.p1.refresh_from_db(); self.assertEqual(self.p1.status, 'inactive')
 
     def test_bulk_confirm_then_apply(self):
         page = self.client.get(f'/products/bulk/?action=deactivate&ids={self.p1.pk}&ids={self.p2.pk}', **HX)
@@ -100,9 +100,9 @@ class ProductActionTests(DashTestCase):
         r = self.client.post('/products/bulk/', {'action': 'deactivate', 'ids': f'{self.p1.pk},{self.p2.pk}'}, **HX)
         self.assertEqual(r.status_code, 204)
         self.assertIn('2 products deactivated', json.loads(r['HX-Trigger'])['toast']['message'])
-        self.assertEqual(Product.objects.filter(is_active=True).count(), 0)
+        self.assertEqual(Product.objects.filter(status='live').count(), 0)
         self.client.post('/products/bulk/', {'action': 'activate', 'ids': str(self.p1.pk)}, **HX)
-        self.assertEqual(Product.objects.filter(is_active=True).count(), 1)
+        self.assertEqual(Product.objects.filter(status='live').count(), 1)
 
     def test_bulk_with_nothing_selected_is_handled(self):
         self.assertContains(self.client.get('/products/bulk/?action=activate', **HX), 'Select at least one')
@@ -120,4 +120,17 @@ class ProductActionTests(DashTestCase):
                                 ('get', '/products/bulk/?action=activate&ids=1'), ('post', '/products/bulk/')):
                 r = getattr(self.client, method)(url, {'action': 'deactivate', 'ids': str(self.p1.pk)}, **HX)
                 self.assertEqual(r.status_code, 403, f'{method} {url} {user.username}')
-        self.p1.refresh_from_db(); self.assertTrue(self.p1.is_active)
+        self.p1.refresh_from_db(); self.assertEqual(self.p1.status, 'live')
+
+
+class ProductReviewStateTests(DashTestCase):
+    def test_bulk_and_toggle_only_touch_live_and_inactive_products(self):
+        sub = f.make_category('S', f.make_category('C')); s = f.make_seller()
+        draft = f.make_product(s, sub, status='draft'); pending = f.make_product(s, sub, status='pending')
+        live = f.make_product(s, sub)
+        self.login_as(self.superuser)
+        self.client.post('/products/bulk/', {'action': 'deactivate', 'ids': f'{draft.pk},{pending.pk},{live.pk}'}, **HX)
+        draft.refresh_from_db(); pending.refresh_from_db(); live.refresh_from_db()
+        self.assertEqual((draft.status, pending.status, live.status), ('draft', 'pending', 'inactive'))
+        self.assertEqual(self.client.post(f'/products/{pending.pk}/toggle/', **HX).status_code, 422)
+        self.assertContains(self.client.get(f'/products/{draft.pk}/toggle/', **HX), 'is draft')

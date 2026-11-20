@@ -1,9 +1,9 @@
 from django.contrib.auth import get_user_model
-from django.db.models import Q
+from django.db.models import Exists, OuterRef, Q
 from django.shortcuts import render
 from django.views import View
 
-from catalog.models import Product
+from catalog.models import Product, ProductVariant
 from orders.models import Order
 from sellers.models import SellerProfile
 
@@ -28,7 +28,8 @@ class SearchView(SuperuserRequiredMixin, View):
                 Q(business_name__icontains=q) | Q(user__email__icontains=q) | Q(gst_number__icontains=q)
             ).order_by('business_name')[:LIMIT])
             products = list(Product.objects.select_related('seller').filter(
-                Q(name__icontains=q) | Q(sku__icontains=q) | Q(brand__icontains=q)
+                Q(name__icontains=q) | Q(brand__icontains=q)
+                | Exists(ProductVariant.objects.filter(product=OuterRef('pk'), sku__icontains=q))
             ).order_by('name')[:LIMIT])
             customers = list(User.objects.filter(
                 Q(username__icontains=q) | Q(email__icontains=q) | Q(first_name__icontains=q) | Q(last_name__icontains=q),

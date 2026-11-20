@@ -1,11 +1,11 @@
 """Test-only data builders. They run inside the temporary test database."""
-from datetime import timedelta
+from datetime import date, timedelta
 from decimal import Decimal
 from itertools import count
 
 from django.contrib.auth import get_user_model
 
-from catalog.models import Category, Product
+from catalog.models import Category, Product, ProductVariant
 from orders.models import Order, OrderItem
 from sellers.models import SellerProfile
 
@@ -29,10 +29,17 @@ def make_category(name=None, parent=None):
 
 
 def make_product(seller, subcategory, price='100', stock=10, **kw):
-    return Product.objects.create(
-        seller=seller, subcategory=subcategory, name=kw.pop('name', f'Product {next(_n)}'),
-        price=Decimal(price), stock=stock, **kw,
+    """A product with one default variant. `product.variant`, `.price` and `.stock` are test conveniences."""
+    inactive = kw.pop('is_active', True) is False
+    sku = kw.pop('sku', None) or f'SKU{next(_n)}'
+    kw.setdefault('status', Product.Status.INACTIVE if inactive else Product.Status.LIVE)
+    p = Product.objects.create(seller=seller, subcategory=subcategory, name=kw.pop('name', f'Product {next(_n)}'), **kw)
+    v = ProductVariant.objects.create(
+        product=p, seller=seller, label='Default', sku=sku, mrp=Decimal(price), price=Decimal(price), stock=stock,
+        expires_on=date.today() + timedelta(days=365), length_cm=10, width_cm=10, height_cm=10, weight_g=500,
     )
+    p.variant, p.price, p.stock = v, v.price, v.stock
+    return p
 
 
 def make_order(customer, when, lines, status='delivered', payment='paid'):
@@ -40,7 +47,7 @@ def make_order(customer, when, lines, status='delivered', payment='paid'):
     order = Order.objects.create(customer=customer, placed_at=when, status=status, payment_status=payment, total=0)
     total = Decimal(0)
     for product, qty in lines:
-        item = OrderItem.objects.create(order=order, product=product, quantity=qty, unit_price=product.price)
+        item = OrderItem.objects.create(order=order, product=product, variant=product.variant, quantity=qty, unit_price=product.price)
         total += item.line_total
     order.total = total
     order.save(update_fields=['total'])

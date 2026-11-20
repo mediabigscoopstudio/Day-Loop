@@ -2,9 +2,10 @@
 from datetime import date
 from decimal import Decimal, InvalidOperation
 
-from django.db.models import Q
+from django.db.models import Exists, Min, OuterRef, Q, Sum
+from django.db.models.functions import Coalesce
 
-from catalog.models import Product
+from catalog.models import Product, ProductVariant
 
 LOW_STOCK = 10
 FILTER_KEYS = ['q', 'seller', 'category', 'subcategory', 'brand', 'status', 'price_min', 'price_max', 'stock', 'date_from', 'date_to']
@@ -34,7 +35,8 @@ def filter_products(qs, p):
     """p: dict of already-stripped GET values."""
     if p.get('q'):
         q = p['q']
-        qs = qs.filter(Q(name__icontains=q) | Q(sku__icontains=q) | Q(brand__icontains=q) | Q(seller__business_name__icontains=q))
+        sku_match = Exists(ProductVariant.objects.filter(product=OuterRef('pk'), sku__icontains=q))
+        qs = qs.filter(Q(name__icontains=q) | sku_match | Q(brand__icontains=q) | Q(seller__business_name__icontains=q))
     if (v := _int(p.get('seller'))) is not None:
         qs = qs.filter(seller_id=v)
     if (v := _int(p.get('subcategory'))) is not None:
@@ -43,19 +45,20 @@ def filter_products(qs, p):
         qs = qs.filter(subcategory__parent_id=v)
     if p.get('brand'):
         qs = qs.filter(brand__iexact=p['brand'])
-    if p.get('status') in ('active', 'inactive'):
-        qs = qs.filter(is_active=p['status'] == 'active')
+    status = {'active': 'live'}.get(p.get('status'), p.get('status'))
+    if status in Product.Status.values:
+        qs = qs.filter(status=status)
     if (v := _dec(p.get('price_min'))) is not None:
-        qs = qs.filter(price__gte=v)
+        qs = qs.filter(min_price__gte=v)
     if (v := _dec(p.get('price_max'))) is not None:
-        qs = qs.filter(price__lte=v)
+        qs = qs.filter(min_price__lte=v)
     stock = p.get('stock')
     if stock == 'out':
-        qs = qs.filter(stock=0)
+        qs = qs.filter(total_stock=0)
     elif stock == 'low':
-        qs = qs.filter(stock__gte=1, stock__lte=LOW_STOCK)
+        qs = qs.filter(total_stock__gte=1, total_stock__lte=LOW_STOCK)
     elif stock == 'in':
-        qs = qs.filter(stock__gt=LOW_STOCK)
+        qs = qs.filter(total_stock__gt=LOW_STOCK)
     if (v := _date(p.get('date_from'))) is not None:
         qs = qs.filter(created_at__date__gte=v)
     if (v := _date(p.get('date_to'))) is not None:
@@ -64,4 +67,6 @@ def filter_products(qs, p):
 
 
 def base_queryset():
-    return Product.objects.select_related('seller', 'subcategory__parent')
+    """Products with their from-price and total stock across variants (one query, no N+1)."""
+    return Product.objects.select_related('seller', 'subcategory__parent').annotate(
+        min_price=Min('variants__price'), total_stock=Coalesce(Sum('variants__stock'), 0))
