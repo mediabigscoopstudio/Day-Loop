@@ -1,0 +1,52 @@
+{% extends "seller/base.html" %}
+{% load static ui_tags %}
+{% block title %}{% if product %}Edit product{% else %}Add product{% endif %} · Day Loop sellers{% endblock %}
+{% block page %}
+<div class="page-head">
+  <div><h1>{% if product %}{{ product.name }}{% else %}Add new product{% endif %}</h1>
+    <p>{% if product %}<span class="chip {{ product.status|status_chip }}">{{ product.get_status_display }}</span>{% else %}Start with the basics. You can save a draft and come back.{% endif %}</p></div>
+  <a class="btn" href="/products/">← Back to products</a>
+</div>
+
+{% if saved %}<div class="saved-note" role="status">Draft saved ✓</div>{% endif %}
+{% if submit_error %}<div class="form-error" role="alert">{{ submit_error }}</div>{% endif %}
+{% if product.status == 'rejected' and product.rejection_reason %}<div class="form-error" role="alert"><strong>Not approved:</strong> {{ product.rejection_reason }}. Fix the issues and submit again.</div>{% endif %}
+{% if product.status == 'live' %}<div class="consequence" style="margin-bottom:14px">This product is live. Saving changes sends it back for review before they go public. Price and stock changes in Inventory don’t need review.</div>{% endif %}
+
+{% if product %}
+<nav class="checklist card" aria-label="Progress">
+  <strong>{{ done }} of {{ total }} sections done</strong>
+  <ol>{% for s in sections %}<li class="{% if s.done %}done{% endif %}"><a href="#sec-{{ s.key }}">{% if s.done %}✓{% else %}○{% endif %} {{ s.label }}{% if s.required %} <span class="req">required</span>{% endif %}</a><small>{{ s.hint }}</small></li>{% endfor %}</ol>
+</nav>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" id="product-form" class="editor-grid" novalidate>
+  {% csrf_token %}
+  <div class="editor-main">
+    {% include "seller/products/section_basics.html" %}
+    {% include "seller/products/section_variants.html" %}
+    {% include "seller/products/section_media.html" %}
+    {% include "seller/products/section_seo.html" %}
+    {% include "seller/products/section_aplus.html" %}
+  </div>
+
+  <aside class="editor-side">
+    <div class="side-card"><h3>Publish</h3>
+      <p class="cat-meta">{% if blockers %}Before submitting: {{ blockers|join:"; " }}.{% else %}{% if product %}Ready to submit for review.{% else %}Save the basics first.{% endif %}{% endif %}</p>
+      <button type="submit" name="action" value="draft" class="btn" style="width:100%;margin-bottom:8px">Save draft</button>
+      <button type="submit" name="action" value="submit" class="btn primary" style="width:100%" {% if not product %}disabled{% endif %}>Submit for review</button>
+      <p class="cat-meta" style="margin-top:8px">An admin approves your product before it goes live.</p></div>
+    <div class="side-card"><h3>Jump to</h3>
+      <ul class="jump">{% for key, label in jump %}<li><a href="#sec-{{ key }}">{{ label }}</a></li>{% endfor %}</ul></div>
+    <div class="side-card"><h3>Quick tips</h3>
+      <ul class="tips"><li>The URL slug is made from the product name.</li><li>Add at least one complete variant: price, stock, expiry and package size.</li>
+        <li>Keep the meta title under 60 characters.</li><li>Use {{ hl_min }}–{{ hl_max }} short, punchy highlights.</li></ul></div>
+  </aside>
+
+  <div class="action-bar">
+    <button type="submit" name="action" value="draft" class="btn">Save draft</button>
+    <button type="submit" name="action" value="submit" class="btn primary" {% if not product %}disabled{% endif %}>Submit for review</button>
+  </div>
+</form>
+{% endblock %}
+{% block seller_scripts %}<script src="{% static 'seller/js/editor.js' %}"></script>{% endblock %}

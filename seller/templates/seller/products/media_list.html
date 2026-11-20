@@ -1,0 +1,26 @@
+{% load ui_tags %}{% comment %}Gallery / A+ list. Context: product, items, cfg, kind, locked. Reorder with arrows (phones) or drag (desktop).{% endcomment %}
+{% if items %}
+<div class="img-list" {% if not locked %}data-reorder-url="/products/{{ product.pk }}/{% if kind == 'aplus' %}aplus{% else %}images{% endif %}/reorder/"{% endif %}>
+  {% for it in items %}
+  <div class="img-card {% if cfg.wide %}wide{% endif %}" {% if not locked %}draggable="true"{% endif %} data-id="{{ it.pk }}">
+    <img src="{{ it.image.url }}" alt="{% if kind == 'aplus' %}{{ it.caption }}{% else %}{{ it.alt_text }}{% endif %}" loading="lazy">
+    <div class="ic-body">
+      <span class="cat-meta">{% if kind == 'aplus' %}{{ it.caption|default:"No caption" }}{% else %}{{ it.alt_text|default:"No description" }}{% endif %}</span>
+      {% if not locked %}
+      {% with base="/products/"|add:product.pk|stringformat:"s" %}
+      <div class="ic-actions">
+        <button type="button" class="btn sm" aria-label="Move earlier" hx-post="{{ base }}/{% if kind == 'aplus' %}aplus{% else %}images{% endif %}/{{ it.pk }}/move/up/" hx-swap="none" {% if forloop.first %}disabled{% endif %}>↑</button>
+        <button type="button" class="btn sm" aria-label="Move later" hx-post="{{ base }}/{% if kind == 'aplus' %}aplus{% else %}images{% endif %}/{{ it.pk }}/move/down/" hx-swap="none" {% if forloop.last %}disabled{% endif %}>↓</button>
+        <button type="button" class="btn sm" aria-label="Edit text" hx-get="{{ base }}/{% if kind == 'aplus' %}aplus{% else %}images{% endif %}/{{ it.pk }}/text/" hx-target="#modal-root" hx-swap="innerHTML">Aa</button>
+        <button type="button" class="btn sm danger-text" aria-label="Remove" hx-get="{{ base }}/{% if kind == 'aplus' %}aplus{% else %}images{% endif %}/{{ it.pk }}/delete/" hx-target="#modal-root" hx-swap="innerHTML">✕</button>
+      </div>
+      {% endwith %}
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<p class="help" style="margin-top:8px">{{ items|length }} of {{ cfg.max }} used. {% if not locked %}Drag to reorder, or use the arrows.{% endif %}</p>
+{% else %}
+{% include "ui/partials/empty.html" with icon="layers" title="No images yet" text="Add clear, well-lit photos." %}
+{% endif %}

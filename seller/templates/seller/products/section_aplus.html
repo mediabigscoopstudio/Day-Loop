@@ -1,0 +1,10 @@
+{% load ui_tags %}
+<details class="pcard" id="sec-aplus" {% if 'aplus' in open_sections %}open{% endif %}>
+  <summary><span class="pc-ico pink">{% icon 'doc' 20 %}</span><span class="pc-title">A+ content<small>Optional. Up to {{ aplus_max }} wide images with captions</small></span></summary>
+  <div class="pc-body">
+  {% if product %}
+    <div class="pc-actions"><button type="button" class="btn sm" hx-get="/products/{{ product.pk }}/aplus/add/" hx-target="#modal-root" hx-swap="innerHTML">{% icon 'plus' 16 %} Add A+ image</button></div>
+    <div id="aplus-region" hx-get="/products/{{ product.pk }}/aplus/" hx-trigger="load, aplus-changed from:body" hx-swap="innerHTML">{% include "ui/partials/skeleton.html" with rows=2 %}</div>
+  {% else %}<p class="cat-meta">Save the basics first to add A+ content.</p>{% endif %}
+  </div>
+</details>

@@ -1,7 +1,7 @@
 /* List pages: select-all and bulk bar. Delegated, so it survives HTMX swaps of #list-region. */
 (function () {
   'use strict';
-  function boxes() { return Array.prototype.slice.call(document.querySelectorAll('#product-table input[name=ids]')); }
+  function boxes() { return Array.prototype.slice.call(document.querySelectorAll('input[name=ids]')); }
   function refresh() {
     var checked = boxes().filter(function (b) { return b.checked; });
     var bar = document.getElementById('bulk-bar'), n = document.getElementById('bulk-count');

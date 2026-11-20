@@ -1,12 +1,30 @@
 from django.urls import path
 
-from . import auth_views, views, views_onboarding, views_variants
+from . import auth_views, views, views_media, views_onboarding, views_product_list, views_products, views_variants
 
 urlpatterns = [
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('register/', auth_views.RegisterView.as_view(), name='register'),
     path('logout/confirm/', auth_views.LogoutConfirmView.as_view(), name='logout-confirm'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('products/', views_product_list.ProductListView.as_view(), name='products'),
+    path('products/bulk/', views_product_list.BulkView.as_view(), name='products-bulk'),
+    path('products/<int:pk>/duplicate/', views_product_list.DuplicateView.as_view(), name='product-duplicate'),
+    path('products/new/', views_products.ProductEditView.as_view(), name='product-new'),
+    path('products/subcategory-options/', views_products.SubcategoryOptionsView.as_view(), name='subcategory-options'),
+    path('products/<int:pk>/edit/', views_products.ProductEditView.as_view(), name='product-edit'),
+    path('products/<int:pk>/images/', views_media.MediaList.as_view(kind='gallery', url_part='images'), name='gallery-list'),
+    path('products/<int:pk>/images/add/', views_media.MediaAdd.as_view(kind='gallery', url_part='images'), name='gallery-add'),
+    path('products/<int:pk>/images/reorder/', views_media.MediaReorder.as_view(kind='gallery', url_part='images'), name='gallery-reorder'),
+    path('products/<int:pk>/images/<int:iid>/text/', views_media.MediaText.as_view(kind='gallery', url_part='images'), name='gallery-text'),
+    path('products/<int:pk>/images/<int:iid>/delete/', views_media.MediaDelete.as_view(kind='gallery', url_part='images'), name='gallery-delete'),
+    path('products/<int:pk>/images/<int:iid>/move/<slug:direction>/', views_media.MediaMove.as_view(kind='gallery', url_part='images'), name='gallery-move'),
+    path('products/<int:pk>/aplus/', views_media.MediaList.as_view(kind='aplus', url_part='aplus'), name='aplus-list'),
+    path('products/<int:pk>/aplus/add/', views_media.MediaAdd.as_view(kind='aplus', url_part='aplus'), name='aplus-add'),
+    path('products/<int:pk>/aplus/reorder/', views_media.MediaReorder.as_view(kind='aplus', url_part='aplus'), name='aplus-reorder'),
+    path('products/<int:pk>/aplus/<int:iid>/text/', views_media.MediaText.as_view(kind='aplus', url_part='aplus'), name='aplus-text'),
+    path('products/<int:pk>/aplus/<int:iid>/delete/', views_media.MediaDelete.as_view(kind='aplus', url_part='aplus'), name='aplus-delete'),
+    path('products/<int:pk>/aplus/<int:iid>/move/<slug:direction>/', views_media.MediaMove.as_view(kind='aplus', url_part='aplus'), name='aplus-move'),
     path('products/<int:pk>/variants/', views_variants.VariantListPartial.as_view(), name='variant-list'),
     path('products/<int:pk>/variants/new/', views_variants.VariantFormView.as_view(), name='variant-new'),
     path('products/<int:pk>/variants/sizes/', views_variants.BulkSizesView.as_view(), name='variant-sizes'),

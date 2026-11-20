@@ -1,0 +1,9 @@
+{% extends "ui/modal_base.html" %}
+{% block title %}{{ cfg.text_label }}{% endblock %}
+{% block form_open %}
+<form class="modal-form" hx-post="/products/{{ product.pk }}/{% if kind == 'aplus' %}aplus{% else %}images{% endif %}/{{ item.pk }}/text/" hx-target="#modal-root" hx-swap="innerHTML">
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+{% endblock %}
+{% block body %}<div class="field"><label for="mt">{{ cfg.text_label }}</label><input class="input" id="mt" name="text" maxlength="200" value="{{ value }}" autofocus></div>{% endblock %}
+{% block footer %}<button type="button" class="btn" data-modal-close>Cancel</button><button type="submit" class="btn primary">Save</button>{% endblock %}
+{% block form_close %}</form>{% endblock %}

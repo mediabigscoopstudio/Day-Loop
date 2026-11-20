@@ -1,0 +1,5 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}Nothing to change{% endblock %}
+{% block body %}<div class="confirm warning"><span class="confirm-icon">{% icon 'info' 24 %}</span><div><h3>Select live or inactive products</h3><p>Tick the products you want to switch. Drafts, pending and rejected products can’t be activated or deactivated in bulk.</p></div></div>{% endblock %}
+{% block footer %}<button type="button" class="btn primary" data-modal-close>OK</button>{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}Add {{ cfg.label }}{% if remaining != 1 %}s{% endif %}{% endblock %}
+{% block subtitle %}<p>{{ remaining }} more allowed · JPG, PNG or WebP, up to 5 MB each</p>{% endblock %}
+{% block form_open %}
+<form class="modal-form" hx-post="/products/{{ product.pk }}/{% if kind == 'aplus' %}aplus{% else %}images{% endif %}/add/" hx-target="#modal-root" hx-swap="innerHTML" hx-encoding="multipart/form-data">
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+{% endblock %}
+{% block body %}
+  {% if error %}<div class="form-error" role="alert">{{ error }}</div>{% endif %}
+  <div class="field">
+    <div class="dropzone" data-dropzone>
+      <div class="dz-preview" data-preview-box hidden></div>
+      <div class="dz-body">
+        <p class="dz-text"><strong>Drag images here</strong> or choose below</p>
+        <div class="dz-actions"><label class="btn sm" for="media-files">Choose from gallery</label><label class="btn sm" for="media-camera">Take photo</label></div>
+        <p class="dz-name" data-file-name></p>
+      </div>
+      <input id="media-files" type="file" name="files" accept="image/*" {% if kind == 'gallery' %}multiple{% endif %}>
+      <input id="media-camera" type="file" name="files" accept="image/*" capture="environment">
+    </div>
+  </div>
+  <div class="field"><label for="media-text">{{ cfg.text_label }} (optional)</label><input class="input" id="media-text" name="text" maxlength="200"></div>
+{% endblock %}
+{% block footer %}<button type="button" class="btn" data-modal-close>Cancel</button><button type="submit" class="btn primary">Upload</button>{% endblock %}
+{% block form_close %}</form>{% endblock %}

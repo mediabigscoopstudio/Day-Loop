@@ -1,0 +1,10 @@
+{% load ui_tags %}
+<details class="pcard" id="sec-seo" {% if 'seo' in open_sections %}open{% endif %}>
+  <summary><span class="pc-ico amber">{% icon 'search' 20 %}</span><span class="pc-title">SEO<small>Optional. Filled in from your name and description</small></span></summary>
+  <div class="pc-body">
+    {% include "ui/partials/field.html" with field=form.meta_title %}
+    {% include "ui/partials/field.html" with field=form.meta_description %}
+    {% include "ui/partials/field.html" with field=form.meta_keywords %}
+    <p class="help">Leave these blank and we’ll fill them in when you save.</p>
+  </div>
+</details>

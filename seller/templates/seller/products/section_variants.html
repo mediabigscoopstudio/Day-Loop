@@ -1,0 +1,14 @@
+{% load ui_tags %}
+<details class="pcard" id="sec-variants" open>
+  <summary><span class="pc-ico green">{% icon 'box' 20 %}</span><span class="pc-title">Variants<small>Sizes with price, stock, expiry and shipping package</small></span>
+    {% if product %}{% for s in sections %}{% if s.key == 'variants' %}<span class="chip {% if s.done %}up{% else %}warn{% endif %}">{% if s.done %}Done{% else %}To do{% endif %}</span>{% endif %}{% endfor %}{% endif %}</summary>
+  <div class="pc-body">
+  {% if product %}
+    <div class="pc-actions">
+      <button type="button" class="btn primary sm" hx-get="/products/{{ product.pk }}/variants/new/" hx-target="#modal-root" hx-swap="innerHTML">{% icon 'plus' 16 %} Add variant</button>
+      <button type="button" class="btn sm" hx-get="/products/{{ product.pk }}/variants/sizes/" hx-target="#modal-root" hx-swap="innerHTML">Add several sizes</button>
+    </div>
+    <div id="variant-region" hx-get="/products/{{ product.pk }}/variants/" hx-trigger="load, variants-changed from:body" hx-swap="innerHTML">{% include "ui/partials/skeleton.html" with rows=3 %}</div>
+  {% else %}<p class="cat-meta">Save the basics first, then add your variants here.</p>{% endif %}
+  </div>
+</details>

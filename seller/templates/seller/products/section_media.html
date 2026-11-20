@@ -1,0 +1,20 @@
+{% load ui_tags %}
+<details class="pcard" id="sec-media" {% if 'media' in open_sections %}open{% endif %}>
+  <summary><span class="pc-ico blue">{% icon 'layers' 20 %}</span><span class="pc-title">Images &amp; highlights<small>Gallery up to {{ gallery_max }} images, {{ hl_min }}–{{ hl_max }} highlights</small></span>
+    {% if product %}{% for s in sections %}{% if s.key == 'media' %}<span class="chip {% if s.done %}up{% else %}neutral{% endif %}">{% if s.done %}Done{% else %}Optional{% endif %}</span>{% endif %}{% endfor %}{% endif %}</summary>
+  <div class="pc-body">
+    <h3 class="pc-h">Gallery</h3>
+    {% if product %}
+      <div class="pc-actions"><button type="button" class="btn sm" hx-get="/products/{{ product.pk }}/images/add/" hx-target="#modal-root" hx-swap="innerHTML">{% icon 'plus' 16 %} Add images</button></div>
+      <div id="gallery-region" hx-get="/products/{{ product.pk }}/images/" hx-trigger="load, gallery-changed from:body" hx-swap="innerHTML">{% include "ui/partials/skeleton.html" with rows=2 %}</div>
+    {% else %}<p class="cat-meta">Save the basics first to add gallery images.</p>{% endif %}
+
+    <h3 class="pc-h" style="margin-top:20px">Highlights</h3>
+    {% if hl_error %}<div class="form-error" role="alert">{{ hl_error }}</div>{% endif %}
+    <div id="hl-list" data-max="{{ hl_max }}">
+      {% for h in highlights %}<div class="hl-row"><input class="input" name="highlights" maxlength="140" value="{{ h }}" placeholder="e.g. 25 g protein per serving"><button type="button" class="btn sm" data-hl-remove aria-label="Remove highlight">✕</button></div>{% endfor %}
+    </div>
+    <button type="button" class="btn sm" id="hl-add">{% icon 'plus' 16 %} Add highlight</button>
+    <p class="help" style="margin-top:6px"><span id="hl-count">{{ highlights|length }}</span> of {{ hl_max }} used. Short, punchy selling points work best.</p>
+  </div>
+</details>

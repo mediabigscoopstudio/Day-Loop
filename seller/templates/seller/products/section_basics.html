@@ -1,0 +1,29 @@
+{% load ui_tags %}
+<details class="pcard" id="sec-basics" open>
+  <summary><span class="pc-ico">{% icon 'tag' 20 %}</span><span class="pc-title">Basics<small>Name, category, description and thumbnail</small></span>
+    {% if product %}{% for s in sections %}{% if s.key == 'basics' %}<span class="chip {% if s.done %}up{% else %}warn{% endif %}">{% if s.done %}Done{% else %}To do{% endif %}</span>{% endif %}{% endfor %}{% endif %}</summary>
+  <div class="pc-body">
+    <div class="form-cols">{% include "ui/partials/category_select.html" with name_category="category" name_sub="subcategory" %}</div>
+    {% for e in form.subcategory.errors %}<span class="field-error" role="alert">{{ e }}</span>{% endfor %}
+    <p class="cat-meta" style="margin:-4px 0 12px">Categories are managed by Day Loop. You can only choose from the list.</p>
+    {% include "ui/partials/field.html" with field=form.name %}
+    {% include "ui/partials/field.html" with field=form.brand %}
+    {% include "ui/partials/field.html" with field=form.short_description %}
+    <div class="field {% if form.description.errors %}has-error{% endif %}">
+      <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+      <div class="rte" data-rte>
+        <div class="rte-bar" role="toolbar" aria-label="Formatting">
+          <button type="button" data-cmd="bold" aria-label="Bold"><b>B</b></button>
+          <button type="button" data-cmd="italic" aria-label="Italic"><i>I</i></button>
+          <button type="button" data-cmd="insertUnorderedList" aria-label="Bulleted list">• List</button>
+          <button type="button" data-cmd="insertOrderedList" aria-label="Numbered list">1. List</button>
+        </div>
+        <div class="rte-area" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Describe the product: what it is, who it is for, how to use it."></div>
+        {{ form.description }}
+      </div>
+      <span class="help">Bold and lists only. Pasted text is converted to plain text.</span>
+      {% for e in form.description.errors %}<span class="field-error" role="alert">{{ e }}</span>{% endfor %}
+    </div>
+    {% include "ui/partials/file_field.html" with field=form.thumbnail current=product.thumbnail square=True %}
+  </div>
+</details>

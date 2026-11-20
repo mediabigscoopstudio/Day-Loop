@@ -1,0 +1,56 @@
+{% extends "seller/base.html" %}
+{% load static ui_tags dash_tags %}
+{% block title %}Products · Day Loop sellers{% endblock %}
+{% block page %}
+<div class="page-head"><div><h1>Products</h1><p>Create and manage what you sell.</p></div>
+  <a class="btn primary" href="/products/new/">{% icon 'plus' 18 %} Add product</a></div>
+{% if notice %}<div class="saved-note" role="status">{{ notice }}</div>{% endif %}
+
+<div id="list-region" class="card" hx-get="{{ request.get_full_path }}" hx-trigger="products-changed from:body" hx-select="#list-region" hx-target="this" hx-swap="outerHTML">
+  <nav class="tabs" aria-label="Filter by status">{% for value, label, n in tabs %}<a class="tab" href="{% qs status=value page=None notice=None submitted=None resubmitted=None %}" {% if f.status == value or not f.status and not value %}aria-current="true"{% endif %}>{{ label }} <span class="chip neutral">{{ n }}</span></a>{% endfor %}</nav>
+  <form method="get" class="filters inline-filters" role="search">
+    {% if f.status %}<input type="hidden" name="status" value="{{ f.status }}">{% endif %}
+    <input class="input" type="search" name="q" value="{{ f.q }}" placeholder="Search name, brand, SKU" aria-label="Search products" style="min-width:200px;flex:1">
+    <select class="select" name="category" aria-label="Category"><option value="">All categories</option>{% for c in categories %}<option value="{{ c.pk }}" {% if f.category == c.pk|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select>
+    <select class="select" name="stock" aria-label="Stock level"><option value="">Any stock</option><option value="out" {% if f.stock == 'out' %}selected{% endif %}>Out of stock</option><option value="low" {% if f.stock == 'low' %}selected{% endif %}>Low stock</option><option value="in" {% if f.stock == 'in' %}selected{% endif %}>In stock</option></select>
+    <button class="btn sm" type="submit">Apply</button>{% if has_filters %}<a class="btn sm" href="/products/">Clear</a>{% endif %}
+  </form>
+
+  {% if can_bulk %}
+  <div class="bulk-bar" id="bulk-bar" hidden><strong><span id="bulk-count">0</span> selected</strong>
+    <button class="btn sm" type="button" hx-get="/products/bulk/?action=activate" hx-include="[name=ids]:checked" hx-target="#modal-root" hx-swap="innerHTML">Activate</button>
+    <button class="btn sm" type="button" hx-get="/products/bulk/?action=deactivate" hx-include="[name=ids]:checked" hx-target="#modal-root" hx-swap="innerHTML">Deactivate</button>
+    <span class="cat-meta">Live and inactive products only</span></div>
+  {% endif %}
+
+  {% if page.object_list %}
+  <div class="table-wrap show-desktop"><table class="table" id="product-table">
+    <thead><tr><th style="width:36px">{% if can_bulk %}<input type="checkbox" id="select-all" aria-label="Select all">{% endif %}</th><th>{% sort_link 'name' 'Product' %}</th><th>Category</th><th class="num">{% sort_link 'price' 'From' %}</th><th class="num">{% sort_link 'stock' 'Stock' %}</th><th>{% sort_link 'status' 'Status' %}</th><th>{% sort_link 'updated' 'Updated' %}</th><th></th></tr></thead>
+    <tbody>{% for p in page.object_list %}
+      <tr><td>{% if p.status == 'live' or p.status == 'inactive' %}<input type="checkbox" name="ids" value="{{ p.pk }}" aria-label="Select {{ p.name }}">{% endif %}</td>
+        <td><a class="link-btn" href="/products/{{ p.pk }}/edit/">{{ p.name }}</a>{% if p.status == 'rejected' and p.rejection_reason %}<br><small class="vc-problems">{{ p.rejection_reason|truncatechars:60 }}</small>{% endif %}</td>
+        <td>{{ p.subcategory.parent.name }} <span class="cat-meta">/ {{ p.subcategory.name }}</span></td>
+        <td class="num">{% if p.min_price %}{{ p.min_price|inr }}{% else %}—{% endif %}</td>
+        <td class="num">{% if p.total_stock == 0 %}<span class="chip danger">Out</span>{% elif p.total_stock <= low_stock %}<span class="chip amber">{{ p.total_stock }} low</span>{% else %}{{ p.total_stock }}{% endif %}</td>
+        <td><span class="chip {{ p.status|status_chip }}">{{ p.get_status_display }}</span></td><td>{{ p.updated_at|date:"M j" }}</td>
+        <td style="white-space:nowrap"><a class="btn sm" href="/products/{{ p.pk }}/edit/">{% if p.status == 'pending' %}View{% else %}Edit{% endif %}</a>
+          <button class="btn sm" type="button" hx-post="/products/{{ p.pk }}/duplicate/" hx-swap="none" aria-label="Duplicate {{ p.name }}">Duplicate</button></td></tr>
+    {% endfor %}</tbody></table></div>
+
+  <div class="card-list show-mobile">{% for p in page.object_list %}
+    <article class="prod-card"><div class="pcard-top">{% if p.status == 'live' or p.status == 'inactive' %}<input type="checkbox" name="ids" value="{{ p.pk }}" aria-label="Select {{ p.name }}">{% endif %}
+      <a class="pc-name" href="/products/{{ p.pk }}/edit/">{{ p.name }}</a><span class="chip {{ p.status|status_chip }}">{{ p.get_status_display }}</span></div>
+      <div class="vc-meta"><span>{% if p.min_price %}from {{ p.min_price|inr }}{% else %}No price yet{% endif %}</span>
+        {% if p.total_stock == 0 %}<span class="chip danger">Out</span>{% elif p.total_stock <= low_stock %}<span class="chip amber">{{ p.total_stock }} low</span>{% else %}<span class="chip neutral">{{ p.total_stock }} in stock</span>{% endif %}</div>
+      {% if p.status == 'rejected' and p.rejection_reason %}<p class="vc-problems">{{ p.rejection_reason|truncatechars:80 }}</p>{% endif %}
+      <div class="vc-actions"><a class="btn sm" href="/products/{{ p.pk }}/edit/">{% if p.status == 'pending' %}View{% else %}Edit{% endif %}</a>
+        <button class="btn sm" type="button" hx-post="/products/{{ p.pk }}/duplicate/" hx-swap="none">Duplicate</button></div></article>
+  {% endfor %}</div>
+  {% include "dash/partials/pager.html" %}
+  {% else %}
+    {% if has_filters %}{% include "ui/partials/empty.html" with icon="search" title="No products match" text="Adjust or clear the filters." %}
+    {% else %}{% include "ui/partials/empty.html" with icon="layers" title="No products yet" text="Add your first product. Save a draft any time and finish later." %}{% endif %}
+  {% endif %}
+</div>
+{% endblock %}
+{% block seller_scripts %}<script src="{% static 'dash/js/lists.js' %}"></script>{% endblock %}

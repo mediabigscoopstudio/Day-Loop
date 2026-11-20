@@ -113,3 +113,78 @@ class BulkSizesForm(forms.Form):
         if any(len(p) > 80 for p in out):
             raise forms.ValidationError('Each size must be 80 characters or fewer.')
         return out
+
+
+from django.core.files.uploadedfile import UploadedFile  # noqa: E402
+
+from catalog.models import Category, Product  # noqa: E402
+
+from .richtext import clean_html  # noqa: E402
+from .services.products import HIGHLIGHTS_MAX  # noqa: E402
+from .uploads import validate_product_image  # noqa: E402
+
+
+class ProductForm(forms.ModelForm):
+    """Basics + SEO. Variants, gallery, highlights and A+ content have their own controls."""
+
+    category = forms.ModelChoiceField(
+        queryset=Category.objects.filter(parent__isnull=True, is_active=True), required=False, label='Category')
+    subcategory = forms.ModelChoiceField(
+        queryset=Category.objects.filter(parent__isnull=False, is_active=True, parent__is_active=True), label='Subcategory')
+    thumbnail = forms.FileField(required=False, widget=forms.FileInput(attrs={'accept': 'image/png,image/jpeg,image/webp', 'data-preview': 'square'}))
+
+    class Meta:
+        model = Product
+        fields = ['name', 'brand', 'short_description', 'description', 'thumbnail', 'meta_title', 'meta_description', 'meta_keywords']
+        labels = {'name': 'Product name', 'short_description': 'Short description', 'description': 'Full description',
+                  'meta_title': 'Meta title', 'meta_description': 'Meta description', 'meta_keywords': 'Meta keywords'}
+        widgets = {
+            'name': forms.TextInput(attrs={**INPUT, 'maxlength': 160, 'placeholder': 'e.g. Whey Protein Isolate'}),
+            'brand': forms.TextInput(attrs=INPUT),
+            'short_description': forms.TextInput(attrs={**INPUT, 'maxlength': 220, 'data-count': 220}),
+            'description': forms.Textarea(attrs={'class': 'textarea rte-source', 'rows': 6}),
+            'meta_title': forms.TextInput(attrs={**INPUT, 'maxlength': 70, 'data-count': 60, 'data-count-soft': 'true'}),
+            'meta_description': forms.Textarea(attrs={'class': 'textarea', 'rows': 3, 'maxlength': 170, 'data-count': 160, 'data-count-soft': 'true'}),
+            'meta_keywords': forms.TextInput(attrs={**INPUT, 'maxlength': 255, 'placeholder': 'comma, separated, keywords'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['name'].required = True
+        self.fields['thumbnail'].help_text = 'Square works best (800×800). JPG, PNG or WebP, up to 5 MB.'
+        self.fields['subcategory'].label_from_instance = lambda c: c.name
+        if self.instance.pk and self.instance.subcategory_id:
+            self.fields['category'].initial = self.instance.subcategory.parent_id
+            self.fields['subcategory'].initial = self.instance.subcategory_id
+
+    def clean_name(self):
+        name = ' '.join(self.cleaned_data['name'].split())
+        if not name:
+            raise forms.ValidationError('Product name is required.')
+        return name
+
+    def clean_description(self):
+        return clean_html(self.cleaned_data.get('description', ''))      # never store raw pasted HTML
+
+    def clean_thumbnail(self):
+        f = self.cleaned_data.get('thumbnail')
+        if isinstance(f, UploadedFile):
+            validate_product_image(f)
+        return f
+
+    def clean(self):
+        cleaned = super().clean()
+        cat, sub = cleaned.get('category'), cleaned.get('subcategory')
+        if cat and sub and sub.parent_id != cat.pk:
+            self.add_error('subcategory', 'This subcategory does not belong to the chosen category.')
+        return cleaned
+
+
+def parse_highlights(post):
+    """Highlights come as repeated `highlights` inputs. Returns (clean list, error or '')."""
+    items = [' '.join(h.split()) for h in post.getlist('highlights') if h.strip()]
+    if len(items) > HIGHLIGHTS_MAX:
+        return items[:HIGHLIGHTS_MAX], f'You can add up to {HIGHLIGHTS_MAX} highlights.'
+    if any(len(h) > 140 for h in items):
+        return items, 'Keep each highlight under 140 characters.'
+    return items, ''
