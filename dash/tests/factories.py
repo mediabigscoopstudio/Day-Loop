@@ -14,7 +14,10 @@ _n = count(1)
 
 def make_user(prefix='u'):
     i = next(_n)
-    return get_user_model().objects.create_user(f'{prefix}{i}', f'{prefix}{i}@example.test', 'x-Pass-12345')
+    user = get_user_model()(username=f'{prefix}{i}', email=f'{prefix}{i}@example.test')
+    user.set_unusable_password()          # factory users never log in; avoids slow password hashing
+    user.save()
+    return user
 
 
 def make_seller(name=None, status='approved'):
