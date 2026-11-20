@@ -135,7 +135,7 @@ DATABASES = {
         'NAME': os.environ.get('DJANGO_DB_NAME', 'dayloop_db'),
         'USER': os.environ.get('DJANGO_DB_USER', 'minaketan'),
         'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', ''),
-        'HOST': os.environ.get('DJANGO_DB_HOST', '127.0.0.1'),
+        'HOST': os.environ.get('DJANGO_DB_HOST', 'localhost'),
         'PORT': os.environ.get('DJANGO_DB_PORT', '5432'),
     }
 }
