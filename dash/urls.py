@@ -30,6 +30,8 @@ urlpatterns = [
     path('products/categories/<int:pk>/delete/', views_categories.CategoryDeleteView.as_view(), name='category-delete'),
     path('products/categories/<int:pk>/move/<slug:direction>/', views_categories.CategoryMoveView.as_view(), name='category-move'),
     path('products/subcategory-options/', views_categories.SubcategoryOptions.as_view(), name='subcategory-options'),
+    path('analytics/', views.AnalyticsView.as_view(), name='analytics'),
+    path('api/new-vs-repeat/', views.NewVsRepeatApi.as_view(), name='api-new-vs-repeat'),
     path('api/sales/', views.SalesApi.as_view(), name='api-sales'),
     path('api/category-revenue/', views.CategoryRevenueApi.as_view(), name='api-category-revenue'),
 ]

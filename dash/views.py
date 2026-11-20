@@ -60,3 +60,23 @@ class CategoryRevenueApi(SuperuserRequiredMixin, RangeMixin, View):
     def get(self, request):
         level = 'subcategory' if request.GET.get('level') == 'subcategory' else 'category'
         return JsonResponse(metrics.category_revenue(self.dr, level=level))
+
+
+class NewVsRepeatApi(SuperuserRequiredMixin, RangeMixin, View):
+    def get(self, request):
+        return JsonResponse(metrics.new_vs_repeat(self.dr))
+
+
+class AnalyticsView(RangeMixin, DashPageView):
+    active = 'analytics'
+    template_name = 'dash/analytics.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        kpis = {k['key']: k for k in metrics.overview_kpis(self.dr)}
+        ctx.update(
+            dr=self.dr, presets=PRESETS, kpis=kpis,
+            top_sellers=metrics.top_sellers(self.dr, limit=8), top_products=metrics.top_products(self.dr),
+            cohorts=metrics.repeat_cohorts(),
+        )
+        return ctx

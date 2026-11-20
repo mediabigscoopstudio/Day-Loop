@@ -90,7 +90,7 @@
         var old = charts.get(canvas); if (old) old.destroy();
         if (kind === 'donut') {
           renderLegend(canvas.dataset.legend, d);
-          var t = document.getElementById('donut-total'); if (t) t.textContent = inrShort(d.total);
+          var t = document.querySelector(canvas.dataset.total || '#donut-total'); if (t) t.textContent = inrShort(d.total);
           empty(canvas, !d.rows.length);
         } else if (kind === 'sales') {
           empty(canvas, !d.gmv.some(function (x) { return x > 0; }));

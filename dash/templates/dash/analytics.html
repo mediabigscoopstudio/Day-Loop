@@ -1,0 +1,49 @@
+{% extends "dash/base.html" %}
+{% load static ui_tags %}
+{% block title %}Analytics · Day Loop admin{% endblock %}
+{% block topbar_extra %}{% include "dash/partials/date_range.html" %}{% endblock %}
+{% block page %}
+<div class="page-head"><div><h1>Analytics</h1><p>{{ dr.label }} · compared with the previous {{ dr.days }} day{{ dr.days|pluralize }}.</p></div></div>
+
+<section class="grid kpis" aria-label="Summary">
+  {% include "ui/partials/kpi_card.html" with k=kpis.gmv %}{% include "ui/partials/kpi_card.html" with k=kpis.orders %}
+  {% include "ui/partials/kpi_card.html" with k=kpis.repeat %}{% include "ui/partials/kpi_card.html" with k=kpis.aov %}
+</section>
+
+<div class="grid row-eq">
+  <section class="card"><div class="card-head"><h2>Sales trend</h2></div>
+    <div class="chart-box"><canvas data-chart="sales" data-url="/api/sales/?{{ dr.query_string }}" role="img" aria-label="Sales trend"></canvas></div>
+    <p class="chart-empty empty" hidden>No sales in this period.</p></section>
+  <section class="card"><div class="card-head"><h2>New vs repeat customers</h2></div>
+    <div class="chart-box"><canvas data-chart="stacked" data-url="/api/new-vs-repeat/?{{ dr.query_string }}" role="img" aria-label="Orders from new and repeat customers"></canvas></div>
+    <p class="chart-empty empty" hidden>No orders in this period.</p></section>
+</div>
+
+<div class="grid row-eq">
+  <section class="card"><div class="card-head"><h2>Revenue by category</h2></div>
+    <div class="donut-wrap"><div class="donut-box"><canvas data-chart="donut" data-url="/api/category-revenue/?{{ dr.query_string }}" data-legend="#leg-cat" data-total="#tot-cat" role="img" aria-label="Revenue by category"></canvas>
+      <div class="donut-center"><span id="tot-cat">₹0</span><small>GMV</small></div></div><div class="legend" id="leg-cat"></div></div></section>
+  <section class="card"><div class="card-head"><h2>Revenue by subcategory</h2></div>
+    <div class="donut-wrap"><div class="donut-box"><canvas data-chart="donut" data-url="/api/category-revenue/?{{ dr.query_string }}&level=subcategory" data-legend="#leg-sub" data-total="#tot-sub" role="img" aria-label="Revenue by subcategory"></canvas>
+      <div class="donut-center"><span id="tot-sub">₹0</span><small>GMV</small></div></div><div class="legend" id="leg-sub"></div></div></section>
+</div>
+
+<div class="grid row-eq">
+  <section class="card"><div class="card-head"><h2>Top products</h2></div>
+    {% if top_products %}<div class="table-wrap"><table class="table"><thead><tr><th>Product</th><th>Seller</th><th class="num">Units</th><th class="num">Revenue</th></tr></thead><tbody>
+      {% for p in top_products %}<tr><td>{{ p.name }}</td><td>{{ p.seller_name }}</td><td class="num">{{ p.units|intcomma_in }}</td><td class="num">{{ p.revenue|inr }}</td></tr>{% endfor %}</tbody></table></div>
+    {% else %}{% include "ui/partials/empty.html" with icon="layers" title="No product sales" text="Top products appear once orders come in." %}{% endif %}</section>
+  <section class="card"><div class="card-head"><h2>Top sellers</h2></div>
+    {% include "dash/partials/top_sellers.html" with rows=top_sellers %}</section>
+</div>
+
+<section class="card" style="margin-top:18px"><div class="card-head"><h2>Repeat-purchase rate by first-order month</h2></div>
+  {% if cohorts %}<div class="table-wrap"><table class="table"><thead><tr><th>Cohort (first order)</th><th class="num">Customers</th><th class="num">Ordered again</th><th class="num">Repeat rate</th></tr></thead><tbody>
+    {% for c in cohorts %}<tr><td>{{ c.cohort|date:"F Y" }}</td><td class="num">{{ c.customers }}</td><td class="num">{{ c.repeaters }}</td>
+      <td class="num"><span class="chip {% if c.rate >= 30 %}up{% elif c.rate > 0 %}amber{% else %}neutral{% endif %}">{{ c.rate }}%</span></td></tr>{% endfor %}</tbody></table></div>
+  {% else %}{% include "ui/partials/empty.html" with icon="repeat" title="No cohorts yet" text="Cohorts form as customers place their first orders." %}{% endif %}</section>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'ui/vendor/chart.umd.min.js' %}"></script>
+<script src="{% static 'dash/js/charts.js' %}"></script>
+{% endblock %}
