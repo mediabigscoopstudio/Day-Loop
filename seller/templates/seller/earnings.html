@@ -1,0 +1,24 @@
+{% extends "seller/base.html" %}
+{% load ui_tags %}
+{% block title %}Earnings · Day Loop sellers{% endblock %}
+{% block page %}
+<div class="page-head"><div><h1>Earnings</h1><p>Your payout for each delivered order: purchase value, minus 5% platform margin, minus 18% GST on that margin.</p></div></div>
+<div class="grid mini-kpis" style="margin-bottom:16px;grid-template-columns:repeat(3,minmax(0,1fr))">
+  <div class="card mini"><span class="cat-meta">Pending payout</span><strong>{{ bal.pending|inr:2 }}</strong><small class="cat-meta">Delivered, not yet settled</small></div>
+  <div class="card mini"><span class="cat-meta">Settled</span><strong>{{ bal.settled|inr:2 }}</strong><small class="cat-meta">Paid to your bank</small></div>
+  <div class="card mini"><span class="cat-meta">Lifetime</span><strong>{{ bal.lifetime|inr:2 }}</strong></div>
+</div>
+<div class="grid row-eq">
+  <section class="card"><div class="card-head"><h2>Ledger</h2></div>
+  {% if page.object_list %}<div class="table-wrap"><table class="table"><thead><tr><th>When</th><th>Entry</th><th class="num">Amount</th><th>Status</th></tr></thead><tbody>
+    {% for e in page.object_list %}<tr><td>{{ e.created_at|date:"M j, Y" }}</td><td>{{ e.description }}</td>
+      <td class="num"><span class="chip {% if e.kind == 'credit' %}up{% else %}down{% endif %}">{% if e.kind == 'debit' %}−{% else %}+{% endif %}{{ e.amount|inr:2 }}</span></td>
+      <td>{% if e.is_settled %}<span class="chip neutral">Settled</span>{% else %}<span class="chip amber">Pending</span>{% endif %}</td></tr>{% endfor %}</tbody></table></div>
+    {% include "dash/partials/pager.html" %}
+  {% else %}{% include "ui/partials/empty.html" with icon="rupee" title="No earnings yet" text="You’re credited when an order is delivered." %}{% endif %}</section>
+  <section class="card"><div class="card-head"><h2>Payout history</h2></div>
+  {% if payouts %}<div class="table-wrap"><table class="table"><thead><tr><th>Paid on</th><th>Reference</th><th class="num">Amount</th></tr></thead><tbody>
+    {% for p in payouts %}<tr><td>{{ p.settled_at|date:"M j, Y" }}</td><td>{{ p.reference|default:"—" }}</td><td class="num">{{ p.amount|inr:2 }}</td></tr>{% endfor %}</tbody></table></div>
+  {% else %}{% include "ui/partials/empty.html" with icon="inbox" title="No payouts yet" text="Settled payouts are listed here." %}{% endif %}</section>
+</div>
+{% endblock %}

@@ -1,12 +1,13 @@
 from django.urls import path
 
-from . import auth_views, views, views_inventory, views_media, views_onboarding, views_orders, views_product_list, views_products, views_variants
+from . import auth_views, views, views_earnings, views_inventory, views_media, views_onboarding, views_orders, views_product_list, views_products, views_variants
 
 urlpatterns = [
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('register/', auth_views.RegisterView.as_view(), name='register'),
     path('logout/confirm/', auth_views.LogoutConfirmView.as_view(), name='logout-confirm'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('earnings/', views_earnings.EarningsView.as_view(), name='earnings'),
     path('orders/', views_orders.OrderListView.as_view(), name='orders'),
     path('orders/<int:pk>/', views_orders.OrderDetailModal.as_view(), name='order-detail'),
     path('orders/<int:pk>/advance/', views_orders.AdvanceView.as_view(), name='order-advance'),

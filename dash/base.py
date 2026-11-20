@@ -8,6 +8,7 @@ NAV = [
     {'key': 'orders', 'label': 'Orders', 'url': '/orders/', 'icon': 'box'},
     {'key': 'sellers', 'label': 'Sellers', 'url': '/sellers/', 'icon': 'users'},
     {'key': 'products', 'label': 'Products', 'url': '/products/', 'icon': 'layers'},
+    {'key': 'payouts', 'label': 'Payouts', 'url': '/payouts/', 'icon': 'rupee'},
     {'key': 'customers', 'label': 'Customers', 'url': '/customers/', 'icon': 'user'},
     {'key': 'analytics', 'label': 'Analytics', 'url': '/analytics/', 'icon': 'chart'},
 ]

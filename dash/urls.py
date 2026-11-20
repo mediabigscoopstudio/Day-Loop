@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import auth_views, views, views_categories, views_customers, views_orders, views_products, views_search, views_sellers
+from . import auth_views, views, views_categories, views_customers, views_orders, views_payouts, views_products, views_search, views_sellers
 
 urlpatterns = [
     path('login/', auth_views.LoginView.as_view(), name='login'),
@@ -12,6 +12,8 @@ urlpatterns = [
     path('partials/recent-orders/', views.RecentOrdersPartial.as_view(), name='partial-recent-orders'),
     path('customers/', views_customers.CustomerListView.as_view(), name='customers'),
     path('customers/<int:pk>/', views_customers.CustomerDetailModal.as_view(), name='customer-detail'),
+    path('payouts/', views_payouts.PayoutListView.as_view(), name='payouts'),
+    path('payouts/<int:pk>/settle/', views_payouts.SettleView.as_view(), name='payout-settle'),
     path('orders/', views_orders.OrderListView.as_view(), name='orders'),
     path('orders/<int:pk>/', views_orders.OrderDetailModal.as_view(), name='order-detail'),
     path('orders/<int:pk>/status/', views_orders.OrderStatusView.as_view(), name='order-status'),

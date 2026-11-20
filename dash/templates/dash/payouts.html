@@ -1,0 +1,18 @@
+{% extends "dash/base.html" %}
+{% load ui_tags %}
+{% block title %}Payouts · Day Loop admin{% endblock %}
+{% block page %}
+<div class="page-head"><div><h1>Payouts</h1><p>Settle what sellers have earned from delivered orders. Total awaiting payout: <strong>{{ total_pending|inr:2 }}</strong></p></div></div>
+<div id="list-region" hx-get="/payouts/" hx-trigger="payouts-changed from:body" hx-select="#list-region" hx-target="this" hx-swap="outerHTML">
+<section class="card"><div class="card-head"><h2>Awaiting settlement</h2></div>
+{% if rows %}<div class="table-wrap"><table class="table"><thead><tr><th>Seller</th><th class="num">Entries</th><th class="num">Credits</th><th class="num">Debits</th><th class="num">Pending</th><th></th></tr></thead><tbody>
+  {% for r in rows %}<tr><td><strong>{{ r.name }}</strong></td><td class="num">{{ r.entries }}</td><td class="num">{{ r.credits|inr:2 }}</td><td class="num">{{ r.debits|inr:2 }}</td>
+    <td class="num"><strong>{{ r.pending|inr:2 }}</strong></td>
+    <td>{% if r.pending > 0 %}<button class="btn sm primary" hx-get="/payouts/{{ r.seller }}/settle/" hx-target="#modal-root" hx-swap="innerHTML">Settle</button>{% else %}<span class="chip neutral">Nothing to pay</span>{% endif %}</td></tr>{% endfor %}</tbody></table></div>
+{% else %}{% include "ui/partials/empty.html" with icon="check" title="All settled" text="No seller has a pending balance." %}{% endif %}</section>
+<section class="card" style="margin-top:18px"><div class="card-head"><h2>Recent payouts</h2></div>
+{% if recent %}<div class="table-wrap"><table class="table"><thead><tr><th>Paid on</th><th>Seller</th><th>Reference</th><th>By</th><th class="num">Amount</th></tr></thead><tbody>
+  {% for p in recent %}<tr><td>{{ p.settled_at|date:"M j, Y, g:i A" }}</td><td>{{ p.seller.business_name }}</td><td>{{ p.reference|default:"—" }}</td><td>{{ p.created_by.get_username|default:"—" }}</td><td class="num">{{ p.amount|inr:2 }}</td></tr>{% endfor %}</tbody></table></div>
+{% else %}{% include "ui/partials/empty.html" with icon="inbox" title="No payouts yet" text="Settled payouts appear here." %}{% endif %}</section>
+</div>
+{% endblock %}
