@@ -111,3 +111,15 @@
   .page.has-tabbar { padding-bottom: 96px; }
   .sidebar-hide-mobile { display: none; }
 }
+
+/* Phones: 44px minimum tap targets, 16px inputs (no iOS zoom) and single-column forms. */
+@media (max-width: 860px) {
+  .btn, .btn.sm, .icon-btn, .tab, .pager .btn, .menu-panel a, .menu-panel button { min-height: 44px; }
+  .input, .select, .textarea { min-height: 48px; font-size: 16px; }
+  .check-pill, .pw-toggle { min-height: 44px; }
+}
+@media (max-width: 560px) {
+  .form-cols, .cols-2, .filter-grid, .review-grid { grid-template-columns: 1fr !important; }
+  .page-head { flex-direction: column; align-items: stretch; }
+  .page-head .btn { width: 100%; }
+}

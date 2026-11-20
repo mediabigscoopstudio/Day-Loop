@@ -51,6 +51,25 @@ names resolve to 127.0.0.1 in modern browsers and on macOS.
   attached to *existing* non-superuser accounts. It never creates users and is never run automatically.
 - **Tests:** `python manage.py test dash`
 
+## Seller portal (seller host)
+
+`seller.localhost:8000` is where sellers register, onboard and run their business.
+
+- **Who can log in:** an active account with a `SellerProfile` that is not staff or a superuser. Customers and staff
+  get the same generic error as a wrong password. Sellers register themselves at `/register/`; no accounts are created for them.
+- **Approval gate:** until an admin approves the application a seller sees only Status, Account and onboarding.
+- **Onboarding:** a 4-step popup wizard (business, compliance, bank & operations, review). Each step saves a draft.
+- **Products:** one long page with collapsible cards (basics, variants, images and highlights, SEO, A+ content).
+  A product needs at least one complete variant (price, stock, expiry and full package dimensions) before it can be
+  submitted. An admin approves it in the dash (Products -> review), which makes it Live.
+- **Orders:** one checkout becomes one `Order` plus one `SellerOrder` per seller. Each seller only sees their own.
+  Pipeline: New -> Accepted -> Packed -> Shipped -> Delivered, plus Cancelled and Returned.
+- **Money:** margin 5% of purchase value, GST 18% on the margin only, payout = purchase value - margin - GST on margin
+  (10,000 -> 500 -> 90 -> 9,410). Rates are stored on each SellerOrder. See `orders/services/money.py`.
+- **Payouts:** credited on delivery, debited on return. Admins settle them in the dash (Payouts).
+- **Uploads** (logo, documents, product images) are written to `MEDIA_ROOT`. Tests use a temporary folder.
+- **Tests:** `python manage.py test seller orders catalog`
+
 ## Sessions and CSRF
 
 - Each surface has its own session cookie: `dl_www_sid`, `dl_seller_sid`,
