@@ -28,3 +28,19 @@
 .agree input { margin-top: 3px; width: 20px; height: 20px; accent-color: var(--green-700); flex: none; }
 .more-docs summary { cursor: pointer; font-weight: 700; padding: 10px 0; color: var(--green-900); }
 dialog.modal .input, dialog.modal .select, dialog.modal .textarea { font-size: 16px; }
+
+/* variants */
+.form-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0 14px; }
+.fs { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 14px 4px; margin: 0 0 14px; }
+.fs legend, .fs summary { font-weight: 800; color: var(--green-900); padding: 0 6px; font-size: 14px; }
+.fs summary { cursor: pointer; padding: 6px 0 10px; }
+.weights { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: var(--sage-100); border-radius: 14px; padding: 12px 14px; margin: 4px 0 10px; }
+.weights div { display: grid; }
+.weights strong { font-size: 18px; color: var(--green-900); }
+.variant-list { display: grid; gap: 10px; }
+.variant-card { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--radius-md); background: #fff; }
+.variant-card.incomplete { border-color: var(--amber-bg); background: #fffaf0; }
+.vc-meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 6px; }
+.vc-problems { margin: 6px 0 0; color: var(--amber-ink); font-size: 13px; font-weight: 600; }
+.vc-actions { display: flex; gap: 8px; }
+@media (max-width: 560px) { .vc-actions { width: 100%; } .vc-actions .btn { flex: 1; min-height: 44px; } }

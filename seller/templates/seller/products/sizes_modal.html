@@ -1,0 +1,10 @@
+{% extends "ui/modal_base.html" %}
+{% block title %}Add several sizes{% endblock %}
+{% block subtitle %}<p>{{ product.name }}</p>{% endblock %}
+{% block form_open %}
+<form class="modal-form" hx-post="/products/{{ product.pk }}/variants/sizes/" hx-target="#modal-root" hx-swap="innerHTML">
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+{% endblock %}
+{% block body %}{% include "ui/partials/field.html" with field=form.sizes %}{% endblock %}
+{% block footer %}<button type="button" class="btn" data-modal-close>Cancel</button><button type="submit" class="btn primary">Create variants</button>{% endblock %}
+{% block form_close %}</form>{% endblock %}

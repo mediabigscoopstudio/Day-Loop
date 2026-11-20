@@ -1,0 +1,5 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}Under review{% endblock %}
+{% block body %}<div class="confirm warning"><span class="confirm-icon">{% icon 'info' 24 %}</span><div><h3>“{{ product.name }}” is being reviewed</h3><p>You can edit it again once the review is finished.</p></div></div>{% endblock %}
+{% block footer %}<button type="button" class="btn primary" data-modal-close>OK</button>{% endblock %}

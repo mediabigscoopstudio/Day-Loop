@@ -5,3 +5,4 @@
   <a href="/account/">Account &amp; documents</a>
   <button type="button" hx-get="/logout/confirm/" hx-target="#modal-root" hx-swap="innerHTML">Sign out</button>
 {% endblock %}
+{% block scripts %}<script src="{% static 'seller/js/seller.js' %}"></script>{% block seller_scripts %}{% endblock %}{% endblock %}

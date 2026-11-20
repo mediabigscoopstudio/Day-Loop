@@ -1,0 +1,5 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}Can’t delete “{{ variant.label }}”{% endblock %}
+{% block body %}<div class="confirm warning"><span class="confirm-icon">{% icon 'alert' 24 %}</span><div><h3>This variant has been ordered</h3><p>Past orders keep a record of it, so it can’t be deleted. Set its stock to 0 from Inventory to stop selling it.</p></div></div>{% endblock %}
+{% block footer %}<button type="button" class="btn primary" data-modal-close>Got it</button>{% endblock %}

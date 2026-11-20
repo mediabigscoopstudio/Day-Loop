@@ -41,3 +41,14 @@ body.scroll-locked { overflow: hidden; }
 
 dialog.modal .modal-form { display: flex; flex-direction: column; min-height: 0; flex: 1; }
 dialog.modal .modal-form .modal-body { flex: 1; }
+
+/* Bottom sheet: on phones the dialog docks to the bottom edge, full width. Desktop keeps the normal modal. */
+@media (max-width: 560px) {
+  dialog.modal.sheet { width: 100vw; max-width: 100vw; margin: auto 0 0 0; max-height: 92vh; border-radius: 22px 22px 0 0; animation: sheet-in .22s ease; }
+  dialog.modal.sheet .modal-head { padding: 16px 18px 6px; }
+  dialog.modal.sheet .modal-body { padding: 8px 18px; }
+  dialog.modal.sheet .modal-foot { padding: 12px 18px calc(14px + env(safe-area-inset-bottom)); position: sticky; bottom: 0; background: var(--card); border-top: 1px solid var(--border); }
+  dialog.modal.sheet .modal-foot .btn { flex: 1; min-height: 46px; }
+  dialog.modal.sheet .modal-head::before { content: ""; position: absolute; top: 8px; left: 50%; width: 40px; height: 4px; margin-left: -20px; border-radius: 4px; background: var(--border); }
+}
+@keyframes sheet-in { from { transform: translateY(40px); opacity: 0; } }

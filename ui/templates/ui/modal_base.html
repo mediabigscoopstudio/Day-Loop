@@ -1,8 +1,8 @@
 {% comment %}
-Reusable modal frame. Extend it and fill blocks. Context: modal_size (sm|md|lg), slide_over (bool).
+Reusable modal frame. Extend it and fill blocks. Context: modal_size (sm|md|lg), slide_over (bool), sheet (bool: bottom sheet on phones).
 Wrap body+footer in a form by overriding form_open / form_close.
 {% endcomment %}{% load ui_tags %}
-<dialog class="modal {{ modal_size|default:'md' }}{% if slide_over %} slide-over{% endif %}" aria-labelledby="modal-title" aria-modal="true">
+<dialog class="modal {{ modal_size|default:'md' }}{% if slide_over %} slide-over{% endif %}{% if sheet %} sheet{% endif %}" aria-labelledby="modal-title" aria-modal="true">
   <div class="modal-head">
     <div>
       <h2 id="modal-title">{% block title %}{% endblock %}</h2>

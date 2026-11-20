@@ -1,0 +1,27 @@
+{% load ui_tags %}{% comment %}Variant cards for the product editor. Context: product, rows [(variant, problems)], locked.{% endcomment %}
+{% if rows %}
+<div class="variant-list">
+{% for v, problems in rows %}
+  <article class="variant-card {% if problems %}incomplete{% endif %}">
+    <div class="vc-main">
+      <strong>{{ v.label }}</strong> <span class="cat-meta">SKU {{ v.sku }}</span>
+      <div class="vc-meta">
+        <span>{% if v.price %}{{ v.price|inr:2 }}{% if v.mrp != v.price %} <s class="cat-meta">{{ v.mrp|inr:2 }}</s>{% endif %}{% else %}<em class="cat-meta">No price</em>{% endif %}</span>
+        {% if v.stock == 0 %}<span class="chip danger">Out of stock</span>{% elif v.is_low_stock %}<span class="chip amber">{{ v.stock }} low</span>{% else %}<span class="chip neutral">{{ v.stock }} in stock</span>{% endif %}
+        {% if v.expires_on %}<span class="chip neutral">Exp {{ v.expires_on|date:"M Y" }}</span>{% endif %}
+        {% if v.has_dimensions %}<span class="chip neutral">{{ v.chargeable_kg }} kg chargeable</span>{% endif %}
+      </div>
+      {% if problems %}<p class="vc-problems">Needs: {{ problems|join:", " }}</p>{% endif %}
+    </div>
+    {% if not locked %}
+    <div class="vc-actions">
+      <button type="button" class="btn sm" hx-get="/products/{{ product.pk }}/variants/{{ v.pk }}/" hx-target="#modal-root" hx-swap="innerHTML">Edit</button>
+      <button type="button" class="btn sm danger-text" hx-get="/products/{{ product.pk }}/variants/{{ v.pk }}/delete/" hx-target="#modal-root" hx-swap="innerHTML" aria-label="Delete {{ v.label }}">Delete</button>
+    </div>
+    {% endif %}
+  </article>
+{% endfor %}
+</div>
+{% else %}
+{% include "ui/partials/empty.html" with icon="layers" title="No variants yet" text="Add the sizes or flavours you sell. At least one complete variant is needed to submit." %}
+{% endif %}

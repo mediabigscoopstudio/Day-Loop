@@ -1,0 +1,58 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}{% if variant %}Edit variant{% else %}Add variant{% endif %}{% endblock %}
+{% block subtitle %}<p>{{ product.name }}</p>{% endblock %}
+{% block form_open %}
+<form class="modal-form" hx-post="{{ post_url }}" hx-target="#modal-root" hx-swap="innerHTML">
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+{% endblock %}
+{% block body %}
+  {% if form.errors %}<div class="form-error" role="alert">Please fix the highlighted fields.{% for e in form.non_field_errors %} {{ e }}{% endfor %}</div>{% endif %}
+  <div class="form-cols">
+    {% include "ui/partials/field.html" with field=form.label %}
+    {% include "ui/partials/field.html" with field=form.sku %}
+  </div>
+  <fieldset class="fs"><legend>Price</legend>
+    <div class="form-cols">
+      {% include "ui/partials/field.html" with field=form.mrp %}
+      {% include "ui/partials/field.html" with field=form.price %}
+      {% include "ui/partials/field.html" with field=form.moq %}
+    </div>
+  </fieldset>
+  <fieldset class="fs"><legend>Stock &amp; batch</legend>
+    <div class="form-cols">
+      {% include "ui/partials/field.html" with field=form.stock %}
+      {% include "ui/partials/field.html" with field=form.low_stock_threshold %}
+      {% include "ui/partials/field.html" with field=form.batch_number %}
+      {% include "ui/partials/field.html" with field=form.manufactured_on %}
+      {% include "ui/partials/field.html" with field=form.expires_on %}
+      {% include "ui/partials/field.html" with field=form.dispatch_days %}
+    </div>
+  </fieldset>
+  <fieldset class="fs"><legend>Tax &amp; origin</legend>
+    <div class="form-cols">
+      {% include "ui/partials/field.html" with field=form.hsn_code %}
+      {% include "ui/partials/field.html" with field=form.gst_rate %}
+      {% include "ui/partials/field.html" with field=form.country_of_origin %}
+    </div>
+  </fieldset>
+  <details class="fs ship" data-weights {% if form.length_cm.errors or form.width_cm.errors or form.height_cm.errors or form.weight_g.errors or variant.has_dimensions or not variant %}open{% endif %}>
+    <summary>Shipping package <span class="cat-meta">(required to submit for review)</span></summary>
+    <div class="form-cols">
+      {% include "ui/partials/field.html" with field=form.length_cm %}
+      {% include "ui/partials/field.html" with field=form.width_cm %}
+      {% include "ui/partials/field.html" with field=form.height_cm %}
+      {% include "ui/partials/field.html" with field=form.weight_g %}
+    </div>
+    <div class="weights" aria-live="polite">
+      <div><span class="cat-meta">Volumetric weight</span><strong data-out="vol">{{ volumetric|default:"0.000" }} kg</strong></div>
+      <div><span class="cat-meta">Chargeable weight</span><strong data-out="chg">{{ chargeable|default:"0.000" }} kg</strong></div>
+    </div>
+    <p class="help">Volumetric = length × width × height ÷ 5000. Chargeable = the larger of dead weight and volumetric.</p>
+  </details>
+{% endblock %}
+{% block footer %}
+  <button type="button" class="btn" data-modal-close>Cancel</button>
+  <button type="submit" class="btn primary">{% if variant %}Save variant{% else %}Add variant{% endif %}</button>
+{% endblock %}
+{% block form_close %}</form>{% endblock %}
