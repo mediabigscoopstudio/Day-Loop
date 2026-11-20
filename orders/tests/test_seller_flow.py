@@ -115,3 +115,16 @@ class OwnershipTests(FlowBase):
             with self.assertRaises(SellerOrder.DoesNotExist):
                 call()
         self.assertEqual(SellerOrder.objects.get(pk=self.so1.pk).status, 'new')
+
+
+class ExpireCommandTests(FlowBase):
+    def test_command_cancels_only_overdue_new_orders_and_returns_stock(self):
+        from django.core.management import call_command
+        from io import StringIO
+        SellerOrder.objects.filter(pk=self.so1.pk).update(accept_by=timezone.now() - timezone.timedelta(minutes=1))
+        out = StringIO()
+        call_command('expire_seller_orders', stdout=out)
+        self.assertIn('Cancelled 1', out.getvalue())
+        self.assertEqual(SellerOrder.objects.get(pk=self.so1.pk).status, 'cancelled')
+        self.assertEqual(SellerOrder.objects.get(pk=self.so2.pk).status, 'new')          # still inside its window
+        self.assertEqual(self.stock(self.p1), 10)
