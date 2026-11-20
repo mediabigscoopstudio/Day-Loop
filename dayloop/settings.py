@@ -49,7 +49,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'dayloop.hosts.HostRoutingMiddleware',
+    'dayloop.hosts.PerHostSessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -57,7 +58,18 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'dayloop.urls'
+ROOT_URLCONF = 'dayloop.urls_www'
+
+# admin.E410 expects Django's stock SessionMiddleware. We replace it with
+# PerHostSessionMiddleware, which exposes the same request.session API but
+# uses a cookie name per host (see dayloop/hosts.py).
+SILENCED_SYSTEM_CHECKS = ['admin.E410']
+
+# Trusted origins for CSRF across the local host-based surfaces.
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://*.localhost:8000',
+]
 
 TEMPLATES = [
     {
