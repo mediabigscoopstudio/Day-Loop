@@ -1,0 +1,15 @@
+{% extends "seller/orders/print_base.html" %}
+{% block title %}Label {{ so.invoice_number }}{% endblock %}
+{% block content %}
+<div class="sheet-head"><div><h1>Shipping label</h1><div class="cat-meta">Invoice {{ so.invoice_number }} · Order {{ order.number }}</div></div>
+  <div style="text-align:right"><div class="big">{{ so.package_weight_kg }} kg</div><div class="cat-meta">chargeable weight</div></div></div>
+<div class="cols">
+  <div class="box"><h2>Deliver to</h2><div class="big">{{ order.ship_name|default:order.customer.get_username }}</div>{{ order.ship_line1 }}<br>{{ order.ship_city }}{% if order.ship_state %}, {{ order.ship_state }}{% endif %}<div class="big" style="margin-top:6px">{{ order.ship_pincode }}</div></div>
+  <div class="box"><h2>From</h2><strong>{{ seller.business_name }}</strong><br>{{ from_address|linebreaksbr }}</div>
+</div>
+<div class="cols">
+  <div class="box"><h2>Package</h2>Units: <strong>{{ units }}</strong><br>{% for it in items %}{{ it.quantity }} × {{ it.product.name }} ({{ it.variant.label }})<br>{% endfor %}</div>
+  <div class="box"><h2>Courier</h2>{% if so.courier %}<div class="big">{{ so.courier }}</div>AWB <strong>{{ so.awb }}</strong>{% else %}<span class="cat-meta">Not shipped yet. Fill in courier and AWB when you ship.</span>{% endif %}</div>
+</div>
+<div class="box"><h2>Payment</h2>{{ order.payment_method|default:"—" }} · {{ order.get_payment_status_display }}</div>
+{% endblock %}

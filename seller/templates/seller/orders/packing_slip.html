@@ -1,0 +1,17 @@
+{% extends "seller/orders/print_base.html" %}
+{% load ui_tags %}
+{% block title %}Packing slip {{ so.invoice_number }}{% endblock %}
+{% block content %}
+<div class="sheet-head"><div><h1>Packing slip</h1><div>Invoice <strong>{{ so.invoice_number }}</strong></div><div class="cat-meta">Order {{ order.number }} · {{ so.created_at|date:"M j, Y" }}</div></div>
+  <div style="text-align:right"><strong>{{ seller.business_name }}</strong><div class="cat-meta">{{ seller.legal_name }}</div>{% if seller.gst_number %}<div class="cat-meta">GSTIN {{ seller.gst_number }}</div>{% endif %}</div></div>
+<div class="cols">
+  <div class="box"><h2>Ship to</h2><strong>{{ order.ship_name|default:order.customer.get_username }}</strong><br>{{ order.ship_line1 }}<br>{{ order.ship_city }}{% if order.ship_state %}, {{ order.ship_state }}{% endif %} {{ order.ship_pincode }}</div>
+  <div class="box"><h2>Shipment</h2>{% if so.shipment_count > 1 %}Shipment {{ so.shipment_index }} of {{ so.shipment_count }}<br>{% endif %}Weight {{ so.package_weight_kg }} kg<br>Payment: {{ order.payment_method|default:"—" }} ({{ order.get_payment_status_display }})</div>
+</div>
+<table class="table"><thead><tr><th>Item</th><th>SKU</th><th>Batch</th><th>Expiry</th><th class="num">Qty</th><th class="num">Price</th><th class="num">GST</th><th class="num">Total</th></tr></thead><tbody>
+{% for it in items %}<tr><td>{{ it.product.name }}<br><small class="cat-meta">{{ it.variant.label }}</small></td><td>{{ it.variant.sku }}</td><td>{{ it.variant.batch_number|default:"—" }}</td>
+  <td>{{ it.variant.expires_on|date:"M Y"|default:"—" }}</td><td class="num">{{ it.quantity }}</td><td class="num">{{ it.unit_price|inr:2 }}</td>
+  <td class="num">{{ it.gst_rate }}% · {{ it.gst_amount|inr:2 }}</td><td class="num">{{ it.line_total|inr:2 }}</td></tr>{% endfor %}</tbody></table>
+<p style="text-align:right;margin-top:10px">Taxable value <strong>{{ taxable|inr:2 }}</strong> · GST <strong>{{ gst|inr:2 }}</strong></p>
+<p class="cat-meta" style="margin-top:24px">Thank you for selling with Day Loop. Check items against this slip before sealing the package.</p>
+{% endblock %}

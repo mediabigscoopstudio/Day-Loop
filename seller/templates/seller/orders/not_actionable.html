@@ -1,0 +1,5 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}{{ so.invoice_number }}{% endblock %}
+{% block body %}<div class="confirm warning"><span class="confirm-icon">{% icon 'info' 24 %}</span><div><h3>{% if error %}{{ error }}{% else %}This order is {{ so.get_status_display|lower }}{% endif %}</h3><p>{% if not error %}There is nothing more to do on it.{% endif %}</p></div></div>{% endblock %}
+{% block footer %}<button type="button" class="btn primary" data-modal-close>OK</button>{% endblock %}

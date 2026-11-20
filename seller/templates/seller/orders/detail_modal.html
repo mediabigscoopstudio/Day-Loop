@@ -1,0 +1,36 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}{{ so.invoice_number }}{% endblock %}
+{% block subtitle %}<p><span class="chip {{ so.status|status_chip }}">{{ so.get_status_display }}</span>
+  {% if so.shipment_count > 1 %}· Shipment {{ so.shipment_index }} of {{ so.shipment_count }} of the customer’s order{% endif %} · {{ so.created_at|date:"M j, Y, g:i A" }}</p>{% endblock %}
+{% block body %}
+{% if so.status == 'new' and so.accept_by %}<div class="consequence" style="margin:0 0 14px">{% if so.accept_by < now %}This order is overdue for acceptance and may be cancelled automatically.{% else %}Accept by {{ so.accept_by|date:"M j, g:i A" }} or it is cancelled automatically.{% endif %}</div>{% endif %}
+<div class="grid cols-2">
+  <section><h3 style="margin-bottom:8px">Deliver to</h3>
+    <dl class="kv"><dt>Name</dt><dd>{{ order.ship_name|default:order.customer.get_username }}</dd>
+      <dt>Address</dt><dd>{{ order.ship_line1 }}<br>{{ order.ship_city }}{% if order.ship_state %}, {{ order.ship_state }}{% endif %} {{ order.ship_pincode }}</dd>
+      <dt>Contact</dt><dd>{{ order.customer.email|default:"—" }}</dd></dl></section>
+  <section><h3 style="margin-bottom:8px">Package</h3>
+    <dl class="kv"><dt>Chargeable weight</dt><dd>{{ so.package_weight_kg }} kg</dd><dt>Units</dt><dd>{{ total_qty }}</dd>
+      {% if so.courier %}<dt>Courier</dt><dd>{{ so.courier }}</dd><dt>AWB</dt><dd>{{ so.awb }}</dd>{% if so.tracking_url %}<dt>Tracking</dt><dd><a href="{{ so.tracking_url }}" target="_blank" rel="noopener noreferrer">Track shipment</a></dd>{% endif %}{% endif %}</dl></section>
+</div>
+<h3 style="margin:18px 0 8px">Items</h3>
+<div class="table-wrap"><table class="table"><thead><tr><th>Item</th><th>Size (cm)</th><th class="num">Weight</th><th class="num">Qty</th><th class="num">Price</th></tr></thead><tbody>
+  {% for it in items %}<tr><td>{{ it.product.name }}<br><small class="cat-meta">{{ it.variant.label }} · {{ it.variant.sku }}</small></td>
+    <td>{% if it.variant.has_dimensions %}{{ it.variant.length_cm|floatformat:"-1" }} × {{ it.variant.width_cm|floatformat:"-1" }} × {{ it.variant.height_cm|floatformat:"-1" }}{% else %}—{% endif %}</td>
+    <td class="num">{% if it.variant.has_dimensions %}{{ it.variant.chargeable_kg }} kg{% else %}—{% endif %}</td>
+    <td class="num">{{ it.quantity }}</td><td class="num">{{ it.line_total|inr:2 }}</td></tr>{% endfor %}</tbody></table></div>
+<dl class="kv money-box">
+  <dt>Purchase value</dt><dd>{{ so.purchase_value|inr:2 }}</dd>
+  <dt>Platform margin ({% widthratio so.commission_rate 1 100 %}%)</dt><dd>− {{ so.margin|inr:2 }}</dd>
+  <dt>GST on margin ({% widthratio so.gst_rate_on_margin 1 100 %}%)</dt><dd>− {{ so.margin_gst|inr:2 }}</dd>
+  <dt><strong>Your payout</strong></dt><dd><strong>{{ so.payout|inr:2 }}</strong></dd>
+</dl>
+<h3 style="margin:18px 0 8px">Timeline</h3>
+<ol class="timeline">{% for e in events %}<li><strong>{{ e.get_status_display }}</strong>{% if e.note %}<div>{{ e.note }}</div>{% endif %}<small>{{ e.created_at|date:"M j, g:i A" }}{% if e.actor %} · {{ e.actor.get_full_name|default:e.actor.get_username }}{% endif %}</small></li>{% endfor %}</ol>
+<p style="margin-top:14px"><a class="btn sm" href="/orders/{{ so.pk }}/packing-slip/" target="_blank" rel="noopener">Packing slip</a> <a class="btn sm" href="/orders/{{ so.pk }}/label/" target="_blank" rel="noopener">Shipping label sheet</a></p>
+{% endblock %}
+{% block footer %}
+  <button type="button" class="btn left" data-modal-close>Close</button>
+  {% for action, label in actions %}<button type="button" class="btn {% if action == 'advance' %}primary{% elif action == 'cancel' %}danger-text{% endif %}" hx-get="/orders/{{ so.pk }}/{{ action }}/" hx-target="#modal-root" hx-swap="innerHTML">{{ label }}</button>{% endfor %}
+{% endblock %}

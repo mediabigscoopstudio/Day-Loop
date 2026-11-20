@@ -1,0 +1,35 @@
+{% extends "seller/base.html" %}
+{% load ui_tags dash_tags %}
+{% block title %}Orders · Day Loop sellers{% endblock %}
+{% block page %}
+<div class="page-head"><div><h1>Orders</h1><p>Only your own shipments are shown here.</p></div></div>
+<div id="list-region" class="card" hx-get="{{ request.get_full_path }}" hx-trigger="orders-changed from:body" hx-select="#list-region" hx-target="this" hx-swap="outerHTML">
+  <nav class="tabs" aria-label="Filter by status">{% for v, label, n in tabs %}<a class="tab" href="{% qs status=v page=None %}" {% if f.status == v or not f.status and not v %}aria-current="true"{% endif %}>{{ label }} <span class="chip neutral">{{ n }}</span></a>{% endfor %}</nav>
+  <form method="get" class="filter-grid" role="search" aria-label="Filter orders">
+    {% if f.status %}<input type="hidden" name="status" value="{{ f.status }}">{% endif %}
+    <div class="field"><label for="o-q">Invoice number</label><input class="input" id="o-q" type="search" name="q" value="{{ f.q }}" placeholder="e.g. DL-ALPH-000012"></div>
+    <div class="field"><label for="o-p">Product</label><select class="select" id="o-p" name="product"><option value="">All products</option>{% for p in products %}<option value="{{ p.pk }}" {% if f.product == p.pk|stringformat:"s" %}selected{% endif %}>{{ p.name }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="o-f">From</label><input class="input" id="o-f" type="date" name="date_from" value="{{ f.date_from }}"></div>
+    <div class="field"><label for="o-t">To</label><input class="input" id="o-t" type="date" name="date_to" value="{{ f.date_to }}"></div>
+    <div class="filter-actions"><button class="btn primary" type="submit">Apply</button>{% if has_filters %}<a class="btn" href="/orders/">Clear</a>{% endif %}</div>
+  </form>
+  {% if page.object_list %}
+  <div class="table-wrap show-desktop"><table class="table"><thead><tr><th>{% sort_link 'invoice' 'Invoice' %}</th><th>Customer</th><th>Items</th><th class="num">{% sort_link 'amount' 'Value' %}</th><th>{% sort_link 'status' 'Status' %}</th><th>{% sort_link 'placed' 'Placed' %}</th><th></th></tr></thead><tbody>
+  {% for o in page.object_list %}<tr class="clickable" tabindex="0" hx-get="/orders/{{ o.pk }}/" hx-target="#modal-root" hx-swap="innerHTML" hx-trigger="click, keyup[key=='Enter']">
+    <td><strong>{{ o.invoice_number }}</strong>{% if o.shipment_count > 1 %}<br><small class="cat-meta">Shipment {{ o.shipment_index }} of {{ o.shipment_count }}</small>{% endif %}</td>
+    <td>{{ o.order.customer.get_full_name|default:o.order.customer.get_username }}<br><small class="cat-meta">{{ o.order.ship_city }}</small></td>
+    <td>{{ o.item_count }}</td><td class="num">{{ o.purchase_value|inr }}</td>
+    <td><span class="chip {{ o.status|status_chip }}">{{ o.get_status_display }}</span>{% if o.status == 'new' and o.accept_by %}<br><small class="vc-problems">{% if o.accept_by < now %}Overdue{% else %}Accept by {{ o.accept_by|date:"M j, g:i A" }}{% endif %}</small>{% endif %}</td>
+    <td>{{ o.created_at|date:"M j, g:i A" }}</td>
+    <td>{% if o.status == 'new' %}<button class="btn sm primary" hx-get="/orders/{{ o.pk }}/advance/" hx-target="#modal-root" hx-swap="innerHTML" onclick="event.stopPropagation()">Accept</button>{% endif %}</td></tr>{% endfor %}</tbody></table></div>
+  <div class="card-list show-mobile">{% for o in page.object_list %}
+    <article class="prod-card" hx-get="/orders/{{ o.pk }}/" hx-target="#modal-root" hx-swap="innerHTML" style="cursor:pointer">
+      <div class="pcard-top"><span class="pc-name">{{ o.invoice_number }}<br><small class="cat-meta">{{ o.order.customer.get_full_name|default:o.order.customer.get_username }} · {{ o.order.ship_city }}</small></span><span class="chip {{ o.status|status_chip }}">{{ o.get_status_display }}</span></div>
+      <div class="vc-meta"><strong>{{ o.purchase_value|inr }}</strong><span class="cat-meta">{{ o.item_count }} item{{ o.item_count|pluralize }} · {{ o.created_at|date:"M j" }}</span></div>
+      {% if o.status == 'new' %}<p class="vc-problems">{% if o.accept_by < now %}Overdue. Accept now.{% else %}Accept by {{ o.accept_by|date:"M j, g:i A" }}{% endif %}</p>
+      <div class="vc-actions"><button class="btn sm primary" hx-get="/orders/{{ o.pk }}/advance/" hx-target="#modal-root" hx-swap="innerHTML" onclick="event.stopPropagation()">Accept order</button></div>{% endif %}</article>{% endfor %}</div>
+  {% include "dash/partials/pager.html" %}
+  {% else %}{% if has_filters %}{% include "ui/partials/empty.html" with icon="search" title="No orders match" text="Adjust or clear the filters." %}
+  {% else %}{% include "ui/partials/empty.html" with icon="box" title="No orders yet" text="When customers buy your products, their orders appear here." %}{% endif %}{% endif %}
+</div>
+{% endblock %}

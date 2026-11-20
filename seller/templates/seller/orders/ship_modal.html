@@ -1,0 +1,18 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}Ship {{ so.invoice_number }}{% endblock %}
+{% block subtitle %}<p>Package {{ so.package_weight_kg }} kg chargeable</p>{% endblock %}
+{% block form_open %}
+<form class="modal-form" hx-post="/orders/{{ so.pk }}/advance/" hx-target="#modal-root" hx-swap="innerHTML">
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+{% endblock %}
+{% block body %}
+  {% if error %}<div class="form-error" role="alert">{{ error }}</div>{% endif %}
+  <div class="field"><label for="courier">Courier</label><input class="input" id="courier" name="courier" list="couriers" value="{{ values.courier }}" required autofocus placeholder="e.g. Delhivery">
+    <datalist id="couriers"><option value="Delhivery"><option value="Blue Dart"><option value="DTDC"><option value="Ecom Express"><option value="India Post"><option value="XpressBees"></datalist></div>
+  <div class="field"><label for="awb">AWB / tracking number</label><input class="input" id="awb" name="awb" value="{{ values.awb }}" required autocapitalize="characters"></div>
+  <div class="field"><label for="turl">Tracking link (optional)</label><input class="input" id="turl" name="tracking_url" type="url" inputmode="url" value="{{ values.tracking_url }}" placeholder="https://"></div>
+  <div class="consequence">The customer is shown this tracking information. You can’t cancel after shipping.</div>
+{% endblock %}
+{% block footer %}<button type="button" class="btn" data-modal-close>Cancel</button><button type="submit" class="btn primary">Mark shipped</button>{% endblock %}
+{% block form_close %}</form>{% endblock %}

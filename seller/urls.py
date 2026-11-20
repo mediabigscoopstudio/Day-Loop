@@ -1,12 +1,19 @@
 from django.urls import path
 
-from . import auth_views, views, views_inventory, views_media, views_onboarding, views_product_list, views_products, views_variants
+from . import auth_views, views, views_inventory, views_media, views_onboarding, views_orders, views_product_list, views_products, views_variants
 
 urlpatterns = [
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('register/', auth_views.RegisterView.as_view(), name='register'),
     path('logout/confirm/', auth_views.LogoutConfirmView.as_view(), name='logout-confirm'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('orders/', views_orders.OrderListView.as_view(), name='orders'),
+    path('orders/<int:pk>/', views_orders.OrderDetailModal.as_view(), name='order-detail'),
+    path('orders/<int:pk>/advance/', views_orders.AdvanceView.as_view(), name='order-advance'),
+    path('orders/<int:pk>/cancel/', views_orders.CancelView.as_view(), name='order-cancel'),
+    path('orders/<int:pk>/return/', views_orders.ReturnView.as_view(), name='order-return'),
+    path('orders/<int:pk>/packing-slip/', views_orders.PackingSlipView.as_view(), name='order-slip'),
+    path('orders/<int:pk>/label/', views_orders.LabelSheetView.as_view(), name='order-label'),
     path('inventory/', views_inventory.InventoryView.as_view(), name='inventory'),
     path('inventory/<int:pk>/stock/', views_inventory.StockUpdateView.as_view(), name='stock-update'),
     path('inventory/<int:pk>/history/', views_inventory.StockHistoryView.as_view(), name='stock-history'),
