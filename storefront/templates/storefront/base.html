@@ -16,9 +16,9 @@
   <div class="nav-row">
     <a href="{% url 'storefront:home' %}" class="nav-logo">{% dayloop_logo %}</a>
     <button class="chip chip-area" hx-get="{% url 'storefront:area' %}" hx-target="#modal-root" aria-label="Change delivery area">
-      {% icon 'tag' 16 %} <span>Delivering to <b>{{ shell.area.area }}</b></span> <span aria-hidden="true">▾</span>
+      {% icon 'tag' 16 %} <span class="chip-txt"><span class="lbl">Delivering to </span><b>{{ shell.area.area }}</b></span> <span class="chev" aria-hidden="true">▾</span>
     </button>
-    <span class="chip chip-tier tier-{{ shell.tier }}">{% icon 'truck' 16 %} {{ shell.tier_label }}</span>
+    <span class="chip chip-tier tier-{{ shell.tier }}" title="{{ shell.tier_label }}">{% icon 'truck' 16 %} <span class="t-full">{{ shell.tier_label }}</span><span class="t-short">{{ shell.tier_short }}</span></span>
     <form class="nav-search" action="{% url 'storefront:product-list' %}" role="search">
       <span class="s-ico">{% icon 'search' 18 %}</span>
       <input type="search" name="q" placeholder="Search products and brands" autocomplete="off" aria-label="Search"

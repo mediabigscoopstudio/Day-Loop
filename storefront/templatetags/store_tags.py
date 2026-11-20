@@ -16,6 +16,7 @@ def store_shell(context):
     cart = context.get('cart') or get_cart(request)
     return {
         'area': area, 'tier': tier, 'tier_label': delivery.TIER_LABELS[tier],
+        'tier_short': {'fastest': '15 min', 'same_day': 'Same day', 'scheduled': 'Scheduled'}.get(tier, 'Scheduled'),
         'cart_count': cart['total_items'], 'nav_categories': category_counts(),
     }
 

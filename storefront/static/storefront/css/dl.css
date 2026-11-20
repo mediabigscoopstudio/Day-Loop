@@ -215,3 +215,28 @@ body.sf{background:var(--cream);color:var(--ink);padding-bottom:70px}
 .pk-chip:hover{border-color:var(--vivid)}
 .pk-chip.on{background:var(--forest);border-color:var(--forest);color:#fff}.pk-chip.on span{color:#FFC93C}
 .pk-none,.pk-empty{font-size:13px;color:#7a8a80;padding:14px 4px}
+
+/* navbar: phone layout. Row 1 = logo, address, delivery pill, cart, account. Row 2 = search. */
+.nav-row{flex-wrap:nowrap;gap:8px}
+.nav-logo{flex:none}.nav-logo .logo{height:28px;width:auto}
+.nav-search{order:5;flex:1 0 100%}
+.chip-area{flex:1 1 0;min-width:0;max-width:none;height:40px;padding:0 10px;font-size:13px;white-space:nowrap;overflow:hidden;cursor:pointer}
+.chip-area svg{flex:none}
+.chip-txt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle}
+.chip-txt b{font-weight:800}
+.chev{flex:none;font-size:11px;opacity:.7}
+.chip-tier{flex:none;height:40px;padding:0 10px;font-size:12px;font-weight:700;white-space:nowrap}
+.chip-tier svg{flex:none}
+.t-short{display:none}
+.nav-ic{flex:none;min-width:40px;min-height:40px}
+@media(max-width:860px){
+  .nav-row{padding:10px 12px}
+  .nav-ic span{display:none}
+}
+@media(max-width:420px){
+  .lbl{display:none}
+  .t-full{display:none}.t-short{display:inline}
+  .chip-area{padding:0 8px;gap:4px}
+  .chip-tier{padding:0 8px;font-size:11px}
+  .nav-row{gap:6px}
+}
