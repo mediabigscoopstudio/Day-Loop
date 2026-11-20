@@ -1,0 +1,24 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}Update order status{% endblock %}
+{% block form_open %}
+<form class="modal-form" hx-post="/orders/{{ order.pk }}/status/" hx-target="#modal-root" hx-swap="innerHTML">
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+{% endblock %}
+{% block body %}
+  {% if form_error %}<div class="form-error" role="alert">{{ form_error }}</div>{% endif %}
+  {% if next %}
+  <div class="confirm warning"><span class="confirm-icon">{% icon 'truck' 24 %}</span>
+    <div><h3>Order #{{ order.number }} is {{ order.get_status_display|lower }}</h3><p>Choose the next status. This is recorded immediately.</p></div></div>
+  <div class="field" style="margin-top:16px"><label for="new-status">New status</label>
+    <select class="select" id="new-status" name="status" required>
+      {% for s in next %}<option value="{{ s.value }}">{{ s.label }}</option>{% endfor %}</select></div>
+  {% else %}
+  <p>This order is {{ order.get_status_display|lower }} and cannot be updated further.</p>
+  {% endif %}
+{% endblock %}
+{% block footer %}
+  <button type="button" class="btn" data-modal-close>Cancel</button>
+  {% if next %}<button type="submit" class="btn primary">Confirm update</button>{% endif %}
+{% endblock %}
+{% block form_close %}</form>{% endblock %}

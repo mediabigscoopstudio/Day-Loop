@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import auth_views, views, views_categories, views_products, views_sellers
+from . import auth_views, views, views_categories, views_orders, views_products, views_sellers
 
 urlpatterns = [
     path('login/', auth_views.LoginView.as_view(), name='login'),
@@ -10,6 +10,10 @@ urlpatterns = [
     path('partials/kpis/', views.KpiPartial.as_view(), name='partial-kpis'),
     path('partials/pending-approvals/', views.PendingPartial.as_view(), name='partial-pending'),
     path('partials/recent-orders/', views.RecentOrdersPartial.as_view(), name='partial-recent-orders'),
+    path('orders/', views_orders.OrderListView.as_view(), name='orders'),
+    path('orders/<int:pk>/', views_orders.OrderDetailModal.as_view(), name='order-detail'),
+    path('orders/<int:pk>/status/', views_orders.OrderStatusView.as_view(), name='order-status'),
+    path('orders/<int:pk>/cancel/', views_orders.OrderCancelView.as_view(), name='order-cancel'),
     path('sellers/', views_sellers.SellerListView.as_view(), name='sellers'),
     path('sellers/<int:pk>/', views_sellers.SellerDetailModal.as_view(), name='seller-detail'),
     path('sellers/<int:pk>/<slug:action>/', views_sellers.SellerActionView.as_view(), name='seller-action'),

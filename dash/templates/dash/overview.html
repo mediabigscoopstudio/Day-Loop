@@ -8,7 +8,7 @@
 </div>
 
 <section class="grid kpis" aria-label="Key metrics"
-         hx-get="/partials/kpis/?{{ dr.query_string }}" hx-trigger="sellers-changed from:body" hx-swap="innerHTML">
+         hx-get="/partials/kpis/?{{ dr.query_string }}" hx-trigger="sellers-changed from:body, orders-changed from:body" hx-swap="innerHTML">
   {% include "dash/partials/kpis.html" %}
 </section>
 

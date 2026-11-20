@@ -1,0 +1,29 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}Order #{{ order.number }}{% endblock %}
+{% block subtitle %}<p><span class="chip {{ order.status|status_chip }}">{{ order.get_status_display }}</span>
+  <span class="chip {{ order.payment_status|status_chip }}">Payment {{ order.get_payment_status_display|lower }}</span> · {{ order.placed_at|date:"M j, Y, g:i A" }}</p>{% endblock %}
+{% block body %}
+<div class="grid cols-2">
+  <section><h3 style="margin-bottom:10px">Customer</h3>
+    <dl class="kv"><dt>Name</dt><dd>{{ order.customer.get_full_name|default:order.customer.get_username }}</dd>
+      <dt>Email</dt><dd>{{ order.customer.email|default:"—" }}</dd>
+      <dt>Ship to</dt><dd>{{ order.ship_name|default:"—" }}<br>{{ order.ship_line1 }}{% if order.ship_city %}<br>{{ order.ship_city }}{% endif %}{% if order.ship_state %}, {{ order.ship_state }}{% endif %} {{ order.ship_pincode }}</dd></dl></section>
+  <section><h3 style="margin-bottom:10px">Payment</h3>
+    <dl class="kv"><dt>Method</dt><dd>{{ order.payment_method|default:"—" }}</dd><dt>Status</dt><dd>{{ order.get_payment_status_display }}</dd><dt>Total</dt><dd>{{ order.total|inr:2 }}</dd></dl></section>
+</div>
+<h3 style="margin:20px 0 8px">Items by seller</h3>
+{% for sub in subs %}
+<div class="card" style="margin-bottom:10px;padding:14px 16px;box-shadow:none">
+  <div class="card-head" style="margin-bottom:6px"><strong>{{ sub.seller.business_name }}</strong><span>{{ sub.total|inr:2 }}</span></div>
+  <table class="table"><tbody>
+    {% for it in sub.items %}<tr><td>{{ it.product.name }}</td><td class="num">{{ it.quantity }} × {{ it.unit_price|inr:2 }}</td><td class="num">{{ it.line_total|inr:2 }}</td></tr>{% endfor %}
+  </tbody></table>
+</div>
+{% empty %}<p style="color:var(--muted)">This order has no items.</p>{% endfor %}
+{% endblock %}
+{% block footer %}
+  <button type="button" class="btn left" data-modal-close>Close</button>
+  {% if can_cancel %}<button type="button" class="btn danger-text" hx-get="/orders/{{ order.pk }}/cancel/" hx-target="#modal-root" hx-swap="innerHTML">Cancel order</button>{% endif %}
+  {% if next %}<button type="button" class="btn primary" hx-get="/orders/{{ order.pk }}/status/" hx-target="#modal-root" hx-swap="innerHTML">Update status</button>{% endif %}
+{% endblock %}

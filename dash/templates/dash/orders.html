@@ -1,0 +1,41 @@
+{% extends "dash/base.html" %}
+{% load ui_tags dash_tags %}
+{% block title %}Orders · Day Loop admin{% endblock %}
+{% block page %}
+<div class="page-head"><div><h1>Orders</h1><p>Track and manage orders placed on the storefront.</p></div></div>
+<div id="list-region" class="card" hx-get="{{ request.get_full_path }}" hx-trigger="orders-changed from:body"
+     hx-select="#list-region" hx-target="this" hx-swap="outerHTML">
+  <form method="get" class="filter-grid" role="search" aria-label="Filter orders">
+    <div class="field"><label for="o-q">Search</label><input class="input" id="o-q" type="search" name="q" value="{{ f.q }}" placeholder="Order no., customer name or email"></div>
+    <div class="field"><label for="o-status">Status</label><select class="select" id="o-status" name="status"><option value="">Any</option>
+      {% for v, l in statuses %}<option value="{{ v }}" {% if f.status == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="o-pay">Payment</label><select class="select" id="o-pay" name="payment"><option value="">Any</option>
+      {% for v, l in payments %}<option value="{{ v }}" {% if f.payment == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="o-seller">Seller</label><select class="select" id="o-seller" name="seller"><option value="">All sellers</option>
+      {% for s in sellers %}<option value="{{ s.pk }}" {% if f.seller == s.pk|stringformat:"s" %}selected{% endif %}>{{ s.business_name }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="o-from">From</label><input class="input" id="o-from" type="date" name="date_from" value="{{ f.date_from }}"></div>
+    <div class="field"><label for="o-to">To</label><input class="input" id="o-to" type="date" name="date_to" value="{{ f.date_to }}"></div>
+    <div class="filter-actions"><button class="btn primary" type="submit">Apply filters</button>{% if has_filters %}<a class="btn" href="/orders/">Clear</a>{% endif %}</div>
+  </form>
+  {% if page.object_list %}
+  <div class="table-wrap"><table class="table">
+    <thead><tr><th>{% sort_link 'number' 'Order ID' %}</th><th>{% sort_link 'customer' 'Customer' %}</th><th>Items</th>
+      <th class="num">{% sort_link 'total' 'Amount' %}</th><th>{% sort_link 'status' 'Status' %}</th><th>Payment</th><th>{% sort_link 'placed' 'Placed' %}</th></tr></thead>
+    <tbody>
+    {% for o in page.object_list %}
+      <tr class="clickable" tabindex="0" hx-get="/orders/{{ o.pk }}/" hx-target="#modal-root" hx-swap="innerHTML" hx-trigger="click, keyup[key=='Enter']">
+        <td><strong>#{{ o.number }}</strong></td>
+        <td>{{ o.customer.get_full_name|default:o.customer.get_username }}</td>
+        <td>{{ o.item_count }}</td><td class="num">{{ o.total|inr }}</td>
+        <td><span class="chip {{ o.status|status_chip }}">{{ o.get_status_display }}</span></td>
+        <td><span class="chip {{ o.payment_status|status_chip }}">{{ o.get_payment_status_display }}</span></td>
+        <td>{{ o.placed_at|date:"M j, Y, g:i A" }}</td></tr>
+    {% endfor %}
+    </tbody></table></div>
+  {% include "dash/partials/pager.html" %}
+  {% else %}
+    {% if has_filters %}{% include "ui/partials/empty.html" with icon="search" title="No orders match" text="Adjust or clear the filters." %}
+    {% else %}{% include "ui/partials/empty.html" with icon="box" title="No orders yet" text="Orders placed on the storefront will show up here." %}{% endif %}
+  {% endif %}
+</div>
+{% endblock %}
