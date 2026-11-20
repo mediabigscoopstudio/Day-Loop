@@ -1,0 +1,18 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}{{ customer.get_full_name|default:customer.get_username }}{% endblock %}
+{% block subtitle %}<p>{{ customer.email|default:"No email" }} · {% if customer.order_count >= 2 %}<span class="chip up">Repeat customer</span>{% else %}<span class="chip neutral">New customer</span>{% endif %}</p>{% endblock %}
+{% block body %}
+<dl class="kv">
+  <dt>Orders</dt><dd>{{ customer.order_count }}</dd>
+  <dt>Lifetime value</dt><dd>{{ customer.lifetime_value|inr }}</dd>
+  <dt>Average order</dt><dd>{{ aov|inr }}</dd>
+  <dt>Last order</dt><dd>{{ customer.last_order|date:"M j, Y, g:i A" }}</dd>
+  <dt>Joined</dt><dd>{{ customer.date_joined|date:"M j, Y" }}</dd>
+</dl>
+<h3 style="margin:18px 0 8px">Recent orders</h3>
+<table class="table"><tbody>
+  {% for o in recent %}<tr><td><strong>#{{ o.number }}</strong></td><td>{{ o.item_count }} item{{ o.item_count|pluralize }}</td>
+    <td class="num">{{ o.total|inr }}</td><td><span class="chip {{ o.status|status_chip }}">{{ o.get_status_display }}</span></td><td>{{ o.placed_at|date:"M j, Y" }}</td></tr>{% endfor %}
+</tbody></table>
+{% endblock %}

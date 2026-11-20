@@ -1,0 +1,35 @@
+{% extends "dash/base.html" %}
+{% load ui_tags dash_tags %}
+{% block title %}Customers · Day Loop admin{% endblock %}
+{% block page %}
+<div class="page-head"><div><h1>Customers</h1><p>Everyone who has placed an order.</p></div></div>
+<div id="list-region" class="card">
+  <form method="get" class="filters inline-filters" role="search">
+    <input class="input" type="search" name="q" value="{{ f.q }}" placeholder="Search name or email" aria-label="Search customers" style="min-width:260px">
+    <select class="select" name="repeat" aria-label="Repeat customers">
+      <option value="">All customers</option>
+      <option value="yes" {% if f.repeat == 'yes' %}selected{% endif %}>Repeat (2+ orders)</option>
+      <option value="no" {% if f.repeat == 'no' %}selected{% endif %}>One-time</option></select>
+    <button class="btn sm" type="submit">Apply</button>
+    {% if has_filters %}<a class="btn sm" href="/customers/">Clear</a>{% endif %}
+  </form>
+  {% if page.object_list %}
+  <div class="table-wrap"><table class="table">
+    <thead><tr><th>{% sort_link 'name' 'Customer' %}</th><th class="num">{% sort_link 'orders' 'Orders' %}</th>
+      <th class="num">{% sort_link 'ltv' 'Lifetime value' %}</th><th>{% sort_link 'last' 'Last order' %}</th><th>Type</th></tr></thead>
+    <tbody>
+    {% for c in page.object_list %}
+      <tr class="clickable" tabindex="0" hx-get="/customers/{{ c.pk }}/" hx-target="#modal-root" hx-swap="innerHTML" hx-trigger="click, keyup[key=='Enter']">
+        <td><span class="who"><span class="badge-ico">{{ c|initials }}</span><span>{{ c.get_full_name|default:c.get_username }}<br><small class="cat-meta">{{ c.email }}</small></span></span></td>
+        <td class="num">{{ c.order_count }}</td><td class="num">{{ c.lifetime_value|inr }}</td>
+        <td>{{ c.last_order|date:"M j, Y" }}</td>
+        <td>{% if c.order_count >= 2 %}<span class="chip up">Repeat</span>{% else %}<span class="chip neutral">New</span>{% endif %}</td></tr>
+    {% endfor %}
+    </tbody></table></div>
+  {% include "dash/partials/pager.html" %}
+  {% else %}
+    {% if has_filters %}{% include "ui/partials/empty.html" with icon="search" title="No customers match" text="Adjust or clear the filters." %}
+    {% else %}{% include "ui/partials/empty.html" with icon="user" title="No customers yet" text="Customers appear here after their first order." %}{% endif %}
+  {% endif %}
+</div>
+{% endblock %}
