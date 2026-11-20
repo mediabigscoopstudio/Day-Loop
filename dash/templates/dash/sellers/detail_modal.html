@@ -1,0 +1,47 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}{{ seller.business_name }}{% endblock %}
+{% block subtitle %}<p><span class="chip {{ seller.status|status_chip }}">{{ seller.get_status_display }}</span> · Applied {{ seller.applied_at|date:"M j, Y" }}</p>{% endblock %}
+{% block body %}
+<div class="grid cols-2">
+  <section aria-label="Profile">
+    <h3 style="margin-bottom:10px">Profile</h3>
+    <dl class="kv">
+      <dt>Contact</dt><dd>{{ seller.user.get_full_name|default:seller.user.get_username }}<br><small>{{ seller.user.email }}</small></dd>
+      <dt>Phone</dt><dd>{{ seller.phone|default:"—" }}</dd>
+      <dt>City</dt><dd>{{ seller.city|default:"—" }}</dd>
+      <dt>Category</dt><dd>{{ seller.category.name|default:"—" }}</dd>
+      <dt>GST</dt><dd>{{ seller.gst_number|default:"—" }}</dd>
+      <dt>FSSAI</dt><dd>{{ seller.fssai_number|default:"—" }}</dd>
+    </dl>
+    <h3 style="margin:18px 0 8px">Documents</h3>
+    <ul style="margin:0;padding-left:18px">
+      {% if seller.gst_document_url %}<li><a href="{{ seller.gst_document_url }}" target="_blank" rel="noopener noreferrer">GST certificate</a></li>{% endif %}
+      {% if seller.fssai_document_url %}<li><a href="{{ seller.fssai_document_url }}" target="_blank" rel="noopener noreferrer">FSSAI licence</a></li>{% endif %}
+      {% if seller.other_document_url %}<li><a href="{{ seller.other_document_url }}" target="_blank" rel="noopener noreferrer">Other document</a></li>{% endif %}
+      {% if not seller.gst_document_url and not seller.fssai_document_url and not seller.other_document_url %}<li style="list-style:none;margin-left:-18px;color:var(--muted)">No documents uploaded.</li>{% endif %}
+    </ul>
+    <h3 style="margin:18px 0 8px">Performance</h3>
+    <dl class="kv"><dt>Products</dt><dd>{{ product_count }}</dd><dt>Orders</dt><dd>{{ stats.orders|default:0 }}</dd><dt>GMV</dt><dd>{{ stats.gmv|default:0|inr }}</dd></dl>
+  </section>
+  <section aria-label="Status history">
+    <h3 style="margin-bottom:10px">Status history</h3>
+    {% if history %}
+    <ol class="timeline">
+      {% for h in history %}
+      <li><strong>{{ h.get_from_status_display }} → {{ h.get_to_status_display }}</strong>
+        {% if h.reason %}<div>“{{ h.reason }}”</div>{% endif %}
+        <small>{{ h.actor.get_full_name|default:h.actor.get_username|default:"System" }} · {{ h.created_at|date:"M j, Y, g:i A" }}</small></li>
+      {% endfor %}
+    </ol>
+    {% else %}<p style="color:var(--muted)">No decisions recorded yet.</p>{% endif %}
+  </section>
+</div>
+{% endblock %}
+{% block footer %}
+  <button type="button" class="btn left" data-modal-close>Close</button>
+  {% for a in actions %}
+    <button type="button" class="btn {% if a == 'approve' %}primary{% endif %}" hx-get="/sellers/{{ seller.pk }}/{{ a }}/" hx-target="#modal-root" hx-swap="innerHTML">
+      {% if a == 'approve' %}Approve{% elif a == 'reject' %}Reject{% else %}Request info{% endif %}</button>
+  {% endfor %}
+{% endblock %}
