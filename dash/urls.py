@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import auth_views, views, views_categories, views_customers, views_orders, views_products, views_sellers
+from . import auth_views, views, views_categories, views_customers, views_orders, views_products, views_search, views_sellers
 
 urlpatterns = [
     path('login/', auth_views.LoginView.as_view(), name='login'),
@@ -30,6 +30,8 @@ urlpatterns = [
     path('products/categories/<int:pk>/delete/', views_categories.CategoryDeleteView.as_view(), name='category-delete'),
     path('products/categories/<int:pk>/move/<slug:direction>/', views_categories.CategoryMoveView.as_view(), name='category-move'),
     path('products/subcategory-options/', views_categories.SubcategoryOptions.as_view(), name='subcategory-options'),
+    path('search/', views_search.SearchView.as_view(), name='search'),
+    path('notifications/', views_search.NotificationsView.as_view(), name='notifications'),
     path('analytics/', views.AnalyticsView.as_view(), name='analytics'),
     path('api/new-vs-repeat/', views.NewVsRepeatApi.as_view(), name='api-new-vs-repeat'),
     path('api/sales/', views.SalesApi.as_view(), name='api-sales'),

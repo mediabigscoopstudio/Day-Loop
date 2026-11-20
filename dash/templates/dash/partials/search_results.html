@@ -1,0 +1,15 @@
+{% load ui_tags %}
+{% if too_short %}
+{% elif groups %}
+  {% for title, kind, rows in groups %}
+    <div class="menu-head"><strong>{{ title }}</strong></div>
+    {% for r in rows %}
+      {% if kind == 'orders' %}<button type="button" class="menu-link" hx-get="/orders/{{ r.pk }}/" hx-target="#modal-root" hx-swap="innerHTML">#{{ r.number }} <small>{{ r.customer.get_username }} · {{ r.total|inr }}</small></button>
+      {% elif kind == 'sellers' %}<button type="button" class="menu-link" hx-get="/sellers/{{ r.pk }}/" hx-target="#modal-root" hx-swap="innerHTML">{{ r.business_name }} <small>{{ r.get_status_display }}</small></button>
+      {% elif kind == 'products' %}<button type="button" class="menu-link" hx-get="/products/{{ r.pk }}/" hx-target="#modal-root" hx-swap="innerHTML">{{ r.name }} <small>{{ r.seller.business_name }}</small></button>
+      {% else %}<button type="button" class="menu-link" hx-get="/customers/{{ r.pk }}/" hx-target="#modal-root" hx-swap="innerHTML">{{ r.get_full_name|default:r.get_username }} <small>{{ r.email }}</small></button>{% endif %}
+    {% endfor %}
+  {% endfor %}
+{% else %}
+  <div class="menu-head">No results for “{{ q }}”.</div>
+{% endif %}

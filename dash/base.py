@@ -14,9 +14,11 @@ NAV = [
 
 
 def shell_context(active):
+    from sellers.models import SellerProfile
     return {
         'nav': NAV, 'active': active, 'home_url': '/',
         'search_url': '/search/', 'bell_url': '/notifications/',
+        'bell_count': SellerProfile.objects.filter(status=SellerProfile.Status.PENDING).count(),
     }
 
 

@@ -1,0 +1,5 @@
+<div class="menu-head"><strong>Notifications</strong></div>
+{% if pending_total %}
+  <a href="/sellers/?status=pending"><strong>{{ pending_total }}</strong> seller application{{ pending_total|pluralize }} awaiting review</a>
+  {% for s in pending %}<button type="button" class="menu-link" hx-get="/sellers/{{ s.pk }}/" hx-target="#modal-root" hx-swap="innerHTML">{{ s.business_name }} <small>{{ s.applied_at|date:"M j" }}</small></button>{% endfor %}
+{% else %}<div class="menu-head">You’re all caught up.</div>{% endif %}
