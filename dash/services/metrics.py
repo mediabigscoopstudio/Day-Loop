@@ -210,3 +210,7 @@ def repeat_cohorts(limit=12):
         r['rate'] = round(r['repeaters'] / r['customers'] * 100, 1) if r['customers'] else 0
         out.append(r)
     return out
+
+
+def pending_total():
+    return SellerProfile.objects.filter(status=SellerProfile.Status.PENDING).count()

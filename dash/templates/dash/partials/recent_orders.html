@@ -1,0 +1,17 @@
+{% load ui_tags %}
+{% if rows %}
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Seller</th><th class="num">Amount</th><th>Status</th><th>Placed On</th></tr></thead>
+  <tbody>
+  {% for o in rows %}
+    <tr class="clickable" hx-get="/orders/{{ o.pk }}/" hx-target="#modal-root" hx-swap="innerHTML" tabindex="0">
+      <td><strong>#{{ o.number }}</strong></td>
+      <td>{{ o.customer.get_full_name|default:o.customer.get_username }}</td>
+      <td>{{ o.item_count }} item{{ o.item_count|pluralize }}</td>
+      <td>{{ o.first_seller|default:"—" }}{% if o.seller_count > 1 %} <span class="chip neutral">+{{ o.seller_count|add:"-1" }}</span>{% endif %}</td>
+      <td class="num">{{ o.total|inr }}</td>
+      <td><span class="chip {{ o.status|status_chip }}">{{ o.get_status_display }}</span></td>
+      <td>{{ o.placed_at|date:"M j, Y, g:i A" }}</td></tr>
+  {% endfor %}
+  </tbody></table></div>
+{% else %}{% include "ui/partials/empty.html" with icon="box" title="No orders yet" text="Orders placed on the storefront will show up here." %}{% endif %}

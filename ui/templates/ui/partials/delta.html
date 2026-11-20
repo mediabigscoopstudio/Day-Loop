@@ -1,0 +1,4 @@
+{% load ui_tags %}{% comment %}Growth chip: {% include "ui/partials/delta.html" with delta=12.4 %}{% endcomment %}
+{% if delta is None %}<span class="chip neutral">New</span>
+{% elif delta >= 0 %}<span class="chip up">↑ +{{ delta }}%</span>
+{% else %}<span class="chip down">↓ {{ delta }}%</span>{% endif %}

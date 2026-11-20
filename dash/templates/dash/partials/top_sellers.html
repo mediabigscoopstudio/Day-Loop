@@ -1,0 +1,12 @@
+{% load ui_tags %}
+{% if rows %}
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>Seller</th><th class="num">GMV</th><th class="num">Orders</th><th class="num">Growth</th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+    <tr><td><span class="who"><span class="badge-ico">{{ r.name|slice:":1" }}</span>{{ r.name }}</span></td>
+      <td class="num">{{ r.gmv|inr }}</td><td class="num">{{ r.orders|intcomma_in }}</td>
+      <td class="num">{% include "ui/partials/delta.html" with delta=r.growth %}</td></tr>
+  {% endfor %}
+  </tbody></table></div>
+{% else %}{% include "ui/partials/empty.html" with icon="users" title="No sales in this period" text="Top sellers will appear here once orders come in." %}{% endif %}

@@ -1,0 +1,22 @@
+{% comment %}Date-range picker. Context: dr (DateRange), presets. Plain GET so URLs are shareable.{% endcomment %}
+{% load ui_tags %}
+<div class="menu">
+  <button type="button" class="daterange-btn" data-menu-toggle aria-expanded="false" aria-haspopup="true">
+    {% icon 'calendar' 18 %}<span>{{ dr.label }}</span>
+  </button>
+  <div class="menu-panel daterange-panel" hidden>
+    <div class="presets">
+      {% for key, label in presets %}{% if key != 'custom' %}
+        <a class="tab" href="?range={{ key }}" {% if dr.preset == key %}aria-current="true"{% endif %}>{{ label }}</a>
+      {% endif %}{% endfor %}
+    </div>
+    <form method="get" class="custom-range">
+      <input type="hidden" name="range" value="custom">
+      <label class="sr-only" for="dr-start">Start date</label>
+      <input class="input" id="dr-start" type="date" name="start" value="{{ dr.start_date|date:'Y-m-d' }}" required>
+      <label class="sr-only" for="dr-end">End date</label>
+      <input class="input" id="dr-end" type="date" name="end" value="{{ dr.end_date|date:'Y-m-d' }}" required>
+      <button class="btn primary sm" type="submit">Apply</button>
+    </form>
+  </div>
+</div>

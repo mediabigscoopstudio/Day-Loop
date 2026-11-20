@@ -1,6 +1,52 @@
 {% extends "dash/base.html" %}
-{% load ui_tags %}
+{% load static ui_tags %}
 {% block title %}Overview · Day Loop admin{% endblock %}
+{% block topbar_extra %}{% include "dash/partials/date_range.html" %}{% endblock %}
 {% block page %}
-<div class="page-head"><div><h1>{% greeting %}, {{ user|first_name }}</h1><p>Here’s what’s happening across your marketplace today.</p></div></div>
+<div class="page-head">
+  <div><h1>{% greeting %}, {{ user|first_name }}</h1><p>Here’s what’s happening across your marketplace today.</p></div>
+</div>
+
+<section class="grid kpis" aria-label="Key metrics"
+         hx-get="/partials/kpis/?{{ dr.query_string }}" hx-trigger="sellers-changed from:body" hx-swap="innerHTML">
+  {% include "dash/partials/kpis.html" %}
+</section>
+
+<div class="grid row-2">
+  <section class="card" aria-labelledby="sales-h">
+    <div class="card-head"><div><h2 id="sales-h">Sales Over Time</h2>
+      <div style="margin-top:6px"><strong style="font-size:22px">{{ gmv_total|inr }}</strong> {% include "ui/partials/delta.html" with delta=gmv_delta %} <small style="color:var(--muted)">vs. prior period</small></div></div></div>
+    <div class="chart-box"><canvas data-chart="sales" data-url="/api/sales/?{{ dr.query_string }}" role="img" aria-label="Sales over time chart"></canvas></div>
+    <p class="chart-empty empty" hidden>No sales in this period.</p>
+  </section>
+  <section class="card" aria-labelledby="cat-h">
+    <div class="card-head"><h2 id="cat-h">Revenue by Category</h2></div>
+    <div class="donut-wrap">
+      <div class="donut-box"><canvas data-chart="donut" data-url="/api/category-revenue/?{{ dr.query_string }}" data-legend="#cat-legend" role="img" aria-label="Revenue by category"></canvas>
+        <div class="donut-center"><span id="donut-total">{{ gmv_total|inr_short }}</span><small>GMV</small></div></div>
+      <div class="legend" id="cat-legend"></div>
+    </div>
+  </section>
+</div>
+
+<div class="grid row-eq">
+  <section class="card" aria-labelledby="ts-h">
+    <div class="card-head"><h2 id="ts-h">Top Sellers</h2><a class="link-more" href="/sellers/?status=approved">View all →</a></div>
+    {% include "dash/partials/top_sellers.html" with rows=top_sellers %}
+  </section>
+  <section class="card" id="pending-card" hx-get="/partials/pending-approvals/?{{ dr.query_string }}" hx-trigger="sellers-changed from:body" hx-swap="innerHTML">
+    {% include "dash/partials/pending_approvals.html" with rows=pending pending_total=pending_total %}
+  </section>
+</div>
+
+<section class="card" style="margin-top:18px" aria-labelledby="ro-h">
+  <div class="card-head"><h2 id="ro-h">Recent Orders</h2><a class="link-more" href="/orders/">View all orders →</a></div>
+  <div hx-get="/partials/recent-orders/" hx-trigger="orders-changed from:body" hx-swap="innerHTML">
+    {% include "dash/partials/recent_orders.html" with rows=recent_orders %}
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'ui/vendor/chart.umd.min.js' %}"></script>
+<script src="{% static 'dash/js/charts.js' %}"></script>
 {% endblock %}

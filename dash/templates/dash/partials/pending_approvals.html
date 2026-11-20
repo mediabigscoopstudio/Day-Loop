@@ -1,0 +1,17 @@
+{% load ui_tags %}
+<div class="card-head"><h2>Pending Seller Approvals ({{ pending_total }})</h2><a class="link-more" href="/sellers/?status=pending">View all →</a></div>
+{% if rows %}
+<div class="table-wrap"><table class="table">
+  <thead><tr><th>Seller Name</th><th>Category</th><th>Applied On</th><th></th></tr></thead>
+  <tbody>
+  {% for s in rows %}
+    <tr><td><span class="who"><span class="badge-ico amber">{{ s.business_name|slice:":1" }}</span>
+        <a href="#" hx-get="/sellers/{{ s.pk }}/" hx-target="#modal-root" hx-swap="innerHTML">{{ s.business_name }}</a></span></td>
+      <td>{{ s.category.name|default:"—" }}</td><td>{{ s.applied_at|date:"M j, Y" }}</td>
+      <td style="white-space:nowrap">
+        <button class="btn primary sm" hx-get="/sellers/{{ s.pk }}/approve/" hx-target="#modal-root" hx-swap="innerHTML">Approve</button>
+        <button class="btn sm" hx-get="/sellers/{{ s.pk }}/reject/" hx-target="#modal-root" hx-swap="innerHTML">Reject</button>
+      </td></tr>
+  {% endfor %}
+  </tbody></table></div>
+{% else %}{% include "ui/partials/empty.html" with icon="check" title="All caught up" text="No sellers are waiting for approval." %}{% endif %}
