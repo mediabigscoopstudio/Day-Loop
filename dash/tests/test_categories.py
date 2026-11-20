@@ -1,7 +1,7 @@
 import json
 
 from django.core.exceptions import ValidationError
-from django.test import Client
+from django.test import Client, override_settings
 from django.urls import get_resolver
 
 from catalog.models import Category
@@ -133,9 +133,13 @@ class CategoryAccessTests(DashTestCase):
             for pattern in get_resolver(module).url_patterns:
                 self.assertNotIn('categor', str(pattern.pattern).lower(), module)
         cat = f.make_category('Protected')
-        for host in ('seller.localhost:8000', 'www.localhost:8000', 'api.localhost:8000'):
+        approved_seller = f.make_seller('Real Seller')           # an approved seller with a profile
+        for host, cookie, user in (('seller.localhost:8000', 'dl_seller_sid', approved_seller.user),
+                                   ('www.localhost:8000', 'dl_www_sid', self.customer),
+                                   ('api.localhost:8000', 'dl_api_sid', self.customer)):
             c = Client(HTTP_HOST=host)
-            c.force_login(self.seller_user)
+            with override_settings(SESSION_COOKIE_NAME=cookie):
+                c.force_login(user)
             for path in ('/products/categories/new/', '/categories/new/', f'/categories/{cat.pk}/edit/',
                          f'/products/categories/{cat.pk}/delete/', '/api/categories/'):
                 for method in ('get', 'post'):

@@ -1,0 +1,40 @@
+{% extends "seller/base.html" %}
+{% load ui_tags %}
+{% block title %}Application status · Day Loop sellers{% endblock %}
+{% block page %}
+<div class="page-head"><div><h1>{% if welcome %}Welcome, {{ user|first_name }}{% else %}Application status{% endif %}</h1>
+  <p>{{ seller.business_name }}</p></div></div>
+
+<section class="card status-card" aria-live="polite">
+  {% if seller.status == S.DRAFT %}
+    <span class="status-ico warn">{% icon 'edit' 28 %}</span>
+    <div><h2>Finish your application</h2>
+      <p>Complete 4 short steps (business, compliance, bank and review). Your progress is saved, so you can leave and come back.</p>
+      <button class="btn primary" hx-get="/onboarding/" hx-target="#modal-root" hx-swap="innerHTML">{% if seller.onboarding_step > 1 %}Continue onboarding · step {{ seller.onboarding_step }} of 4{% else %}Start onboarding{% endif %}</button></div>
+  {% elif seller.status == S.PENDING %}
+    <span class="status-ico amber">{% icon 'doc' 28 %}</span>
+    <div><h2>Submitted · under review</h2><p>We’re reviewing your details. This usually takes 1–2 working days. You’ll be able to add products as soon as you’re approved.</p>
+      <p class="cat-meta">Submitted {{ seller.submitted_at|date:"M j, Y, g:i A" }}</p></div>
+  {% elif seller.status == S.APPROVED %}
+    <span class="status-ico ok">{% icon 'check' 28 %}</span>
+    <div><h2>You’re approved</h2><p>Your seller account is active. Add your first product to start selling.</p>
+      <a class="btn primary" href="/products/new/">Add a product</a></div>
+  {% elif seller.status == S.REJECTED %}
+    <span class="status-ico bad">{% icon 'x' 28 %}</span>
+    <div><h2>Application not approved</h2>
+      {% if rejection.reason %}<div class="consequence" style="margin:8px 0 12px">Reason: {{ rejection.reason }}</div>{% endif %}
+      <p>If you believe this is a mistake or have corrected the issue, contact support.</p></div>
+  {% elif seller.status == S.NEEDS_INFO %}
+    <span class="status-ico amber">{% icon 'info' 28 %}</span>
+    <div><h2>We need a little more information</h2>
+      {% if info_request.reason %}<div class="consequence" style="margin:8px 0 12px">{{ info_request.reason }}</div>{% endif %}
+      <button class="btn primary" hx-get="/status/reply/" hx-target="#modal-root" hx-swap="innerHTML">Reply to the request</button></div>
+  {% endif %}
+</section>
+
+{% if history %}
+<section class="card" style="margin-top:18px"><div class="card-head"><h2>History</h2></div>
+  <ol class="timeline">{% for h in history %}<li><strong>{{ h.get_from_status_display }} → {{ h.get_to_status_display }}</strong>
+    {% if h.reason %}<div>“{{ h.reason }}”</div>{% endif %}<small>{{ h.created_at|date:"M j, Y, g:i A" }}</small></li>{% endfor %}</ol></section>
+{% endif %}
+{% endblock %}

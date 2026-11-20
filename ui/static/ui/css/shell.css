@@ -91,3 +91,23 @@
   .page-head h1 { font-size: 24px; }
 }
 @media (max-width: 480px) { .kpis { grid-template-columns: 1fr; } }
+
+/* Bottom tab bar + floating action button (phones). Optional: enabled when a view passes bottom_nav. */
+.tabbar, .fab { display: none; }
+@media (max-width: 860px) {
+  .tabbar {
+    display: grid; grid-template-columns: repeat(5, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+    background: var(--card); border-top: 1px solid var(--border); padding-bottom: env(safe-area-inset-bottom);
+  }
+  .tabbar a { display: grid; justify-items: center; gap: 2px; padding: 8px 2px 7px; min-height: 56px; color: var(--muted); font-size: 11px; font-weight: 600; }
+  .tabbar a:hover { text-decoration: none; }
+  .tabbar a[aria-current="page"] { color: var(--green-900); }
+  .tabbar a[aria-current="page"] svg { background: var(--sage-200); border-radius: 12px; padding: 3px 14px; width: 54px; box-sizing: content-box; height: 22px; }
+  .fab {
+    display: grid; place-items: center; position: fixed; right: 16px; bottom: calc(74px + env(safe-area-inset-bottom)); z-index: 41;
+    width: 56px; height: 56px; border-radius: 50%; background: var(--green-700); color: #fff; box-shadow: var(--shadow-lg);
+  }
+  .fab:hover { text-decoration: none; background: var(--green-900); }
+  .page.has-tabbar { padding-bottom: 96px; }
+  .sidebar-hide-mobile { display: none; }
+}

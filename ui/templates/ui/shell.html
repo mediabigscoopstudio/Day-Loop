@@ -58,7 +58,15 @@ Blocks: topbar_extra (date picker), menu_items (avatar menu), page.
         </div>
       </div>
     </header>
-    <main class="page">{% block page %}{% endblock %}</main>
+    <main class="page {% if bottom_nav %}has-tabbar{% endif %}">{% block page %}{% endblock %}</main>
   </div>
+  {% if bottom_nav %}
+  <nav class="tabbar" aria-label="Primary">
+    {% for item in bottom_nav %}
+      <a href="{{ item.url }}" {% if item.key == active %}aria-current="page"{% endif %}>{% icon item.icon 22 %}<span>{{ item.label }}</span></a>
+    {% endfor %}
+  </nav>
+  {% if fab %}<a class="fab" href="{{ fab.url }}" aria-label="{{ fab.label }}">{% icon 'plus' 24 %}</a>{% endif %}
+  {% endif %}
 </div>
 {% endblock %}

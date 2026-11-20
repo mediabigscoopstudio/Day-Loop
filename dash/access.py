@@ -12,9 +12,9 @@ from django.contrib.auth.mixins import AccessMixin
 from django.core.cache import cache
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 
+from ui.throttle import LoginThrottle
+
 LOGIN_URL = '/login/'
-MAX_ATTEMPTS = 5
-WINDOW_SECONDS = 15 * 60
 
 
 def is_dash_admin(user):
@@ -47,28 +47,17 @@ class SuperuserRequiredMixin(AccessMixin):
         return super().dispatch(request, *args, **kwargs)
 
 
-# ---- failed-login throttle (cache based, per IP + username) ----
-
-def _key(ip, username):
-    return f'dash-login-fail:{ip}:{(username or "").strip().lower()}'
-
-
-def client_ip(request):
-    return request.META.get('REMOTE_ADDR', 'unknown')
+# ---- failed-login throttle (shared implementation in ui.throttle) ----
+_throttle = LoginThrottle('dash-login-fail')
 
 
 def is_throttled(request, username):
-    return cache.get(_key(client_ip(request), username), 0) >= MAX_ATTEMPTS
+    return _throttle.is_throttled(request, username)
 
 
 def record_failure(request, username):
-    key = _key(client_ip(request), username)
-    try:
-        cache.add(key, 0, WINDOW_SECONDS)
-        cache.incr(key)
-    except ValueError:
-        cache.set(key, 1, WINDOW_SECONDS)
+    _throttle.record_failure(request, username)
 
 
 def clear_failures(request, username):
-    cache.delete(_key(client_ip(request), username))
+    _throttle.clear(request, username)

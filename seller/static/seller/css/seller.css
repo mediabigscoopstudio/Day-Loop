@@ -1,0 +1,9 @@
+/* Seller-specific styles (shell, modals and components come from the ui app). */
+
+.status-card { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: start; padding: 26px; }
+.status-card h2 { font-size: 21px; color: var(--green-900); margin-bottom: 6px; }
+.status-card p { margin: 0 0 12px; color: var(--muted); }
+.status-ico { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: var(--sage-100); color: var(--green-700); }
+.status-ico.warn, .status-ico.amber { background: var(--amber-bg); color: var(--amber-ink); }
+.status-ico.bad { background: var(--danger-bg); color: var(--danger); }
+@media (max-width: 560px) { .status-card { grid-template-columns: 1fr; } }

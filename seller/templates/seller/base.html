@@ -1,0 +1,7 @@
+{% extends "ui/shell.html" %}
+{% load static %}
+{% block head %}<link rel="stylesheet" href="{% static 'seller/css/seller.css' %}">{% block seller_head %}{% endblock %}{% endblock %}
+{% block menu_items %}
+  <a href="/account/">Account &amp; documents</a>
+  <button type="button" hx-get="/logout/confirm/" hx-target="#modal-root" hx-swap="innerHTML">Sign out</button>
+{% endblock %}

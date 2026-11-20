@@ -1,0 +1,20 @@
+{% extends "ui/base.html" %}
+{% load static ui_tags %}
+{% block title %}Become a seller · Day Loop{% endblock %}
+{% block head %}<link rel="stylesheet" href="{% static 'ui/css/auth.css' %}">{% endblock %}
+{% block body %}
+<main class="login-wrap">
+  <section class="login-card" aria-labelledby="reg-title">
+    <div class="login-logo">{% dayloop_logo %}</div>
+    <h1 id="reg-title">Become a seller</h1>
+    <p class="login-sub">Create your account. You’ll add business and compliance details next.</p>
+    {% if error %}<div class="form-error" role="alert">{{ error }}</div>{% endif %}
+    <form method="post" action="/register/" data-loading-form novalidate>
+      {% csrf_token %}
+      {% for field in form %}{% include "ui/partials/field.html" %}{% endfor %}
+      <button type="submit" class="btn primary login-submit">Create account</button>
+    </form>
+    <p class="login-alt">Already registered? <a href="/login/">Sign in</a></p>
+  </section>
+</main>
+{% endblock %}

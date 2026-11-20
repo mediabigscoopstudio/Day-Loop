@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'django_hosts',
     'ui',
     'dash',
+    'seller',
     'catalog',
     'sellers',
     'orders',
@@ -77,6 +78,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'dash.middleware.DashAccessMiddleware',
+    'seller.middleware.SellerAccessMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_hosts.middleware.HostsResponseMiddleware',      # must be last
 ]
