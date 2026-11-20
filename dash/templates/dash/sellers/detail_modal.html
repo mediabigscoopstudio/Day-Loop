@@ -1,31 +1,63 @@
 {% extends "ui/modal_base.html" %}
 {% load ui_tags %}
 {% block title %}{{ seller.business_name }}{% endblock %}
-{% block subtitle %}<p><span class="chip {{ seller.status|status_chip }}">{{ seller.get_status_display }}</span> · Applied {{ seller.applied_at|date:"M j, Y" }}</p>{% endblock %}
+{% block subtitle %}<p><span class="chip {{ seller.status|status_chip }}">{{ seller.get_status_display }}</span> · Applied {{ seller.applied_at|date:"M j, Y" }}{% if seller.submitted_at %} · Submitted {{ seller.submitted_at|date:"M j, Y, g:i A" }}{% endif %}</p>{% endblock %}
 {% block body %}
 <div class="grid cols-2">
-  <section aria-label="Profile">
-    <h3 style="margin-bottom:10px">Profile</h3>
+  <section aria-label="Business">
+    <h3 style="margin-bottom:10px">Business</h3>
     <dl class="kv">
-      <dt>Contact</dt><dd>{{ seller.user.get_full_name|default:seller.user.get_username }}<br><small>{{ seller.user.email }}</small></dd>
-      <dt>Phone</dt><dd>{{ seller.phone|default:"—" }}</dd>
-      <dt>City</dt><dd>{{ seller.city|default:"—" }}</dd>
-      <dt>Category</dt><dd>{{ seller.category.name|default:"—" }}</dd>
-      <dt>GST</dt><dd>{{ seller.gst_number|default:"—" }}</dd>
-      <dt>FSSAI</dt><dd>{{ seller.fssai_number|default:"—" }}</dd>
+      <dt>Trade name</dt><dd>{{ seller.business_name }}</dd>
+      <dt>Legal name</dt><dd>{{ seller.legal_name|default:"—" }}</dd>
+      <dt>Type</dt><dd>{{ seller.get_business_type_display|default:"—" }}</dd>
+      <dt>Contact</dt><dd>{{ seller.contact_person|default:seller.user.get_full_name|default:seller.user.get_username }}<br><small>{{ seller.email|default:seller.user.email }} · {{ seller.phone|default:"—" }}</small></dd>
+      <dt>Address</dt><dd>{{ seller.address|default:"—" }}{% if seller.city %}<br>{{ seller.city }}{% endif %}</dd>
+      <dt>Established</dt><dd>{{ seller.year_established|default:"—" }}</dd>
+      <dt>Logo</dt><dd>{% if seller.logo %}<a href="{{ seller.logo.url }}" target="_blank" rel="noopener noreferrer">View logo</a>{% else %}—{% endif %}</dd>
     </dl>
-    <h3 style="margin:18px 0 8px">Documents</h3>
-    <ul style="margin:0;padding-left:18px">
-      {% if seller.gst_document_url %}<li><a href="{{ seller.gst_document_url }}" target="_blank" rel="noopener noreferrer">GST certificate</a></li>{% endif %}
-      {% if seller.fssai_document_url %}<li><a href="{{ seller.fssai_document_url }}" target="_blank" rel="noopener noreferrer">FSSAI licence</a></li>{% endif %}
-      {% if seller.other_document_url %}<li><a href="{{ seller.other_document_url }}" target="_blank" rel="noopener noreferrer">Other document</a></li>{% endif %}
-      {% if not seller.gst_document_url and not seller.fssai_document_url and not seller.other_document_url %}<li style="list-style:none;margin-left:-18px;color:var(--muted)">No documents uploaded.</li>{% endif %}
+
+    <h3 style="margin:18px 0 10px">Compliance</h3>
+    <dl class="kv">
+      <dt>GST</dt><dd>{{ seller.gst_number|default:"—" }} <span class="chip {{ seller.gst_status|status_chip }}">{{ seller.get_gst_status_display }}</span></dd>
+      <dt>PAN</dt><dd>{{ seller.pan_number|default:"—" }}</dd>
+      <dt>Company PAN</dt><dd>{{ seller.company_pan|default:"—" }}</dd>
+      <dt>FSSAI</dt><dd>{{ seller.fssai_number|default:"—" }}{% if seller.fssai_expiry %} · expires {{ seller.fssai_expiry|date:"M j, Y" }}{% endif %}</dd>
+      <dt>Mfg. licence</dt><dd>{{ seller.mfg_licence_number|default:"—" }}</dd>
+    </dl>
+
+    <h3 style="margin:18px 0 10px">Documents</h3>
+    {% if documents %}
+    <ul class="doc-list">
+      {% for d in documents %}
+      <li><a href="{% url 'seller-document' seller.pk d.pk %}" target="_blank" rel="noopener noreferrer">{{ d.get_kind_display }}</a>
+        <small class="cat-meta">uploaded {{ d.uploaded_at|date:"M j, Y" }}{% if d.expires_on %} · expires {{ d.expires_on|date:"M j, Y" }}{% endif %}</small></li>
+      {% endfor %}
     </ul>
-    <h3 style="margin:18px 0 8px">Performance</h3>
-    <dl class="kv"><dt>Products</dt><dd>{{ product_count }}</dd><dt>Orders</dt><dd>{{ stats.orders|default:0 }}</dd><dt>GMV</dt><dd>{{ stats.gmv|default:0|inr }}</dd></dl>
+    {% else %}<p class="cat-meta">No documents uploaded.</p>{% endif %}
   </section>
-  <section aria-label="Status history">
-    <h3 style="margin-bottom:10px">Status history</h3>
+
+  <section aria-label="Operations and bank">
+    <h3 style="margin-bottom:10px">Bank &amp; operations</h3>
+    {% if bank %}
+    <dl class="kv">
+      <dt>Account holder</dt><dd>{{ bank.account_holder }}</dd>
+      <dt>Account number</dt><dd>{{ bank.masked_number }}</dd>
+      <dt>IFSC</dt><dd>{{ bank.ifsc }}</dd>
+      <dt>Bank</dt><dd>{{ bank.bank_name }}</dd>
+      <dt>UPI</dt><dd>{{ bank.upi_id|default:"—" }}</dd>
+      <dt>Verified</dt><dd><span class="chip {% if bank.verified %}up{% else %}warn{% endif %}">{% if bank.verified %}Yes{% else %}Not yet{% endif %}</span></dd>
+    </dl>
+    {% else %}<p class="cat-meta">No bank details yet.</p>{% endif %}
+    <dl class="kv" style="margin-top:12px">
+      <dt>Categories</dt><dd>{% for c in categories %}{{ c.name }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</dd>
+      <dt>Dispatch</dt><dd>{{ seller.dispatch_days }} day{{ seller.dispatch_days|pluralize }}{% if seller.dispatch_address %}<br><small>{{ seller.dispatch_address }}</small>{% endif %}</dd>
+      <dt>Agreement</dt><dd>{% if seller.commission_accepted_at %}Accepted {{ seller.commission_accepted_at|date:"M j, Y" }}{% else %}Not accepted{% endif %}</dd>
+    </dl>
+
+    <h3 style="margin:18px 0 10px">Performance</h3>
+    <dl class="kv"><dt>Products</dt><dd>{{ product_count }}</dd><dt>Orders</dt><dd>{{ stats.orders|default:0 }}</dd><dt>GMV</dt><dd>{{ stats.gmv|default:0|inr }}</dd></dl>
+
+    <h3 style="margin:18px 0 10px">Status history</h3>
     {% if history %}
     <ol class="timeline">
       {% for h in history %}
@@ -34,14 +66,19 @@
         <small>{{ h.actor.get_full_name|default:h.actor.get_username|default:"System" }} · {{ h.created_at|date:"M j, Y, g:i A" }}</small></li>
       {% endfor %}
     </ol>
-    {% else %}<p style="color:var(--muted)">No decisions recorded yet.</p>{% endif %}
+    {% else %}<p class="cat-meta">No decisions recorded yet.</p>{% endif %}
   </section>
 </div>
 {% endblock %}
 {% block footer %}
   <button type="button" class="btn left" data-modal-close>Close</button>
   {% for a in actions %}
-    <button type="button" class="btn {% if a == 'approve' %}primary{% endif %}" hx-get="/sellers/{{ seller.pk }}/{{ a }}/" hx-target="#modal-root" hx-swap="innerHTML">
-      {% if a == 'approve' %}Approve{% elif a == 'reject' %}Reject{% else %}Request info{% endif %}</button>
+    {% if a == 'request-info' %}
+    <button type="button" class="btn" hx-get="/sellers/{{ seller.pk }}/{{ a }}/" hx-target="#modal-root" hx-swap="innerHTML">Request info</button>
+    {% elif a == 'reject' %}
+    <button type="button" class="btn danger-text" hx-get="/sellers/{{ seller.pk }}/{{ a }}/" hx-target="#modal-root" hx-swap="innerHTML">Reject</button>
+    {% else %}
+    <button type="button" class="btn primary" hx-get="/sellers/{{ seller.pk }}/{{ a }}/" hx-target="#modal-root" hx-swap="innerHTML">Approve</button>
+    {% endif %}
   {% endfor %}
 {% endblock %}

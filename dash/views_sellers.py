@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views import View
 
 from orders.models import OrderItem
-from sellers.models import SellerProfile
+from sellers.models import SellerDocument, SellerProfile
 
 from .access import SuperuserRequiredMixin
 from .base import DashPageView
@@ -50,16 +50,34 @@ def _seller_or_404(pk):
 
 
 class SellerDetailModal(SuperuserRequiredMixin, View):
+    """The full application: onboarding details, uploaded documents, bank (masked), categories, decisions."""
+
     def get(self, request, pk):
         seller = _seller_or_404(pk)
         stats = OrderItem.objects.filter(seller=seller).exclude(order__status='cancelled').aggregate(
             gmv=Sum('line_total'), orders=Count('order', distinct=True))
+        bank = seller.bank if hasattr(seller, 'bank') else None
         return render(request, 'dash/sellers/detail_modal.html', {
             'seller': seller,
             'history': seller.history.select_related('actor'),
             'stats': stats, 'product_count': seller.products.count(),
             'actions': allowed_actions(seller),
+            'documents': seller.documents.all(),
+            'bank': bank,
+            'categories': seller.categories.all(),
+            'modal_size': 'lg',
         })
+
+
+class SellerDocumentView(SuperuserRequiredMixin, View):
+    """Serves one uploaded document to superusers only (the media folder is not public)."""
+
+    def get(self, request, pk, doc):
+        from django.http import FileResponse, Http404
+        d = get_object_or_404(SellerDocument, pk=doc, seller_id=pk)
+        if not d.file:
+            raise Http404
+        return FileResponse(d.file.open('rb'), as_attachment=False, filename=d.file.name.rsplit('/', 1)[-1])
 
 
 COPY = {

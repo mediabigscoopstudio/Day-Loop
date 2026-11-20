@@ -22,7 +22,7 @@
   <div class="table-wrap"><table class="table">
     <thead><tr>
       <th>{% sort_link 'name' 'Seller' %}</th><th>Category</th><th>{% sort_link 'city' 'City' %}</th>
-      <th class="num">{% sort_link 'products' 'Products' %}</th><th>{% sort_link 'applied' 'Applied' %}</th><th>{% sort_link 'status' 'Status' %}</th>
+      <th class="num">{% sort_link 'products' 'Products' %}</th><th>{% sort_link 'applied' 'Applied' %}</th><th>{% sort_link 'status' 'Status' %}</th><th></th>
     </tr></thead>
     <tbody>
     {% for s in page.object_list %}
@@ -32,6 +32,10 @@
         <td>{{ s.category.name|default:"—" }}</td><td>{{ s.city|default:"—" }}</td>
         <td class="num">{{ s.product_count }}</td><td>{{ s.applied_at|date:"M j, Y" }}</td>
         <td><span class="chip {{ s.status|status_chip }}">{{ s.get_status_display }}</span></td>
+        <td style="white-space:nowrap">{% if s.status == 'pending' %}
+          <button type="button" class="btn sm primary" hx-get="/sellers/{{ s.pk }}/approve/" hx-target="#modal-root" hx-swap="innerHTML" onclick="event.stopPropagation()">Approve</button>
+          <button type="button" class="btn sm" hx-get="/sellers/{{ s.pk }}/reject/" hx-target="#modal-root" hx-swap="innerHTML" onclick="event.stopPropagation()">Reject</button>
+        {% endif %}</td>
       </tr>
     {% endfor %}
     </tbody></table></div>

@@ -20,6 +20,7 @@ urlpatterns = [
     path('orders/<int:pk>/cancel/', views_orders.OrderCancelView.as_view(), name='order-cancel'),
     path('sellers/', views_sellers.SellerListView.as_view(), name='sellers'),
     path('sellers/<int:pk>/', views_sellers.SellerDetailModal.as_view(), name='seller-detail'),
+    path('sellers/<int:pk>/documents/<int:doc>/', views_sellers.SellerDocumentView.as_view(), name='seller-document'),
     path('sellers/<int:pk>/<slug:action>/', views_sellers.SellerActionView.as_view(), name='seller-action'),
     path('products/', views_products.ProductListView.as_view(), name='products'),
     path('products/bulk/', views_products.ProductBulkView.as_view(), name='products-bulk'),
