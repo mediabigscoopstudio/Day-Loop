@@ -112,3 +112,9 @@ dialog.modal .input, dialog.modal .select, dialog.modal .textarea { font-size: 1
 .pcard-top input { width: 22px; height: 22px; accent-color: var(--green-700); flex: none; }
 .pc-name { font-weight: 800; color: var(--green-900); flex: 1; min-width: 0; }
 @media (max-width: 860px) { .show-desktop { display: none; } .show-mobile { display: grid; } }
+
+.mini-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.card.mini { display: grid; gap: 2px; padding: 14px 16px; color: var(--text); }
+.card.mini:hover { text-decoration: none; background: var(--sage-100); }
+.card.mini strong { font-size: 26px; color: var(--green-900); }
+@media (max-width: 700px) { .mini-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

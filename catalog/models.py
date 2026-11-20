@@ -145,6 +145,7 @@ class Product(models.Model):
 
 GST_RATES = [(0, '0%'), (5, '5%'), (12, '12%'), (18, '18%')]
 VOLUMETRIC_DIVISOR = 5000      # L x W x H (cm) / 5000 = kg
+EXPIRY_WARN_DAYS = 60          # 'expiring soon' window
 
 
 class ProductVariant(models.Model):
@@ -197,6 +198,21 @@ class ProductVariant(models.Model):
     @property
     def chargeable_kg(self):
         return chargeable_weight_kg(self.weight_g, self.length_cm, self.width_cm, self.height_cm)
+
+    @property
+    def days_to_expiry(self):
+        from datetime import date
+        return (self.expires_on - date.today()).days if self.expires_on else None
+
+    @property
+    def is_expired(self):
+        d = self.days_to_expiry
+        return d is not None and d < 0
+
+    @property
+    def is_expiring_soon(self):
+        d = self.days_to_expiry
+        return d is not None and 0 <= d <= EXPIRY_WARN_DAYS
 
     @property
     def is_low_stock(self):

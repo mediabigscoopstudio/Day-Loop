@@ -1,12 +1,15 @@
 from django.urls import path
 
-from . import auth_views, views, views_media, views_onboarding, views_product_list, views_products, views_variants
+from . import auth_views, views, views_inventory, views_media, views_onboarding, views_product_list, views_products, views_variants
 
 urlpatterns = [
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('register/', auth_views.RegisterView.as_view(), name='register'),
     path('logout/confirm/', auth_views.LogoutConfirmView.as_view(), name='logout-confirm'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('inventory/', views_inventory.InventoryView.as_view(), name='inventory'),
+    path('inventory/<int:pk>/stock/', views_inventory.StockUpdateView.as_view(), name='stock-update'),
+    path('inventory/<int:pk>/history/', views_inventory.StockHistoryView.as_view(), name='stock-history'),
     path('products/', views_product_list.ProductListView.as_view(), name='products'),
     path('products/bulk/', views_product_list.BulkView.as_view(), name='products-bulk'),
     path('products/<int:pk>/duplicate/', views_product_list.DuplicateView.as_view(), name='product-duplicate'),

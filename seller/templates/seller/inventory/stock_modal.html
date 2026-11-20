@@ -1,0 +1,18 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}Update stock{% endblock %}
+{% block subtitle %}<p>{{ variant.product.name }} · {{ variant.label }} · now <strong>{{ variant.stock }}</strong></p>{% endblock %}
+{% block form_open %}
+<form class="modal-form" hx-post="/inventory/{{ variant.pk }}/stock/" hx-target="#modal-root" hx-swap="innerHTML">
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+{% endblock %}
+{% block body %}
+  {% for e in form.non_field_errors %}<div class="form-error" role="alert">{{ e }}</div>{% endfor %}
+  <div class="field"><label>What do you want to do?</label>
+    <div class="check-grid">{% for r in form.action %}<label class="check-pill">{{ r.tag }}<span>{{ r.choice_label }}</span></label>{% endfor %}</div>
+    {% for e in form.action.errors %}<span class="field-error" role="alert">{{ e }}</span>{% endfor %}</div>
+  {% include "ui/partials/field.html" with field=form.quantity %}
+  {% include "ui/partials/field.html" with field=form.reason %}
+{% endblock %}
+{% block footer %}<button type="button" class="btn" data-modal-close>Cancel</button><button type="submit" class="btn primary">Save</button>{% endblock %}
+{% block form_close %}</form>{% endblock %}

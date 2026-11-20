@@ -1,0 +1,8 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}Stock history{% endblock %}
+{% block subtitle %}<p>{{ variant.product.name }} · {{ variant.label }}</p>{% endblock %}
+{% block body %}{% if rows %}<div class="table-wrap"><table class="table"><thead><tr><th>When</th><th>What</th><th class="num">Change</th><th class="num">Balance</th></tr></thead><tbody>
+  {% for m in rows %}<tr><td>{{ m.created_at|date:"M j, g:i A" }}</td><td>{{ m.get_kind_display }}{% if m.reason %}<br><small class="cat-meta">{{ m.reason }}</small>{% endif %}</td>
+    <td class="num"><span class="chip {% if m.delta >= 0 %}up{% else %}down{% endif %}">{% if m.delta > 0 %}+{% endif %}{{ m.delta }}</span></td><td class="num">{{ m.balance_after }}</td></tr>{% endfor %}</tbody></table></div>
+{% else %}{% include "ui/partials/empty.html" with icon="inbox" title="No movements yet" text="Changes to stock will be listed here." %}{% endif %}{% endblock %}
