@@ -99,9 +99,9 @@ def initials(user_or_text):
 @register.simple_tag
 def dayloop_logo(css_class=''):
     """The Dayloop wordmark file, used as is. Falls back to a text wordmark if missing."""
-    path = 'ui/img/dayloop-logo.png'
+    path = 'ui/img/logo.png'  # transparent wordmark (original: dayloop-logo.png)
     if finders.find(path):
-        return format_html('<span class="logo-crop"><img src="{}" alt="Dayloop" class="{}"></span>', static(path), css_class)
+        return format_html('<img src="{}" alt="Dayloop" class="logo {}">', static(path), css_class)
     return mark_safe('<span class="brand-word">dayloop</span>')
 
 

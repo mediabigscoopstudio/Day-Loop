@@ -5,7 +5,7 @@
   border-radius: 26px; box-shadow: var(--shadow-lg); padding: 34px 32px 30px;
 }
 .login-logo { display: grid; place-items: center; margin-bottom: 10px; }
-.login-logo .logo-crop { width: 220px; }
+.login-logo .logo { width: 200px; }
 .login-card h1 { font-size: 24px; font-weight: 800; color: var(--green-900); text-align: center; }
 .login-sub { text-align: center; color: var(--muted); margin: 6px 0 22px; }
 .pw { position: relative; }

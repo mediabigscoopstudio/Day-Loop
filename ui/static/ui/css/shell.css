@@ -7,9 +7,8 @@
   display: flex; flex-direction: column; padding: 22px 14px;
 }
 .brand { display: block; padding: 0 8px 22px; }
-.brand .logo-crop { width: 156px; }
-.logo-crop { position: relative; display: block; aspect-ratio: 3.2 / 1; overflow: hidden; }
-.logo-crop img { position: absolute; width: 134.9%; max-width: none; left: -17.5%; top: -58.4%; height: auto; }
+.logo { display: block; height: auto; }
+.brand .logo { width: 150px; }
 .brand-word { font-weight: 800; font-size: 26px; color: var(--green-900); letter-spacing: -.03em; }
 .nav { display: grid; gap: 4px; position: relative; z-index: 1; }
 .nav a {
