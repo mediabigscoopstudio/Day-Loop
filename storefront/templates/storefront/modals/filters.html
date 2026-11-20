@@ -1,0 +1,15 @@
+{% extends "ui/modal_base.html" %}
+{% block title %}Filters{% endblock %}
+{% block form_open %}<form class="modal-form" action="{% url 'storefront:product-list' %}" method="get">{% if q %}<input type="hidden" name="q" value="{{ q }}">{% endif %}{% endblock %}
+{% block body %}
+  <h4 class="fh">Category</h4>
+  {% for c in categories %}<label class="check"><input type="radio" name="category" value="{{ c.slug }}" {% if c.slug == selected_slug %}checked{% endif %}> {{ c.name }} <small>({{ c.visible_count }})</small></label>{% endfor %}
+  <h4 class="fh">Brand</h4>
+  {% for b in brand_facets %}<label class="check"><input type="checkbox" name="brand" value="{{ b.seller__business_name }}" {% if b.seller__business_name in brands %}checked{% endif %}> {{ b.seller__business_name }} <small>({{ b.c }})</small></label>{% endfor %}
+  <h4 class="fh">Price (₹)</h4>
+  <div class="prange"><input class="input" type="number" name="pmin" min="0" placeholder="Min" value="{{ pmin }}"><input class="input" type="number" name="pmax" min="0" placeholder="Max" value="{{ pmax }}"></div>
+  <h4 class="fh">Sort</h4>
+  <select class="input" name="sort">{% for k, l in sorts %}<option value="{{ k }}" {% if k == sort %}selected{% endif %}>{{ l }}</option>{% endfor %}</select>
+{% endblock %}
+{% block footer %}<a class="btn" href="{% url 'storefront:product-list' %}">Clear</a><button type="submit" class="btn primary">Show results</button>{% endblock %}
+{% block form_close %}</form>{% endblock %}

@@ -1,0 +1,70 @@
+{% load static ui_tags store_tags %}{% store_shell as shell %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>{% block title %}dayloop: your daily performance, delivered{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'ui/css/tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'ui/css/components.css' %}">
+  <link rel="stylesheet" href="{% static 'ui/css/modal.css' %}">
+  <link rel="stylesheet" href="{% static 'storefront/css/dl.css' %}">
+  {% block head %}{% endblock %}
+</head>
+<body class="sf" hx-headers='{"X-Requested-With": "XMLHttpRequest"}'>
+<header class="nav" id="nav">
+  <div class="nav-row">
+    <a href="{% url 'storefront:home' %}" class="nav-logo">{% dayloop_logo %}</a>
+    <button class="chip chip-area" hx-get="{% url 'storefront:area' %}" hx-target="#modal-root" aria-label="Change delivery area">
+      {% icon 'tag' 16 %} <span>Delivering to <b>{{ shell.area.area }}</b></span> <span aria-hidden="true">▾</span>
+    </button>
+    <span class="chip chip-tier tier-{{ shell.tier }}">{% icon 'truck' 16 %} {{ shell.tier_label }}</span>
+    <form class="nav-search" action="{% url 'storefront:product-list' %}" role="search">
+      <span class="s-ico">{% icon 'search' 18 %}</span>
+      <input type="search" name="q" placeholder="Search products and brands" autocomplete="off" aria-label="Search"
+             hx-get="{% url 'storefront:search' %}" hx-trigger="input changed delay:300ms, search" hx-target="#search-results">
+      <div id="search-results" class="search-dd"></div>
+    </form>
+    <a class="nav-ic" href="{% url 'storefront:cart' %}" aria-label="Cart">{% icon 'cart' 22 %}
+      <span id="cart-badge" hx-get="{% url 'storefront:cart-badge' %}" hx-trigger="cartChanged from:body" hx-swap="innerHTML">{% include "storefront/partials/cart_badge.html" with cart=cart|default:shell %}</span></a>
+    {% if user.is_authenticated %}
+      <a class="nav-ic nav-acct" href="{% url 'storefront:account' %}">{% icon 'user' 22 %}<span>{{ user|first_name }}</span></a>
+    {% else %}
+      <button class="nav-ic nav-acct" hx-get="{% url 'storefront:login-modal' %}" hx-target="#modal-root">{% icon 'user' 22 %}<span>Sign in</span></button>
+    {% endif %}
+  </div>
+</header>
+
+<main id="main">{% block content %}{% endblock %}</main>
+
+<footer class="foot">
+  <div class="foot-grid">
+    <div><div class="foot-logo">{% dayloop_logo %}</div><p>Your daily performance, delivered. Verified supplements from brands you trust.</p></div>
+    <div><h4>Shop</h4><a href="{% url 'storefront:product-list' %}">All products</a>{% for c in shell.nav_categories|slice:":4" %}<a href="{% url 'storefront:product-list' %}?category={{ c.slug }}">{{ c.name }}</a>{% endfor %}</div>
+    <div><h4>Help</h4><a href="{% url 'storefront:cart' %}">Your cart</a><a href="#shipping">Shipping</a><a href="#returns">Returns</a></div>
+    <div><h4>Account</h4><a href="{% url 'storefront:account' %}">My account</a><a href="{% url 'storefront:orders' %}">Orders</a><a href="{% url 'storefront:subscriptions' %}">Subscriptions</a></div>
+    <form class="foot-news" hx-post="{% url 'storefront:newsletter' %}" hx-swap="none">
+      <h4>Get the updates</h4>
+      <div class="news-row"><input class="input" type="email" name="email" placeholder="you@email.com" required aria-label="Email"><button class="btn primary" type="submit">Join</button></div>
+    </form>
+  </div>
+  <div class="foot-legal"><span>© dayloop</span><a href="#terms">Terms</a><a href="#privacy">Privacy</a><a href="#shipping">Shipping</a><a href="#returns">Returns</a></div>
+</footer>
+
+<nav class="tabbar" aria-label="Primary">
+  <a href="{% url 'storefront:home' %}">{% icon 'home' 22 %}<span>Home</span></a>
+  <a href="{% url 'storefront:product-list' %}">{% icon 'layers' 22 %}<span>Categories</span></a>
+  <a href="{% url 'storefront:product-list' %}?focus=1" data-focus-search>{% icon 'search' 22 %}<span>Search</span></a>
+  <a href="{% url 'storefront:cart' %}">{% icon 'cart' 22 %}<span>Cart</span></a>
+  <a href="{% url 'storefront:account' %}">{% icon 'user' 22 %}<span>Account</span></a>
+</nav>
+
+<div id="modal-root"></div>
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<script src="{% static 'ui/vendor/htmx.min.js' %}"></script>
+<script src="{% static 'ui/js/ui.js' %}"></script>
+<script src="{% static 'storefront/js/dl.js' %}"></script>
+{% for m in messages %}<div class="flash" hidden data-level="{% if m.level_tag == 'error' %}error{% else %}success{% endif %}">{{ m.message }}</div>{% endfor %}
+{% block scripts %}{% endblock %}
+</body>
+</html>

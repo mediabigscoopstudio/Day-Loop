@@ -1,0 +1,8 @@
+{% load ui_tags store_tags %}{% if q|length >= 2 %}
+<div class="dd-card">
+  {% if brands %}<div class="dd-h">Brands</div>{% for b in brands %}<a class="dd-row" href="{% url 'storefront:product-list' %}?brand={{ b.seller__business_name|urlencode }}">{% icon 'tag' 16 %} {{ b.seller__business_name }} <small>{{ b.c }} products</small></a>{% endfor %}{% endif %}
+  {% if products %}<div class="dd-h">Products</div>{% for p in products %}
+    <a class="dd-row" href="{% url 'storefront:product-detail' p.slug %}">{% if p.main_image %}<img src="{{ p.main_image|media_url }}" alt="">{% endif %}<span>{{ p.name }}<small>{{ p.seller.business_name }}</small></span><b>{{ p.min_price|inr }}</b></a>{% endfor %}
+    <a class="dd-all" href="{% url 'storefront:product-list' %}?q={{ q|urlencode }}">See all results</a>
+  {% elif not brands %}<div class="dd-empty">No matches for “{{ q }}”.</div>{% endif %}
+</div>{% endif %}

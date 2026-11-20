@@ -1,0 +1,10 @@
+{% extends "ui/modal_base.html" %}
+{% block title %}Choose delivery area{% endblock %}
+{% block subtitle %}<p>We show the fastest delivery available for your area.</p>{% endblock %}
+{% block body %}
+  <button type="button" class="btn block" data-geo>Use my location</button>
+  <p id="geo-msg" class="muted" role="status"></p>
+  <input class="input" type="search" name="q" value="{{ q }}" placeholder="Search area or city" autocomplete="off" aria-label="Search area"
+         hx-get="{% url 'storefront:area' %}" hx-trigger="input changed delay:250ms" hx-target="#area-results">
+  <div id="area-results" class="area-list">{% include "storefront/partials/area_results.html" %}</div>
+{% endblock %}

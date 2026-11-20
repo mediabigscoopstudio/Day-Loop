@@ -1,0 +1,20 @@
+{% load ui_tags %}
+<div id="results-inner">
+  <div class="list-head"><h1>{{ title }} <small>({{ total }} product{{ total|pluralize }})</small></h1>
+    <label class="sort">Sort
+      <select name="sort" form="filters" hx-get="{% url 'storefront:product-list' %}" hx-include="#filters" hx-target="#results" hx-push-url="true" hx-trigger="change">
+        {% for k, l in sorts %}<option value="{{ k }}" {% if k == sort %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></label>
+  </div>
+  {% if products %}
+  <div class="grid">{% for p in products %}{% include "storefront/partials/product_card.html" %}{% endfor %}</div>
+  {% if products.paginator.num_pages > 1 %}<div class="pager">
+    {% if products.has_previous %}<a class="btn" hx-get="?{{ qs_string }}&page={{ products.previous_page_number }}" hx-target="#results" hx-push-url="true">‹ Prev</a>{% endif %}
+    <span>Page {{ products.number }} of {{ products.paginator.num_pages }}</span>
+    {% if products.has_next %}<a class="btn" hx-get="?{{ qs_string }}&page={{ products.next_page_number }}" hx-target="#results" hx-push-url="true">Next ›</a>{% endif %}</div>{% endif %}
+  {% else %}
+  <div class="empty-state">
+    <svg width="120" height="120" viewBox="0 0 120 120" fill="none"><circle cx="60" cy="60" r="44" stroke="#1FA971" stroke-width="10"/><circle cx="86" cy="36" r="12" fill="#FF7A1A"/><path d="M44 66c6 8 26 8 32 0" stroke="#0F4D3A" stroke-width="5" stroke-linecap="round"/></svg>
+    <h3>No products match</h3><p>Try removing a filter or searching for something else.</p>
+    <a class="btn primary" href="{% url 'storefront:product-list' %}" hx-get="{% url 'storefront:product-list' %}" hx-target="#results" hx-push-url="true">Clear filters</a>
+  </div>{% endif %}
+</div>

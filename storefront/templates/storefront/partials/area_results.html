@@ -1,0 +1,6 @@
+{% for a in areas %}
+<form class="area-row" hx-post="{% url 'storefront:area' %}" hx-swap="none">
+  <input type="hidden" name="area" value="{{ a.area }}"><input type="hidden" name="city" value="{{ a.city }}">
+  <button type="submit" class="area-btn{% if a.area == current.area %} on{% endif %}"><span><b>{{ a.area }}</b>, {{ a.city }}</span><span class="chip tier-{{ a.tier }}">{% if a.tier == 'fastest' %}15 min{% elif a.tier == 'same_day' %}Same day{% else %}Scheduled{% endif %}</span></button>
+</form>
+{% empty %}<p class="muted">We don't serve “{{ q }}” yet. Try another area.</p>{% endfor %}

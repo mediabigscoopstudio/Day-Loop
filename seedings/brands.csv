@@ -1,0 +1,51 @@
+brand,seller_email,category,product_name,price_inr,mrp_inr,stock,image_file
+Optimum Nutrition,optimum-nutrition@dayloop.test,Whey Protein,Gold Standard 100% Whey 2 lb,4999,5499,120,optimum-nutrition_1.jpg
+Optimum Nutrition,optimum-nutrition@dayloop.test,Creatine,Micronized Creatine Powder 300 g,1499,1699,150,optimum-nutrition_2.jpg
+Optimum Nutrition,optimum-nutrition@dayloop.test,Multivitamins,Opti-Men Multivitamin 90 tablets,1299,1499,90,optimum-nutrition_3.jpg
+Optimum Nutrition,optimum-nutrition@dayloop.test,Pre-Workout,Gold Standard Pre-Workout 30 servings,2299,2599,80,optimum-nutrition_4.jpg
+Optimum Nutrition,optimum-nutrition@dayloop.test,Whey Protein,Gold Standard 100% Isolate 1.6 lb,4799,5299,70,optimum-nutrition_5.jpg
+MuscleBlaze,muscleblaze@dayloop.test,Whey Protein,Biozyme Whey Protein 1 kg,2799,3299,110,muscleblaze_1.jpg
+MuscleBlaze,muscleblaze@dayloop.test,Creatine,Creatine Monohydrate 250 g,899,1099,140,muscleblaze_2.jpg
+MuscleBlaze,muscleblaze@dayloop.test,Multivitamins,Multivitamin for Men 60 tablets,699,899,100,muscleblaze_3.jpg
+MuscleBlaze,muscleblaze@dayloop.test,Pre-Workout,Pre-Workout Energy 250 g,1499,1799,85,muscleblaze_4.jpg
+MuscleBlaze,muscleblaze@dayloop.test,Whey Protein,Raw Whey Protein 1 kg,2499,2999,95,muscleblaze_5.jpg
+MuscleTech,muscletech@dayloop.test,Whey Protein,Nitro-Tech Whey Protein 2 lb,4199,4799,100,muscletech_1.jpg
+MuscleTech,muscletech@dayloop.test,Creatine,Platinum 100% Creatine 400 g,1699,1999,120,muscletech_2.jpg
+MuscleTech,muscletech@dayloop.test,Multivitamins,Platinum Multivitamin 90 tablets,1399,1599,75,muscletech_3.jpg
+MuscleTech,muscletech@dayloop.test,Pre-Workout,Vapor X5 Pre-Workout 30 servings,2199,2499,65,muscletech_4.jpg
+MuscleTech,muscletech@dayloop.test,Whey Protein,Platinum 100% Whey 5 lb,7999,8999,40,muscletech_5.jpg
+Dymatize,dymatize@dayloop.test,Whey Protein,ISO100 Hydrolyzed Whey 2 lb,5499,5999,60,dymatize_1.jpg
+Dymatize,dymatize@dayloop.test,Creatine,Micronized Creatine 300 g,1599,1799,90,dymatize_2.jpg
+Dymatize,dymatize@dayloop.test,Multivitamins,Multi-Vitamin Daily 60 tablets,1199,1399,80,dymatize_3.jpg
+Dymatize,dymatize@dayloop.test,Pre-Workout,Xpand Pre-Workout 30 servings,2499,2799,70,dymatize_4.jpg
+Dymatize,dymatize@dayloop.test,Whey Protein,Elite Whey 2 lb,4799,5299,85,dymatize_5.jpg
+Myprotein,myprotein@dayloop.test,Whey Protein,Impact Whey Protein 1 kg,2199,2799,200,myprotein_1.jpg
+Myprotein,myprotein@dayloop.test,Creatine,Creatine Monohydrate 250 g,899,1199,180,myprotein_2.jpg
+Myprotein,myprotein@dayloop.test,Multivitamins,Vitamin D3 + K2 90 tablets,499,699,160,myprotein_3.jpg
+Myprotein,myprotein@dayloop.test,Pre-Workout,Pre-Workout Shot 30 servings,1299,1599,110,myprotein_4.jpg
+Myprotein,myprotein@dayloop.test,Whey Protein,Clear Whey Isolate 1 kg,2999,3499,95,myprotein_5.jpg
+BigMuscles Nutrition,bigmuscles-nutrition@dayloop.test,Whey Protein,Premium Whey Protein 1 kg,2299,2599,130,bigmuscles-nutrition_1.jpg
+BigMuscles Nutrition,bigmuscles-nutrition@dayloop.test,Creatine,Creatine Monohydrate 300 g,799,999,140,bigmuscles-nutrition_2.jpg
+BigMuscles Nutrition,bigmuscles-nutrition@dayloop.test,Multivitamins,Multivitamin Tablets 60,599,799,100,bigmuscles-nutrition_3.jpg
+BigMuscles Nutrition,bigmuscles-nutrition@dayloop.test,Pre-Workout,Pre-Workout 300 g,1399,1599,90,bigmuscles-nutrition_4.jpg
+BigMuscles Nutrition,bigmuscles-nutrition@dayloop.test,Whey Protein,Mass Gainer 1 kg,1999,2399,75,bigmuscles-nutrition_5.jpg
+Himalaya Wellness,himalaya-wellness@dayloop.test,Ashwagandha & Herbal,Ashvagandha Capsules 60,249,299,250,himalaya-wellness_1.jpg
+Himalaya Wellness,himalaya-wellness@dayloop.test,Multivitamins,Wellness Multivitamin 60 tablets,399,499,140,himalaya-wellness_2.jpg
+Himalaya Wellness,himalaya-wellness@dayloop.test,Ashwagandha & Herbal,Triphala Tablets 60,199,249,180,himalaya-wellness_3.jpg
+Himalaya Wellness,himalaya-wellness@dayloop.test,Ashwagandha & Herbal,Shatavari Capsules 60,299,349,120,himalaya-wellness_4.jpg
+Himalaya Wellness,himalaya-wellness@dayloop.test,Multivitamins,Immunity Gummies 30,349,399,110,himalaya-wellness_5.jpg
+Kapiva,kapiva@dayloop.test,Ashwagandha & Herbal,Ashwagandha Gummies 60,399,499,130,kapiva_1.jpg
+Kapiva,kapiva@dayloop.test,Ashwagandha & Herbal,Giloy Juice 1 L,349,399,100,kapiva_2.jpg
+Kapiva,kapiva@dayloop.test,Multivitamins,Vitamin C Gummies 30,299,349,120,kapiva_3.jpg
+Kapiva,kapiva@dayloop.test,Ashwagandha & Herbal,Shilajit Resin 20 g,599,699,80,kapiva_4.jpg
+Kapiva,kapiva@dayloop.test,Multivitamins,Multi Greens 200 g,499,599,95,kapiva_5.jpg
+Nutrilite,nutrilite@dayloop.test,Multivitamins,Daily Multivitamin Tablets 60,1150,1350,100,nutrilite_1.jpg
+Nutrilite,nutrilite@dayloop.test,Multivitamins,Calcium Magnesium 60 tablets,800,900,90,nutrilite_2.jpg
+Nutrilite,nutrilite@dayloop.test,Whey Protein,Plant Protein Powder 500 g,1550,1750,60,nutrilite_3.jpg
+Nutrilite,nutrilite@dayloop.test,Ashwagandha & Herbal,Herbal Immune Booster 60 tablets,699,799,70,nutrilite_4.jpg
+Nutrilite,nutrilite@dayloop.test,Creatine,Creatine Monohydrate 150 g,999,1199,80,nutrilite_5.jpg
+Herbalife,herbalife@dayloop.test,Whey Protein,Formula 1 Shake Mix 750 g,3400,3800,150,herbalife_1.jpg
+Herbalife,herbalife@dayloop.test,Multivitamins,Multivitamin Tablets 60,1500,1700,100,herbalife_2.jpg
+Herbalife,herbalife@dayloop.test,Creatine,Creatine Powder 300 g,1800,2000,70,herbalife_3.jpg
+Herbalife,herbalife@dayloop.test,Pre-Workout,Energy Drink 500 ml,2000,2200,90,herbalife_4.jpg
+Herbalife,herbalife@dayloop.test,Ashwagandha & Herbal,Herbal Aloe Concentrate 1 L,2200,2500,60,herbalife_5.jpg

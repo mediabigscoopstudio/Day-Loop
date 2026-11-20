@@ -1,0 +1,14 @@
+{% extends "storefront/account/layout.html" %}{% load ui_tags %}
+{% block main %}
+<div class="list-head"><h1>{{ order.number }} <span class="chip {% if order.chip == 'Delivered' %}up{% elif order.chip == 'Processing' %}amber{% else %}danger{% endif %}">{{ order.chip }}</span></h1>
+  <button class="btn primary" hx-post="{% url 'storefront:reorder' order.number %}" hx-swap="none">Reorder</button></div>
+<p class="muted">Placed {{ order.placed_at|date:"d M Y, H:i" }} · {{ order.payment_method }} · {{ order.total|inr:2 }}<br>Ship to {{ order.ship_name }}, {{ order.ship_line1 }}, {{ order.ship_city }} {{ order.ship_pincode }}</p>
+{% for so in shipments %}
+<section class="card shipment"><h3>Shipment {{ so.shipment_index }} of {{ so.shipment_count }} from {{ so.seller.business_name }}</h3>
+  <ol class="timeline">{% for s in so.steps %}<li class="{% if s.done %}done{% endif %}">{{ s.label }}</li>{% endfor %}</ol>
+  {% for i in so.items.all %}<div class="row"><span>{{ i.product.name }} · {{ i.variant.label }} × {{ i.quantity }}</span><span>{{ i.line_total|inr }}</span></div>{% endfor %}
+  <div class="row"><span>Expected delivery</span><b>{{ so.eta }}</b></div>
+  {% if so.tracking_url and so.status == 'shipped' %}<a class="btn" href="{{ so.tracking_url }}" target="_blank" rel="noopener">Track shipment{% if so.awb %} ({{ so.awb }}){% endif %}</a>{% endif %}
+  <a class="btn" href="{% url 'storefront:invoice' so.invoice_number %}" target="_blank">Download invoice {{ so.invoice_number }}</a>
+</section>{% endfor %}
+{% endblock %}

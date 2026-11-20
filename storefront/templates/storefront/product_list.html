@@ -1,0 +1,25 @@
+{% extends "storefront/base.html" %}{% load ui_tags %}
+{% block title %}{{ title }} · dayloop{% endblock %}
+{% block content %}
+<div class="wrap list">
+  <aside class="filters">
+    <form id="filters" hx-get="{% url 'storefront:product-list' %}" hx-target="#results" hx-push-url="true" hx-trigger="change, input delay:400ms from:.prange">
+      {% if q %}<input type="hidden" name="q" value="{{ q }}">{% endif %}{% if slot %}<input type="hidden" name="time" value="{{ slot }}">{% endif %}
+      <h4 class="fh">Categories</h4>
+      <label class="check"><input type="radio" name="category" value="" {% if not selected %}checked{% endif %}> All <small></small></label>
+      {% for c in categories %}<label class="check"><input type="radio" name="category" value="{{ c.slug }}" {% if selected and selected.slug == c.slug %}checked{% endif %}> {{ c.name }} <small>({{ c.visible_count }})</small></label>{% endfor %}
+      <h4 class="fh">Brand</h4>
+      {% for b in brand_facets %}<label class="check"><input type="checkbox" name="brand" value="{{ b.seller__business_name }}" {% if b.seller__business_name in brands %}checked{% endif %}> {{ b.seller__business_name }} <small>({{ b.c }})</small></label>{% endfor %}
+      <h4 class="fh">Price range</h4>
+      <div class="prange"><input class="input" type="number" name="pmin" min="0" max="{{ hi_b }}" placeholder="₹{{ lo_b }}" value="{{ pmin|default_if_none:'' }}"><span>–</span><input class="input" type="number" name="pmax" min="0" max="{{ hi_b }}" placeholder="₹{{ hi_b }}" value="{{ pmax|default_if_none:'' }}"></div>
+      <input type="range" min="{{ lo_b }}" max="{{ hi_b }}" value="{{ pmax|default:hi_b }}" data-range="pmax-label" oninput="this.form.pmax.value=this.value" onchange="this.form.pmax.dispatchEvent(new Event('input',{bubbles:true}))">
+      <div class="muted">Up to <span id="pmax-label">{{ pmax|default:hi_b|inr }}</span></div>
+      <label class="toggle"><input type="checkbox" checked disabled> In stock only</label>
+    </form>
+  </aside>
+  <section class="results">
+    <button class="btn filters-btn" hx-get="{% url 'storefront:filters-sheet' %}?{{ qs_string }}" hx-target="#modal-root">{% icon 'menu' 18 %} Filters</button>
+    <div id="results">{% include "storefront/partials/product_results.html" %}</div>
+  </section>
+</div>
+{% endblock %}

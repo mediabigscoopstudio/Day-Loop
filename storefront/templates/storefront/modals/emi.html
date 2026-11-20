@@ -1,0 +1,8 @@
+{% extends "ui/modal_base.html" %}{% load ui_tags %}
+{% block title %}Pay in easy EMIs with Snapmint{% endblock %}
+{% block subtitle %}<p>{{ variant.product.name }} · {{ variant.label }} · {{ price|inr }}</p>{% endblock %}
+{% block body %}
+  <div class="emi-list">{% for o in options %}
+    <div class="emi-row"><span class="emi-m">{{ o.months }} months</span><span><b>{{ o.monthly|inr }}</b> / month</span><span class="chip">No-cost EMI</span></div>{% endfor %}</div>
+  <p class="muted">Indicative. Final EMI is confirmed by Snapmint at checkout.</p>
+{% endblock %}

@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'catalog',
     'sellers',
     'orders',
+    'storefront',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

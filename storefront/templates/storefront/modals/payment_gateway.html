@@ -1,0 +1,12 @@
+{% extends "ui/modal_base.html" %}{% load ui_tags %}
+{% block title %}Secure payment{% endblock %}
+{% block subtitle %}<p>Test gateway · {{ method_label }}</p>{% endblock %}
+{% block form_open %}<form class="modal-form" hx-post="{% url 'storefront:pay-confirm' %}" hx-target="#modal-root" hx-swap="innerHTML"><input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"><input type="hidden" name="payment_method" value="{{ method }}">{% endblock %}
+{% block body %}
+  <div class="gw-amount">{{ total|inr:2 }}</div>
+  <p class="muted">This is a simulated gateway: no money moves. Choose the outcome to test.</p>
+  <label class="addr-opt"><input type="radio" name="simulate" value="success" checked><span><b>Simulate success</b><br>Payment goes through and the order is placed.</span></label>
+  <label class="addr-opt"><input type="radio" name="simulate" value="failure"><span><b>Simulate failure</b><br>The bank declines the payment.</span></label>
+{% endblock %}
+{% block footer %}<button type="button" class="btn" data-modal-close>Cancel</button><button type="submit" class="btn primary">Pay {{ total|inr:2 }}</button>{% endblock %}
+{% block form_close %}</form>{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "storefront/base.html" %}{% load ui_tags store_tags %}
+{% block title %}{{ product.name }} · dayloop{% endblock %}
+{% block content %}
+<div class="wrap pdp">
+  <nav class="crumbs"><a href="{% url 'storefront:home' %}">Home</a> › <a href="{% url 'storefront:product-list' %}?category={{ product.subcategory.parent.slug }}">{{ product.subcategory.parent.name }}</a> › <span>{{ product.name }}</span></nav>
+  <div class="pdp-grid">
+    <div class="gallery">
+      <div class="thumbs">{% for i in images %}<button type="button" data-thumb="{{ i.image|media_url }}"><img src="{{ i.image|media_url }}" alt="{{ i.alt_text|default:product.name }}"></button>{% endfor %}</div>
+      <div class="main">{% if product.main_image %}<img id="main-img" src="{{ product.main_image|media_url }}" alt="{{ product.name }}">{% endif %}</div>
+    </div>
+    <div class="buy">
+      {% for b in product.badges %}<span class="pbadge static">{{ b }}</span>{% endfor %}
+      <h1>{{ product.name }}</h1>
+      <div class="pbrand">by <a href="{% url 'storefront:product-list' %}?brand={{ product.seller.business_name|urlencode }}">{{ product.seller.business_name }}</a></div>
+      <div class="rating">{% if product.review_count %}<span class="stars">{{ product.avg_rating|stars }}</span> {{ product.avg_rating|floatformat:1 }} ({{ product.review_count }} review{{ product.review_count|pluralize }}){% else %}<span class="muted">No reviews yet</span>{% endif %}</div>
+      <div class="pprice big"><b>{{ sel.price|inr }}</b>{% if off %}<s>{{ sel.mrp|inr }}</s><span class="off">{{ off }}% off</span>{% endif %}</div>
+      <div class="muted">Inclusive of all taxes</div>
+      <h4 class="fh">Flavour / size</h4>
+      <div class="vchips">{% for v in variants %}<a class="vchip{% if v.pk == sel.pk %} on{% endif %}{% if v.stock <= 0 %} out{% endif %}" href="?variant={{ v.pk }}">{{ v.label }}<small>{% if v.stock <= 0 %}Out of stock{% elif v.stock <= v.low_stock_threshold %}Only {{ v.stock }} left{% else %}In stock{% endif %}</small></a>{% endfor %}</div>
+      <div class="qty"><button type="button" data-qty="-1" data-target="qty" aria-label="Decrease">−</button><input id="qty" form="addform" name="quantity" value="{{ sel.moq|default:1 }}" inputmode="numeric" aria-label="Quantity"><button type="button" data-qty="1" data-target="qty" aria-label="Increase">+</button></div>
+      <button type="button" class="emi-strip" hx-get="{% url 'storefront:emi' sel.pk %}" hx-target="#modal-root">
+        <span>Pay in easy EMIs with Snapmint</span><span class="chip">No-cost EMI available</span><span aria-hidden="true">→</span></button>
+      <div class="cta-row">
+        <form id="addform" hx-post="{% url 'storefront:cart-add' %}" hx-swap="none"><input type="hidden" name="variant_id" value="{{ sel.pk }}"><button class="btn primary lg" type="submit" {% if sel.stock <= 0 %}disabled{% endif %}>Add to cart</button></form>
+        <button class="btn orange lg" hx-get="{% url 'storefront:subscribe' sel.pk %}" hx-target="#modal-root">Subscribe &amp; save</button>
+      </div>
+      <ul class="meta-row"><li>Sold by <b>{{ product.seller.business_name }}</b></li><li>Dispatches in {{ sel.dispatch_days }} day{{ sel.dispatch_days|pluralize }}</li><li>GST invoice</li></ul>
+      <div class="muted">Shipment from {{ product.seller.business_name }} · est. {{ eta }}</div>
+    </div>
+  </div>
+  <div class="tabs"><button class="on" data-tab="hl">Highlights</button><button data-tab="desc">Description</button><button data-tab="dim">Dimensions &amp; dispatch</button><button data-tab="rev">Reviews</button></div>
+  <div class="pane" data-pane="hl">{% if product.highlights.all %}<ul>{% for h in product.highlights.all %}<li>{{ h.text }}</li>{% endfor %}</ul>{% else %}<p class="muted">No highlights listed.</p>{% endif %}</div>
+  <div class="pane" data-pane="desc" hidden><p>{{ product.description|default:product.short_description|linebreaksbr }}</p>{% for a in product.aplus_images.all %}<img class="aplus" src="{{ a.image|media_url }}" alt="{{ a.caption }}">{% endfor %}</div>
+  <div class="pane" data-pane="dim" hidden><table class="kv">
+    {% if sel.length_cm %}<tr><td>Package size</td><td>{{ sel.length_cm|floatformat:"-1" }} × {{ sel.width_cm|floatformat:"-1" }} × {{ sel.height_cm|floatformat:"-1" }} cm</td></tr>{% endif %}
+    {% if sel.weight_g %}<tr><td>Weight</td><td>{{ sel.weight_g }} g</td></tr>{% endif %}
+    <tr><td>Dispatch</td><td>{{ sel.dispatch_days }} day{{ sel.dispatch_days|pluralize }}</td></tr><tr><td>Country of origin</td><td>{{ sel.country_of_origin }}</td></tr>
+    {% if sel.expires_on %}<tr><td>Best before</td><td>{{ sel.expires_on|date:"M Y" }}</td></tr>{% endif %}</table></div>
+  <div class="pane" data-pane="rev" hidden>{% for r in reviews %}<div class="review"><span class="stars">{{ r.rating|stars }}</span> <b>{{ r.title }}</b><p>{{ r.body }}</p></div>{% empty %}<p class="muted">No reviews yet.</p>{% endfor %}</div>
+  {% if related %}<h2 class="sec">You may also like</h2><div class="grid">{% for p in related %}{% include "storefront/partials/product_card.html" %}{% endfor %}</div>{% endif %}
+</div>
+{% endblock %}

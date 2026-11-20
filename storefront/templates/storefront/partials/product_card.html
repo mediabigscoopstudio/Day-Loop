@@ -1,0 +1,14 @@
+{% load ui_tags store_tags %}
+<article class="pcard">
+  {% for b in p.badges %}<span class="pbadge">{{ b }}</span>{% endfor %}
+  <a class="pimg" href="{% url 'storefront:product-detail' p.slug %}">{% if p.main_image %}<img src="{{ p.main_image|media_url }}" alt="{{ p.name }}" loading="lazy">{% endif %}</a>
+  <div class="pbody">
+    <a class="pname" href="{% url 'storefront:product-detail' p.slug %}">{{ p.name }}</a>
+    <div class="pbrand">{{ p.seller.business_name }}</div>
+    {% with v=p.default_variant %}{% if v %}
+    <div class="pprice"><b>{{ v.price|inr }}</b>{% if p.off %}<s>{{ v.mrp|inr }}</s><span class="off">{{ p.off }}% off</span>{% endif %}</div>
+    <div class="vchips">{% for x in p.card_variants %}<a class="vchip{% if x.stock <= 0 %} out{% endif %}{% if x.pk == v.pk %} on{% endif %}" href="{% url 'storefront:product-detail' p.slug %}?variant={{ x.pk }}">{{ x.label }}</a>{% endfor %}</div>
+    <form hx-post="{% url 'storefront:cart-add' %}" hx-swap="none"><input type="hidden" name="variant_id" value="{{ v.pk }}"><button class="btn primary block" type="submit">Add to cart</button></form>
+    {% endif %}{% endwith %}
+  </div>
+</article>

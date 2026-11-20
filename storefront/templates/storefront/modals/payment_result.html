@@ -1,0 +1,11 @@
+{% extends "ui/modal_base.html" %}{% load ui_tags %}
+{% block title %}{% if blocking %}Can't place order{% else %}Payment failed{% endif %}{% endblock %}
+{% block body %}
+  <div class="confirm danger"><span class="confirm-icon">{% icon 'alert' 24 %}</span><div><h3>{{ message }}</h3>
+  {% if not blocking %}<p>You have not been charged and your cart is safe.</p>{% endif %}</div></div>
+{% endblock %}
+{% block footer %}
+  {% if blocking %}<a class="btn primary" href="{% url 'storefront:cart' %}">Back to cart</a>
+  {% else %}<button type="button" class="btn" data-modal-close>Change payment method</button>
+  <button type="button" class="btn primary" hx-post="{% url 'storefront:pay' %}" hx-vals='{"payment_method": "{{ method }}"}' hx-target="#modal-root">Retry payment</button>{% endif %}
+{% endblock %}

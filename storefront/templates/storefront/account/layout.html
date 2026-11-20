@@ -1,0 +1,15 @@
+{% extends "storefront/base.html" %}{% load ui_tags %}
+{% block content %}
+<div class="wrap acct">
+  <nav class="acct-nav">
+    {% url 'storefront:account' as u1 %}
+    <a href="{% url 'storefront:account' %}" class="{% if tab == 'home' %}on{% endif %}">My account</a>
+    <a href="{% url 'storefront:orders' %}" class="{% if tab == 'orders' %}on{% endif %}">Orders</a>
+    <a href="{% url 'storefront:subscriptions' %}" class="{% if tab == 'subscriptions' %}on{% endif %}">Subscriptions</a>
+    <a href="{% url 'storefront:addresses' %}" class="{% if tab == 'addresses' %}on{% endif %}">Addresses</a>
+    <button class="linklike" hx-get="{% url 'storefront:details' %}" hx-target="#modal-root">Account details</button>
+    <button class="linklike danger" hx-get="{% url 'storefront:logout' %}" hx-target="#modal-root">Logout</button>
+  </nav>
+  <section class="acct-main">{% block main %}{% endblock %}</section>
+</div>
+{% endblock %}

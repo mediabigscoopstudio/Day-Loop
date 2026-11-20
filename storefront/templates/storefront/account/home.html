@@ -1,0 +1,11 @@
+{% extends "storefront/account/layout.html" %}{% load ui_tags %}
+{% block main %}
+<h1>Hi, {{ user|first_name }}</h1>
+<div class="stats"><div class="card stat"><b>{{ order_count }}</b><span>Orders</span></div><div class="card stat"><b>{{ sub_count }}</b><span>Active subscriptions</span></div></div>
+<h3>Recent orders</h3>
+{% for o in recent %}<a class="card orow" href="{% url 'storefront:order-detail' o.number %}"><b>{{ o.number }}</b><span>{{ o.placed_at|date:"d M Y" }}</span><b>{{ o.total|inr }}</b></a>
+{% empty %}{% include "ui/partials/empty.html" with icon="inbox" title="No orders yet" text="Your orders will appear here." %}{% endfor %}
+<h3>Account</h3>
+<p>{{ user.get_full_name }} · {{ user.email }}</p>
+<button class="btn" hx-get="{% url 'storefront:password' %}" hx-target="#modal-root">Change password</button>
+{% endblock %}

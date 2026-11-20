@@ -1,0 +1,39 @@
+{% load ui_tags store_tags %}
+{% if not cart.groups %}
+  {% include "ui/partials/empty.html" with icon="cart" title="Your cart is empty" text="Add something you like and it will show up here." %}
+  <p class="center"><a class="btn primary" href="{% url 'storefront:product-list' %}">Start shopping</a></p>
+{% else %}
+<div class="cart-grid">
+  <div>
+  {% for g in cart.groups %}
+  <section class="card shipment">
+    <h3>Shipment {{ g.index }} of {{ g.count }} from {{ g.seller.business_name }}</h3>
+    {% for l in g.items %}
+    <div class="line">
+      <a class="line-img" href="{% url 'storefront:product-detail' l.product.slug %}">{% if l.image %}<img src="{{ l.image|media_url }}" alt="">{% endif %}</a>
+      <div class="line-info"><a href="{% url 'storefront:product-detail' l.product.slug %}"><b>{{ l.product.name }}</b></a><small>{{ l.variant.label }}</small>
+        <span class="chip eta">{% icon 'truck' 14 %} {{ l.eta }}</span>
+        {% if l.warning %}<div class="warn-inline" role="alert">{{ l.warning }}</div>{% endif %}</div>
+      <form class="qty sm" hx-post="{% url 'storefront:cart-update' %}" hx-target="#cart-body" hx-trigger="change">
+        <input type="hidden" name="variant_id" value="{{ l.variant.pk }}">
+        <button type="button" onclick="var i=this.form.quantity;i.value=Math.max(1,+i.value-1);i.dispatchEvent(new Event('change',{bubbles:true}))" aria-label="Decrease">−</button>
+        <input name="quantity" value="{{ l.quantity }}" inputmode="numeric" aria-label="Quantity">
+        <button type="button" onclick="var i=this.form.quantity;i.value=+i.value+1;i.dispatchEvent(new Event('change',{bubbles:true}))" aria-label="Increase">+</button></form>
+      <div class="line-price"><b>{{ l.line_total|inr }}</b>{% if l.off %}<s>{{ l.mrp|inr }}</s>{% endif %}</div>
+      <button class="icon-btn" hx-get="{% url 'storefront:cart-remove' l.variant.pk %}" hx-target="#modal-root" aria-label="Remove">{% icon 'trash' 18 %}</button>
+    </div>{% endfor %}
+    <div class="sub">Shipment subtotal <b>{{ g.subtotal|inr }}</b></div>
+  </section>{% endfor %}
+  </div>
+  <aside class="card summary sticky-sum">
+    <h3>Order summary</h3>
+    <div class="row"><span>Items ({{ cart.total_items }})</span><span>{{ cart.subtotal|inr }}</span></div>
+    <div class="row"><span>GST</span><span>{{ cart.gst|inr }}</span></div>
+    <div class="row"><span>Delivery</span><span>{{ cart.delivery_fee|inr }}</span></div>
+    <div class="row total"><span>Order total <small>(inclusive of all taxes)</small></span><b>{{ cart.total|inr }}</b></div>
+    {% if cart.blocked %}<button class="btn primary block" disabled>Fix items to continue</button>
+    {% else %}<a class="btn primary block" href="{% url 'storefront:checkout' %}">Proceed to checkout</a>{% endif %}
+    <p class="note">{% icon 'truck' 16 %} {% if cart.tier == 'fastest' %}Fastest delivery{% elif cart.tier == 'same_day' %}Same-day delivery{% else %}Scheduled delivery{% endif %} to {{ area.area|default:'your area' }}</p>
+  </aside>
+</div>
+{% endif %}

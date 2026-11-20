@@ -1,0 +1,16 @@
+{% load ui_tags store_tags %}
+{% for p in products %}
+<div class="pk-row">
+  <div class="pk-img">{% if p.main_image %}<img src="{{ p.main_image|media_url }}" alt="">{% endif %}</div>
+  <div class="pk-info">
+    <b>{{ p.name }}</b>
+    <small>{{ p.seller.business_name }}</small>
+    <div class="pk-variants">{% for v in p.pick_variants %}
+      <button type="button" class="pk-chip{% if v.pk == chosen %} on{% endif %}" hx-post="{% url 'storefront:loop-pick' %}" hx-vals='{"slot": "{{ slot }}", "variant_id": "{{ v.pk }}"}' hx-swap="none">
+        {{ v.label }} <span>{{ v.price|inr }}</span></button>{% empty %}<span class="pk-none">Out of stock</span>{% endfor %}
+    </div>
+  </div>
+</div>
+{% empty %}
+<div class="pk-empty">No products match. Try another search.</div>
+{% endfor %}

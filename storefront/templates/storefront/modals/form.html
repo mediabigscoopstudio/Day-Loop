@@ -1,0 +1,13 @@
+{% extends "ui/modal_base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block subtitle %}{% if subtitle %}<p>{{ subtitle }}</p>{% endif %}{% endblock %}
+{% block form_open %}<form class="modal-form" hx-post="{{ post_url }}" hx-target="#modal-root" hx-swap="innerHTML">
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+  {% for k, v in extra.items %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endfor %}{% endblock %}
+{% block body %}
+  {% if form.non_field_errors %}<div class="form-error" role="alert">{{ form.non_field_errors.0 }}</div>{% endif %}
+  <div class="fgrid">{% for field in form %}{% if field.widget_type == 'checkbox' %}<label class="check">{{ field }} {{ field.label }}</label>{% else %}{% include "ui/partials/field.html" %}{% endif %}{% endfor %}</div>
+  {% if switch %}<p class="switch"><a href="#" hx-get="{% url switch.1 %}" hx-target="#modal-root">{{ switch.0 }}</a></p>{% endif %}
+{% endblock %}
+{% block footer %}<button type="button" class="btn" data-modal-close>Cancel</button><button type="submit" class="btn primary">{{ submit|default:'Save' }}</button>{% endblock %}
+{% block form_close %}</form>{% endblock %}

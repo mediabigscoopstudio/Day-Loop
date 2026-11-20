@@ -1,0 +1,31 @@
+{% extends "storefront/base.html" %}{% load ui_tags store_tags %}
+{% block title %}Checkout · dayloop{% endblock %}
+{% block content %}
+<div class="wrap"><h1 class="pg">Checkout</h1>
+{% if not user.is_authenticated %}
+  <div class="signin-card"><p>Sign in to continue to checkout. Your cart will be kept.</p><button class="btn primary" hx-get="{% url 'storefront:login-modal' %}?next={% url 'storefront:checkout' %}" hx-target="#modal-root">Sign in</button></div>
+{% else %}
+<div class="cart-grid">
+  <div>
+    <section class="card step"><h3><span class="n">1</span> Delivery address</h3>
+      {% if address %}<p><b>{{ address.name }}</b><br>{{ address.line1 }}{% if address.area %}, {{ address.area }}{% endif %}<br>{{ address.city }}, {{ address.state }} {{ address.pincode }}</p>
+        <button class="btn" hx-get="{% url 'storefront:checkout-address' %}" hx-target="#modal-root">Change</button>
+      {% else %}<p class="muted">You have no saved address.</p><button class="btn primary" hx-get="{% url 'storefront:address-new' %}" hx-target="#modal-root">Add address</button>{% endif %}
+    </section>
+    <section class="card step"><h3><span class="n">2</span> Delivery estimate</h3>
+      {% for g in cart.groups %}<div class="row"><span>Shipment {{ g.index }} of {{ g.count }} from {{ g.seller.business_name }}</span><b>{{ g.eta }}</b></div>{% endfor %}
+    </section>
+    <form id="payform" hx-post="{% url 'storefront:pay' %}" hx-target="#modal-root">
+    <section class="card step"><h3><span class="n">3</span> Payment method</h3>
+      {% for k, l in methods %}<label class="addr-opt"><input type="radio" name="payment_method" value="{{ k }}" {% if k == method %}checked{% endif %}><span>{{ l }}</span></label>{% endfor %}
+    </section></form>
+  </div>
+  <aside class="card summary sticky-sum"><h3>Order summary</h3>
+    {% for l in cart.items %}<div class="row"><span>{{ l.product.name }} × {{ l.quantity }}</span><span>{{ l.line_total|inr }}</span></div>{% endfor %}
+    <div class="row"><span>GST</span><span>{{ cart.gst|inr }}</span></div>
+    <div class="row"><span>Delivery</span><span>{{ cart.delivery_fee|inr }}</span></div>
+    <div class="row total"><span>Total</span><b>{{ cart.total|inr }}</b></div>
+    <button class="btn primary block" type="submit" form="payform">Pay {{ cart.total|inr }}</button>
+  </aside>
+</div>{% endif %}</div>
+{% endblock %}

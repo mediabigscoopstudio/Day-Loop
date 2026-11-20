@@ -1,0 +1,5 @@
+{% extends "storefront/account/layout.html" %}
+{% block main %}<div class="list-head"><h1>Addresses</h1><button class="btn primary" hx-get="{% url 'storefront:address-new' %}" hx-target="#modal-root">+ Add address</button></div>
+{% for a in addresses %}<div class="card"><b>{{ a.name }}</b>{% if a.is_default %} <span class="chip up">Default</span>{% endif %}<br>{{ a.line1 }}{% if a.area %}, {{ a.area }}{% endif %}<br>{{ a.city }}, {{ a.state }} {{ a.pincode }}{% if a.phone %}<br>{{ a.phone }}{% endif %}
+  <div class="acts"><button class="btn" hx-get="{% url 'storefront:address-edit' a.pk %}" hx-target="#modal-root">Edit</button><button class="btn danger" hx-get="{% url 'storefront:address-delete' a.pk %}" hx-target="#modal-root">Delete</button></div></div>
+{% empty %}{% include "ui/partials/empty.html" with icon="home" title="No addresses yet" text="Add one to speed up checkout." %}{% endfor %}{% endblock %}

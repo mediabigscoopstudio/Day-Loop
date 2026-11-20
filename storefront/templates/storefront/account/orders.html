@@ -1,0 +1,7 @@
+{% extends "storefront/account/layout.html" %}{% load ui_tags %}
+{% block main %}<h1>Orders</h1>
+{% for o in orders %}
+<a class="card orow" href="{% url 'storefront:order-detail' o.number %}"><b>{{ o.number }}</b><span>{{ o.item_count }} item{{ o.item_count|pluralize }}</span><span>{{ o.placed_at|date:"d M Y" }}</span>
+  <span class="chip {% if o.chip == 'Delivered' %}up{% elif o.chip == 'Processing' %}amber{% else %}danger{% endif %}">{{ o.chip }}</span></a>
+{% empty %}{% include "ui/partials/empty.html" with icon="inbox" title="No orders yet" text="When you place an order it shows up here." %}{% endfor %}
+{% endblock %}

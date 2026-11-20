@@ -1,0 +1,30 @@
+<section class="calc" id="protein-calc" aria-labelledby="calc-h">
+  <div class="calc-in">
+    <div class="calc-form-wrap">
+      <span class="eyebrow">Protein calculator</span>
+      <h2 id="calc-h">How much protein do you need each day?</h2>
+      <p class="muted">Enter your weight, goal and activity. We estimate your daily target and how many scoops of whey get you there.</p>
+      <label class="calc-kg">Body weight (kg)
+        <input class="input" type="number" id="calc-kg" min="30" max="200" value="70" inputmode="decimal"></label>
+      <fieldset class="seg-set"><legend>Goal</legend>
+        <label class="seg"><input type="radio" name="goal" value="1.2" checked><span>Maintain</span></label>
+        <label class="seg"><input type="radio" name="goal" value="1.8"><span>Build muscle</span></label>
+        <label class="seg"><input type="radio" name="goal" value="1.6"><span>Lose fat</span></label>
+      </fieldset>
+      <fieldset class="seg-set"><legend>Activity</legend>
+        <label class="seg"><input type="radio" name="activity" value="1.0" checked><span>Low</span></label>
+        <label class="seg"><input type="radio" name="activity" value="1.1"><span>Moderate</span></label>
+        <label class="seg"><input type="radio" name="activity" value="1.2"><span>High</span></label>
+      </fieldset>
+    </div>
+    <div class="calc-out" aria-live="polite">
+      <div class="ring">
+        <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" id="calc-ring" cx="60" cy="60" r="52"/></svg>
+        <div class="ring-val"><b id="calc-g">0</b><span>g / day</span></div>
+      </div>
+      <p id="calc-scoops" class="calc-scoops">About <b>0</b> scoops of whey a day</p>
+      <a class="btn cta" href="{% url 'storefront:product-list' %}?q=whey">Shop whey protein</a>
+      <p class="note">An estimate only. Assumes about 24 g protein per scoop. Not medical advice.</p>
+    </div>
+  </div>
+</section>

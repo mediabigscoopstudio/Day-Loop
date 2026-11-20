@@ -1,0 +1,89 @@
+{% extends "storefront/base.html" %}{% load static ui_tags store_tags %}
+{% block content %}
+<section class="hero-banner">
+  <a href="{% url 'storefront:product-list' %}" class="hero-link" aria-label="Start your loop: shop whey protein and sports nutrition">
+    <picture>
+      <source media="(max-width: 760px)" srcset="{% static 'storefront/img/hero-mobile.png' %}">
+      <img src="{% static 'storefront/img/hero-desktop.png' %}" alt="Your daily performance, delivered. Premium whey protein and sports nutrition, at your door fast. 15 min delivery" class="hero-full" width="1920" height="819">
+    </picture>
+  </a>
+</section>
+<section class="wrap">
+  <h2 class="sec">Shop by time of day</h2>
+  <div class="tod">
+    {% for s in slots %}<a class="tod-tile tod-{{ s.key }}{% if s.highlight %} hi{% endif %}" href="{% url 'storefront:product-list' %}?time={{ s.key }}">
+      <span class="tod-copy"><b>{{ s.name }}</b><span>{{ s.sub }}</span></span>
+      <span class="tod-bundle" aria-hidden="true">{% for img in s.images %}<img src="{{ img|media_url }}" alt="">{% endfor %}</span></a>{% endfor %}
+  </div>
+
+  <section class="loop-plan" id="loop-plan" aria-labelledby="loop-h">
+    <div class="lp-head">
+      <div>
+        <span class="eyebrow dark">Monthly loop</span>
+        <h2 id="loop-h">Plan your month, one routine at a time</h2>
+        <p class="muted">We pick one product for each part of your day. Add the month's loop in one tap and set a reminder for your next refill.</p>
+      </div>
+      <form class="lp-remind" hx-post="{% url 'storefront:loop-remind' %}" hx-swap="none">
+        <span class="lp-ask">Remind me on</span>
+        <div class="cal" data-cal>
+          <input type="hidden" name="day" value="{{ loop_day }}" id="loop-day">
+          <button type="button" class="cal-btn" data-cal-toggle aria-expanded="false" aria-haspopup="dialog">
+            <span class="cal-btn-day">{{ loop_day }}</span><span class="cal-btn-txt">of each month</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="cal-panel" role="dialog" aria-label="Choose reminder day" hidden>
+            <div class="cal-head"><b>Monthly reminder day</b><span>Pick a day from 1 to 28</span></div>
+            <div class="cal-grid">{% for d in days %}<button type="button" class="cal-day{% if d == loop_day %} on{% endif %}" data-day="{{ d }}" aria-pressed="{% if d == loop_day %}true{% else %}false{% endif %}">{{ d }}</button>{% endfor %}</div>
+            <p class="cal-note">We remind you on this day each month so your loop never runs out.</p>
+          </div>
+        </div>
+        <button class="btn primary" type="submit">Set reminder</button>
+      </form>
+    </div>
+    <ol class="lp-steps">{% for s in loop %}
+      <li class="lp-step{% if not s.variant %} is-empty{% endif %}">
+        <span class="lp-tag">{{ s.name }}</span>
+        {% if s.variant %}
+        <div class="lp-prod">
+          {% if s.image %}<img src="{{ s.image|media_url }}" alt="{{ s.variant.product.name }}">{% endif %}
+          <div><b>{{ s.variant.product.name }}</b><small>{{ s.variant.product.seller.business_name }} · {{ s.variant.label }}</small><span class="lp-price">{{ s.variant.price|inr }}</span></div>
+        </div>
+        <div class="lp-actions">
+          <button type="button" class="lp-link" hx-get="{% url 'storefront:loop-picker' s.key %}" hx-target="#modal-root">Change</button>
+          <button type="button" class="lp-link danger" hx-post="{% url 'storefront:loop-unpick' %}" hx-vals='{"slot": "{{ s.key }}"}' hx-swap="none">Remove</button>
+        </div>
+        {% else %}
+        <button type="button" class="lp-empty" hx-get="{% url 'storefront:loop-picker' s.key %}" hx-target="#modal-root">
+          <span class="lp-plus" aria-hidden="true">+</span>
+          <b>Choose a {{ s.name|lower }} product</b>
+          <small>Pick from our catalogue</small>
+        </button>
+        {% endif %}
+      </li>{% endfor %}
+    </ol>
+    <form class="lp-foot" hx-post="{% url 'storefront:loop-add' %}" hx-swap="none">
+      {% for s in loop %}{% if s.variant %}<input type="hidden" name="variant_id" value="{{ s.variant.pk }}">{% endif %}{% endfor %}
+      <p>{{ loop_count }} of 3 picked{% if loop_count %} · <b>{{ loop_total|inr }}</b> a month{% endif %}</p>
+      <button class="btn primary" type="submit" {% if not loop_count %}disabled{% endif %}>Add my loop to cart</button>
+    </form>
+  </section>
+  <h2 class="sec">Order by your favourite brands</h2>
+  <div class="brand-row">{% for b in brands %}
+    <a class="brand-card" href="{% url 'storefront:product-list' %}?brand={{ b.business_name|urlencode }}" title="{{ b.business_name }}" aria-label="{{ b.business_name }}">
+      {% if b.logo_static %}<img src="{% static b.logo_static %}" alt="{{ b.business_name }}">{% elif b.logo %}<img src="{{ b.logo|media_url }}" alt="{{ b.business_name }}">{% else %}<span class="brand-init" aria-hidden="true">{{ b.business_name|slice:":1" }}</span>{% endif %}
+    </a>{% empty %}{% include "ui/partials/empty.html" with icon="tag" title="No brands yet" text="Brands appear here once sellers list products." %}{% endfor %}
+  </div>
+
+  <h2 class="sec">Featured products</h2>
+  {% if featured %}<div class="grid five">{% for p in featured %}{% include "storefront/partials/product_card.html" %}{% endfor %}</div>
+  {% else %}{% include "ui/partials/empty.html" with icon="box" title="No products yet" text="Check back soon." %}{% endif %}
+  {% include "storefront/partials/protein_calc.html" %}
+</section>
+
+<section class="trust"><div class="trust-in">
+  <div>{% icon 'truck' 26 %}<b>15 min delivery</b><span>In select areas</span></div>
+  <div>{% icon 'doc' 26 %}<b>GST invoices</b><span>On every shipment</span></div>
+  <div>{% icon 'check' 26 %}<b>Lab-tested batches</b><span>Verified by brands</span></div>
+  <div>{% icon 'bag' 26 %}<b>Free delivery above ₹999</b><span>Else a flat ₹99</span></div>
+</div></section>
+{% endblock %}

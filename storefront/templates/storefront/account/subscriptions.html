@@ -1,0 +1,8 @@
+{% extends "storefront/account/layout.html" %}{% load ui_tags %}
+{% block main %}<h1>Subscriptions</h1>
+{% for s in subs %}<div class="card"><b>{{ s.variant.product.name }}</b> · {{ s.variant.label }} × {{ s.quantity }}<br>Every {{ s.frequency_days }} days · next delivery {{ s.next_delivery|date:"d M Y" }} · <span class="chip {{ s.status|status_chip }}">{{ s.get_status_display }}</span>
+  {% if s.status != 'cancelled' %}<div class="acts">
+    {% if s.status == 'active' %}<button class="btn" hx-get="{% url 'storefront:sub-pause' s.pk %}" hx-target="#modal-root">Pause</button>{% else %}<button class="btn" hx-get="{% url 'storefront:sub-resume' s.pk %}" hx-target="#modal-root">Resume</button>{% endif %}
+    <button class="btn" hx-get="{% url 'storefront:sub-frequency' s.pk %}" hx-target="#modal-root">Change frequency</button>
+    <button class="btn danger" hx-get="{% url 'storefront:sub-cancel' s.pk %}" hx-target="#modal-root">Cancel</button></div>{% endif %}</div>
+{% empty %}{% include "ui/partials/empty.html" with icon="repeat" title="No subscriptions" text="Use “Subscribe & save” on any product." %}{% endfor %}{% endblock %}

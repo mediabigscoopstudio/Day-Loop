@@ -1,0 +1,7 @@
+{% load ui_tags %}<!doctype html><html><head><meta charset="utf-8"><title>Invoice {{ so.invoice_number }}</title>
+<style>body{font:14px system-ui;max-width:760px;margin:30px auto;color:#10251E}table{width:100%;border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid #ddd;text-align:left}.r{text-align:right}</style></head><body>
+<h1>Tax invoice {{ so.invoice_number }}</h1>
+<p>Sold by <b>{{ so.seller.business_name }}</b>{% if so.seller.gst_number %} · GSTIN {{ so.seller.gst_number }}{% endif %}<br>Order {{ order.number }} · {{ order.placed_at|date:"d M Y" }}<br>Bill to {{ order.ship_name }}, {{ order.ship_line1 }}, {{ order.ship_city }}, {{ order.ship_state }} {{ order.ship_pincode }}</p>
+<table><tr><th>Item</th><th class="r">Qty</th><th class="r">Rate</th><th class="r">GST</th><th class="r">Amount</th></tr>
+{% for i in so.items.all %}<tr><td>{{ i.product.name }} · {{ i.variant.label }}</td><td class="r">{{ i.quantity }}</td><td class="r">{{ i.unit_price|inr:2 }}</td><td class="r">{{ i.gst_rate }}% ({{ i.gst_amount|inr:2 }})</td><td class="r">{{ i.line_total|inr:2 }}</td></tr>{% endfor %}</table>
+<p><button onclick="window.print()">Print / save as PDF</button></p></body></html>

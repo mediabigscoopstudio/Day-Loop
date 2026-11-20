@@ -1,0 +1,10 @@
+{% extends "ui/modal_base.html" %}
+{% block title %}Choose delivery address{% endblock %}
+{% block form_open %}<form class="modal-form" hx-post="{% url 'storefront:checkout-address' %}" hx-target="#modal-root" hx-swap="innerHTML"><input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">{% endblock %}
+{% block body %}
+  {% for a in addresses %}<label class="addr-opt"><input type="radio" name="address_id" value="{{ a.pk }}" {% if a.pk == current.pk %}checked{% endif %}><span><b>{{ a.name }}</b><br>{{ a.line1 }}{% if a.area %}, {{ a.area }}{% endif %}<br>{{ a.city }}, {{ a.state }} {{ a.pincode }}</span></label>
+  {% empty %}<p class="muted">No saved addresses yet.</p>{% endfor %}
+  <button type="button" class="btn block" hx-get="{% url 'storefront:address-new' %}" hx-target="#modal-root">+ Add a new address</button>
+{% endblock %}
+{% block footer %}<button type="button" class="btn" data-modal-close>Cancel</button>{% if addresses %}<button type="submit" class="btn primary">Deliver here</button>{% endif %}{% endblock %}
+{% block form_close %}</form>{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "ui/modal_base.html" %}
+{% block title %}Choose your {{ slot_name|lower }} product{% endblock %}
+{% block subtitle %}<p>Pick a product, then tap the size or flavour you want.</p>{% endblock %}
+{% block body %}
+  <input class="input lp-search" type="search" name="q" value="{{ q }}" placeholder="Search all products or brands" autocomplete="off" aria-label="Search products"
+         hx-get="{% url 'storefront:loop-picker' slot %}" hx-trigger="input changed delay:300ms, search" hx-target="#loop-list" hx-swap="innerHTML">
+  <p class="pk-hint">{% if q %}Results for “{{ q }}”{% else %}Suggested for {{ slot_name|lower }}. Search to find anything else.{% endif %}</p>
+  <div id="loop-list" class="pk-list">{% include "storefront/partials/loop_picker_list.html" %}</div>
+{% endblock %}
