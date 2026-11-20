@@ -234,8 +234,7 @@ body.sf{background:var(--cream);color:var(--ink);padding-bottom:70px}
   .nav-search{grid-area:search;width:100%;min-width:0;flex:none;order:0}
   .nav-search input{min-height:50px}
   .s-ico{top:15px}
-}
-@media(max-width:360px){
-  .t-full{display:none}
-  .t-short{display:inline}
+  .nav-row .chip-tier .t-full{display:none}
+  .nav-row .chip-tier .t-short{display:inline}
+  .nav-row .chip-tier svg{flex:none;width:18px;height:18px}
 }
