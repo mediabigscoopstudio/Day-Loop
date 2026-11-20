@@ -28,17 +28,31 @@ SECRET_KEY = os.environ.get(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', '1') == '1'
 
-# Host-based routing: www / seller / admin subdomains of localhost.
+# Host-based routing (django-hosts). Hosts are www / seller / dash / api
+# under PARENT_HOST. Dev default: localhost:8000. In production set
+# DJANGO_PARENT_HOST=dayloop.example.com (no port) and DJANGO_SCHEME=https.
+PARENT_HOST = os.environ.get('DJANGO_PARENT_HOST', 'localhost:8000')
+HOST_PORT = os.environ.get('DJANGO_HOST_PORT', '')  # PARENT_HOST already carries the port in dev
+ROOT_HOSTCONF = 'dayloop.hosts'
+DEFAULT_HOST = 'www'
+DJANGO_SCHEME = os.environ.get('DJANGO_SCHEME', 'http')
+
+_parent_name = PARENT_HOST.split(':', 1)[0]
 ALLOWED_HOSTS = [
     'localhost',
     '.localhost',
     '127.0.0.1',
+    _parent_name,
+    '.' + _parent_name,
 ]
+ALLOWED_HOSTS += [h.strip() for h in os.environ.get('DJANGO_EXTRA_ALLOWED_HOSTS', '').split(',') if h.strip()]
+ALLOWED_HOSTS = list(dict.fromkeys(ALLOWED_HOSTS))
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'django_hosts',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,27 +62,37 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'django_hosts.middleware.HostsRequestMiddleware',       # must be first
+    'dayloop.middleware.ApexRedirectMiddleware',
+    'dayloop.middleware.HostCookieNamesMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'dayloop.hosts.HostRoutingMiddleware',
-    'dayloop.hosts.PerHostSessionMiddleware',
+    'dayloop.middleware.PerHostSessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_hosts.middleware.HostsResponseMiddleware',      # must be last
 ]
 
 ROOT_URLCONF = 'dayloop.urls_www'
 
-# admin.E410 expects Django's stock SessionMiddleware. We replace it with
-# PerHostSessionMiddleware, which exposes the same request.session API but
-# uses a cookie name per host (see dayloop/hosts.py).
+# admin.E410 expects Django's stock SessionMiddleware. PerHostSessionMiddleware
+# provides the same request.session API with one cookie per host
+# (see dayloop/middleware.py).
 SILENCED_SYSTEM_CHECKS = ['admin.E410']
 
-# Trusted origins for CSRF across the local host-based surfaces.
+# CSRF secret is stored in the per-host session, not in a csrftoken cookie.
+# Django's csrf_protect (used by admin views) reads the global CSRF_COOKIE_NAME,
+# so a per-host CSRF cookie cannot be done by middleware alone. Storing the
+# secret in the per-host session gives the same per-host isolation.
+CSRF_USE_SESSIONS = True
+
+# CSRF trusted origins follow PARENT_HOST: http://localhost:8000 and
+# http://*.localhost:8000 in dev; https://<domain> and https://*.<domain> in prod.
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:8000',
-    'http://*.localhost:8000',
+    f'{DJANGO_SCHEME}://{PARENT_HOST}',
+    f'{DJANGO_SCHEME}://*.{PARENT_HOST}',
 ]
 
 TEMPLATES = [

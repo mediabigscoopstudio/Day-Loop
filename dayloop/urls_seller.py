@@ -1,10 +1,10 @@
-"""URLconf for the seller portal (seller.*)."""
+"""URLconf for seller.<parent> - seller portal."""
 from django.http import HttpResponse
 from django.urls import path
 
 
 def home(request):
-    return HttpResponse(f"Day Loop seller portal (surface={request.surface})")
+    return HttpResponse("Day Loop: seller portal")
 
 
 urlpatterns = [
