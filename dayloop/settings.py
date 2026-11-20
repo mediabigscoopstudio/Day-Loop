@@ -116,10 +116,16 @@ WSGI_APPLICATION = 'dayloop.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
+# PostgreSQL. The password is read from the environment and is never committed:
+#   export DJANGO_DB_PASSWORD='...'
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DJANGO_DB_NAME', 'dayloop_db'),
+        'USER': os.environ.get('DJANGO_DB_USER', 'minaketan'),
+        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', ''),
+        'HOST': os.environ.get('DJANGO_DB_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('DJANGO_DB_PORT', '5432'),
     }
 }
 
