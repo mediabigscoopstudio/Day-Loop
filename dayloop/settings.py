@@ -29,13 +29,15 @@ SECRET_KEY = os.environ.get(
 DEBUG = os.environ.get('DJANGO_DEBUG', '1') == '1'
 
 # Host-based routing (django-hosts). Hosts are www / seller / dash / api
-# under PARENT_HOST. Dev default: localhost:8000. In production set
-# DJANGO_PARENT_HOST=dayloop.example.com (no port) and DJANGO_SCHEME=https.
-PARENT_HOST = os.environ.get('DJANGO_PARENT_HOST', 'localhost:8000')
+# under PARENT_HOST, e.g. www.bigscooptesting.online.
+# Default is the production domain over https. For local development set
+#   DJANGO_PARENT_HOST=localhost:8000 DJANGO_SCHEME=http
+# (then open www.localhost:8000).
+PARENT_HOST = os.environ.get('DJANGO_PARENT_HOST', 'bigscooptesting.online')
 HOST_PORT = os.environ.get('DJANGO_HOST_PORT', '')  # PARENT_HOST already carries the port in dev
 ROOT_HOSTCONF = 'dayloop.hosts'
 DEFAULT_HOST = 'www'
-DJANGO_SCHEME = os.environ.get('DJANGO_SCHEME', 'http')
+DJANGO_SCHEME = os.environ.get('DJANGO_SCHEME', 'https')
 
 _parent_name = PARENT_HOST.split(':', 1)[0]
 ALLOWED_HOSTS = [
