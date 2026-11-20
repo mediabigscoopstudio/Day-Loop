@@ -20,12 +20,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-unv%$!u71_&3i(6xx99z5et3qf1-019@9cgz3ap9b!)x8c79v#'
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    'dev-only-insecure-key-change-me',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', '1') == '1'
 
-ALLOWED_HOSTS = ['*']
+# Host-based routing: www / seller / admin subdomains of localhost.
+ALLOWED_HOSTS = [
+    'localhost',
+    '.localhost',
+    '127.0.0.1',
+]
 
 
 # Application definition
@@ -74,12 +82,8 @@ WSGI_APPLICATION = 'dayloop.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dayloop_db',
-        'USER': 'minaketan',
-        'PASSWORD': 'Mina@2001',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
