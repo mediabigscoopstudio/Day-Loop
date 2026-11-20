@@ -22,6 +22,7 @@ urlpatterns = [
     path('products/', views_products.ProductListView.as_view(), name='products'),
     path('products/bulk/', views_products.ProductBulkView.as_view(), name='products-bulk'),
     path('products/<int:pk>/', views_products.ProductDetailModal.as_view(), name='product-detail'),
+    path('products/<int:pk>/review/<slug:action>/', views_products.ProductReviewView.as_view(), name='product-review'),
     path('products/<int:pk>/toggle/', views_products.ProductToggleView.as_view(), name='product-toggle'),
     path('products/categories/', views_categories.CategoryListView.as_view(), name='categories'),
     path('products/categories/new/', views_categories.CategoryFormView.as_view(), name='category-new'),

@@ -1,4 +1,5 @@
 from django.db.models import Count
+from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 from django.views import View
 
@@ -116,3 +117,50 @@ class ProductBulkView(SuperuserRequiredMixin, View):
                     else (Product.Status.LIVE, Product.Status.INACTIVE))
         changed = Product.objects.filter(pk__in=ids, status=src).update(status=dst)
         return trigger_response(f'{changed} product{"s" if changed != 1 else ""} {action}d.', events=('products-changed',))
+
+
+class ProductReviewView(SuperuserRequiredMixin, View):
+    """Admin decision on a product a seller submitted: approve (goes Live) or reject (reason required)."""
+
+    COPY = {
+        'approve': dict(variant='neutral', icon='check', title='Approve product', label='Approve and publish',
+                        consequence='The product goes live and becomes visible and purchasable on the storefront.'),
+        'reject': dict(variant='danger', icon='x', title='Reject product', label='Reject product', reason=True,
+                       reason_label='Reason shown to the seller',
+                       consequence='The seller is told why and can fix it and submit again.'),
+    }
+
+    def _ctx(self, p, action, **extra):
+        c = self.COPY[action]
+        return {'modal_size': 'sm', 'variant': c['variant'], 'icon': c['icon'], 'title': c['title'],
+                'message': f'{c["title"]}: {p.name}?', 'consequence': c['consequence'], 'confirm_label': c['label'],
+                'post_url': f'/products/{p.pk}/review/{action}/', 'reason': c.get('reason', False),
+                'reason_label': c.get('reason_label'), **extra}
+
+    def _check(self, action):
+        if action not in self.COPY:
+            raise Http404
+
+    def get(self, request, pk, action):
+        self._check(action)
+        p = _product(pk)
+        if p.status != Product.Status.PENDING:
+            return render(request, 'dash/products/not_reviewable.html', {'product': p, 'modal_size': 'sm'})
+        return render(request, 'ui/confirm_modal.html', self._ctx(p, action))
+
+    def post(self, request, pk, action):
+        self._check(action)
+        p = _product(pk)
+        if p.status != Product.Status.PENDING:
+            return render(request, 'dash/products/not_reviewable.html', {'product': p, 'modal_size': 'sm'}, status=422)
+        if action == 'approve':
+            p.status, p.rejection_reason = Product.Status.LIVE, ''
+            msg = f'“{p.name}” approved and live.'
+        else:
+            reason = request.POST.get('reason', '').strip()
+            if not reason:
+                return render(request, 'ui/confirm_modal.html', self._ctx(p, action, reason_error='A reason is required.', reason_value=''), status=422)
+            p.status, p.rejection_reason = Product.Status.REJECTED, reason[:500]
+            msg = f'“{p.name}” rejected.'
+        p.save(update_fields=['status', 'rejection_reason', 'updated_at'])
+        return trigger_response(msg, events=('products-changed',))
