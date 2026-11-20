@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import auth_views, views, views_categories, views_sellers
+from . import auth_views, views, views_categories, views_products, views_sellers
 
 urlpatterns = [
     path('login/', auth_views.LoginView.as_view(), name='login'),
@@ -13,6 +13,10 @@ urlpatterns = [
     path('sellers/', views_sellers.SellerListView.as_view(), name='sellers'),
     path('sellers/<int:pk>/', views_sellers.SellerDetailModal.as_view(), name='seller-detail'),
     path('sellers/<int:pk>/<slug:action>/', views_sellers.SellerActionView.as_view(), name='seller-action'),
+    path('products/', views_products.ProductListView.as_view(), name='products'),
+    path('products/bulk/', views_products.ProductBulkView.as_view(), name='products-bulk'),
+    path('products/<int:pk>/', views_products.ProductDetailModal.as_view(), name='product-detail'),
+    path('products/<int:pk>/toggle/', views_products.ProductToggleView.as_view(), name='product-toggle'),
     path('products/categories/', views_categories.CategoryListView.as_view(), name='categories'),
     path('products/categories/new/', views_categories.CategoryFormView.as_view(), name='category-new'),
     path('products/categories/<int:pk>/edit/', views_categories.CategoryFormView.as_view(), name='category-edit'),

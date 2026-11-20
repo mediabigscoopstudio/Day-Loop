@@ -1,0 +1,5 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}Nothing selected{% endblock %}
+{% block body %}<div class="confirm warning"><span class="confirm-icon">{% icon 'info' 24 %}</span><div><h3>Select at least one product</h3><p>Tick the boxes next to the products you want to change, then try again.</p></div></div>{% endblock %}
+{% block footer %}<button type="button" class="btn primary" data-modal-close>OK</button>{% endblock %}

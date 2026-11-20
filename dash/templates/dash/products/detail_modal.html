@@ -1,0 +1,20 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}{{ product.name }}{% endblock %}
+{% block subtitle %}<p><span class="chip {% if product.is_active %}up{% else %}neutral{% endif %}">{% if product.is_active %}Active{% else %}Inactive{% endif %}</span> · {{ product.seller.business_name }}</p>{% endblock %}
+{% block body %}
+<dl class="kv">
+  <dt>Category</dt><dd>{{ product.subcategory.parent.name }} / {{ product.subcategory.name }}</dd>
+  <dt>Brand</dt><dd>{{ product.brand|default:"—" }}</dd>
+  <dt>SKU</dt><dd>{{ product.sku|default:"—" }}</dd>
+  <dt>Price</dt><dd>{{ product.price|inr:2 }}</dd>
+  <dt>Stock</dt><dd>{{ product.stock }}{% if product.stock == 0 %} <span class="chip danger">Out of stock</span>{% elif product.stock <= low_stock %} <span class="chip amber">Low</span>{% endif %}</dd>
+  <dt>Units ordered</dt><dd>{{ sold }}</dd>
+  <dt>Added</dt><dd>{{ product.created_at|date:"M j, Y" }}</dd>
+  <dt>Description</dt><dd style="font-weight:500">{{ product.description|default:"—"|linebreaksbr }}</dd>
+</dl>
+{% endblock %}
+{% block footer %}
+  <button type="button" class="btn left" data-modal-close>Close</button>
+  <button type="button" class="btn" hx-get="/products/{{ product.pk }}/toggle/" hx-target="#modal-root" hx-swap="innerHTML">{% if product.is_active %}Deactivate{% else %}Activate{% endif %}</button>
+{% endblock %}

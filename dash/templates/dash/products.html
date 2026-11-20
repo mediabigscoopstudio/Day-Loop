@@ -1,0 +1,74 @@
+{% extends "dash/base.html" %}
+{% load static ui_tags dash_tags %}
+{% block title %}Products · Day Loop admin{% endblock %}
+{% block page %}
+<div class="page-head"><div><h1>Products</h1><p>All products across sellers.</p></div></div>
+{% include "dash/partials/products_tabs.html" with section="products" %}
+
+<div id="list-region" class="card" hx-get="{{ request.get_full_path }}" hx-trigger="products-changed from:body"
+     hx-select="#list-region" hx-target="this" hx-swap="outerHTML">
+  <form method="get" class="filter-grid" role="search" aria-label="Filter products">
+    <div class="field"><label for="f-q">Search</label>
+      <input class="input" id="f-q" type="search" name="q" value="{{ f.q }}" placeholder="Name, SKU, brand, seller"></div>
+    <div class="field"><label for="f-seller">Seller</label>
+      <select class="select" id="f-seller" name="seller"><option value="">All sellers</option>
+        {% for s in sellers %}<option value="{{ s.pk }}" {% if f.seller == s.pk|stringformat:"s" %}selected{% endif %}>{{ s.business_name }}</option>{% endfor %}
+      </select></div>
+    {% include "ui/partials/category_select.html" with options_url="/products/subcategory-options/" %}
+    <div class="field"><label for="f-brand">Brand</label>
+      <select class="select" id="f-brand" name="brand"><option value="">All brands</option>
+        {% for b in brands %}<option value="{{ b }}" {% if f.brand == b %}selected{% endif %}>{{ b }}</option>{% endfor %}
+      </select></div>
+    <div class="field"><label for="f-status">Status</label>
+      <select class="select" id="f-status" name="status"><option value="">Any</option>
+        <option value="active" {% if f.status == 'active' %}selected{% endif %}>Active</option>
+        <option value="inactive" {% if f.status == 'inactive' %}selected{% endif %}>Inactive</option></select></div>
+    <div class="field"><label for="f-stock">Stock</label>
+      <select class="select" id="f-stock" name="stock"><option value="">Any</option>
+        {% for v, label in stock_levels %}<option value="{{ v }}" {% if f.stock == v %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="f-pmin">Min price (₹)</label><input class="input" id="f-pmin" type="number" min="0" step="1" name="price_min" value="{{ f.price_min }}"></div>
+    <div class="field"><label for="f-pmax">Max price (₹)</label><input class="input" id="f-pmax" type="number" min="0" step="1" name="price_max" value="{{ f.price_max }}"></div>
+    <div class="field"><label for="f-dfrom">Added from</label><input class="input" id="f-dfrom" type="date" name="date_from" value="{{ f.date_from }}"></div>
+    <div class="field"><label for="f-dto">Added to</label><input class="input" id="f-dto" type="date" name="date_to" value="{{ f.date_to }}"></div>
+    <div class="filter-actions"><button class="btn primary" type="submit">Apply filters</button>
+      {% if has_filters %}<a class="btn" href="/products/">Clear</a>{% endif %}</div>
+  </form>
+
+  <div class="bulk-bar" id="bulk-bar" hidden>
+    <strong><span id="bulk-count">0</span> selected</strong>
+    <button class="btn sm" type="button" hx-get="/products/bulk/?action=activate" hx-include="[name=ids]:checked" hx-target="#modal-root" hx-swap="innerHTML">Activate</button>
+    <button class="btn sm" type="button" hx-get="/products/bulk/?action=deactivate" hx-include="[name=ids]:checked" hx-target="#modal-root" hx-swap="innerHTML">Deactivate</button>
+  </div>
+
+  {% if page.object_list %}
+  <div class="table-wrap"><table class="table" id="product-table">
+    <thead><tr>
+      <th style="width:36px"><input type="checkbox" id="select-all" aria-label="Select all products on this page"></th>
+      <th>{% sort_link 'name' 'Product' %}</th><th>{% sort_link 'seller' 'Seller' %}</th><th>Category</th>
+      <th class="num">{% sort_link 'price' 'Price' %}</th><th class="num">{% sort_link 'stock' 'Stock' %}</th>
+      <th>{% sort_link 'status' 'Status' %}</th><th>{% sort_link 'created' 'Added' %}</th><th></th>
+    </tr></thead>
+    <tbody>
+    {% for p in page.object_list %}
+      <tr>
+        <td><input type="checkbox" name="ids" value="{{ p.pk }}" aria-label="Select {{ p.name }}"></td>
+        <td><button type="button" class="link-btn" hx-get="/products/{{ p.pk }}/" hx-target="#modal-root" hx-swap="innerHTML">{{ p.name }}</button>
+          {% if p.brand %}<br><small class="cat-meta">{{ p.brand }}</small>{% endif %}</td>
+        <td>{{ p.seller.business_name }}</td>
+        <td>{{ p.subcategory.parent.name }} <span class="cat-meta">/ {{ p.subcategory.name }}</span></td>
+        <td class="num">{{ p.price|inr }}</td>
+        <td class="num">{% if p.stock == 0 %}<span class="chip danger">Out</span>{% elif p.stock <= low_stock %}<span class="chip amber">{{ p.stock }} low</span>{% else %}{{ p.stock }}{% endif %}</td>
+        <td><span class="chip {% if p.is_active %}up{% else %}neutral{% endif %}">{% if p.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+        <td>{{ p.created_at|date:"M j, Y" }}</td>
+        <td><button class="btn sm" type="button" hx-get="/products/{{ p.pk }}/toggle/" hx-target="#modal-root" hx-swap="innerHTML">{% if p.is_active %}Deactivate{% else %}Activate{% endif %}</button></td>
+      </tr>
+    {% endfor %}
+    </tbody></table></div>
+  {% include "dash/partials/pager.html" %}
+  {% else %}
+    {% if has_filters %}{% include "ui/partials/empty.html" with icon="search" title="No products match" text="Adjust or clear the filters." %}
+    {% else %}{% include "ui/partials/empty.html" with icon="layers" title="No products yet" text="Products added by sellers will appear here." %}{% endif %}
+  {% endif %}
+</div>
+{% endblock %}
+{% block scripts %}<script src="{% static 'dash/js/lists.js' %}"></script>{% endblock %}
