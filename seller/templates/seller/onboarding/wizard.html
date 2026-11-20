@@ -1,0 +1,31 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}Seller onboarding{% endblock %}
+{% block subtitle %}
+<ol class="stepper" aria-label="Progress">
+  {% for n, label, state in steps %}
+    <li class="{{ state }}" {% if state == 'current' %}aria-current="step"{% endif %}><span class="dot-n">{% if state == 'done' %}✓{% else %}{{ n }}{% endif %}</span><span class="lbl">{{ label }}</span></li>
+  {% endfor %}
+</ol>
+{% endblock %}
+{% block form_open %}
+<form class="modal-form" hx-post="{% if step == 4 %}/onboarding/submit/{% else %}/onboarding/step/{{ step }}/{% endif %}"
+      hx-target="#modal-root" hx-swap="innerHTML" hx-encoding="multipart/form-data">
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+{% endblock %}
+{% block body %}
+  {% if saved %}<div class="saved-note" role="status">Step {{ saved }} saved ✓</div>{% endif %}
+  {% if form_error %}<div class="form-error" role="alert">{{ form_error }}</div>{% endif %}
+  {% if form.errors and step != 4 %}<div class="form-error" role="alert">Please fix the highlighted fields.</div>{% endif %}
+  {% if step == 1 %}{% include "seller/onboarding/step1.html" %}
+  {% elif step == 2 %}{% include "seller/onboarding/step2.html" %}
+  {% elif step == 3 %}{% include "seller/onboarding/step3.html" %}
+  {% else %}{% include "seller/onboarding/step4.html" %}{% endif %}
+{% endblock %}
+{% block footer %}
+  {% if step > 1 %}<button type="button" class="btn left" hx-get="/onboarding/?step={{ step|add:'-1' }}" hx-target="#modal-root" hx-swap="innerHTML">← Back</button>
+  {% else %}<button type="button" class="btn left" data-modal-close>Save &amp; close</button>{% endif %}
+  {% if step > 1 %}<button type="button" class="btn" data-modal-close>Save &amp; close</button>{% endif %}
+  <button type="submit" class="btn primary">{% if step == 4 %}Submit for review{% else %}Save &amp; continue{% endif %}</button>
+{% endblock %}
+{% block form_close %}</form>{% endblock %}

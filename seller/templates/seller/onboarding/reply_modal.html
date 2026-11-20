@@ -1,0 +1,17 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}Reply to our request{% endblock %}
+{% block form_open %}
+<form class="modal-form" hx-post="/status/reply/" hx-target="#modal-root" hx-swap="innerHTML">
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+{% endblock %}
+{% block body %}
+  {% if request_text %}<div class="consequence" style="margin:0 0 14px"><strong>Our request:</strong> {{ request_text }}</div>{% endif %}
+  {% if error %}<div class="form-error" role="alert">{{ error }}</div>{% endif %}
+  <div class="field"><label for="reply-msg">Your reply</label>
+    <textarea class="textarea" id="reply-msg" name="message" rows="5" required>{{ message|default:'' }}</textarea>
+    <span class="help">If we asked for documents, update them first in onboarding, then describe what you changed here.</span></div>
+  <button type="button" class="btn sm" hx-get="/onboarding/" hx-target="#modal-root" hx-swap="innerHTML">Open onboarding to update details</button>
+{% endblock %}
+{% block footer %}<button type="button" class="btn" data-modal-close>Cancel</button><button type="submit" class="btn primary">Send reply</button>{% endblock %}
+{% block form_close %}</form>{% endblock %}

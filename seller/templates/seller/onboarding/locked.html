@@ -1,0 +1,7 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}Application locked{% endblock %}
+{% block body %}<div class="confirm warning"><span class="confirm-icon">{% icon 'info' 24 %}</span><div>
+  <h3>Your application is {{ seller.get_status_display|lower }}</h3>
+  <p>You can’t edit it right now. If we need more information we’ll ask you here. Approved sellers can update details from Account.</p></div></div>{% endblock %}
+{% block footer %}<button type="button" class="btn primary" data-modal-close>OK</button>{% endblock %}

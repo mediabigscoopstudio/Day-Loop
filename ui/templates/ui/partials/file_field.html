@@ -1,0 +1,26 @@
+{% comment %}
+Upload field with drag-drop (desktop) and camera + gallery (phones). Context:
+  field (bound file field), camera (its bound x_camera field, optional), current (stored file, optional),
+  square (bool: preview cropped to a square), hint (optional text)
+Both inputs write to the form; whichever is filled is used. JS: ui/js/uploads.js.
+{% endcomment %}
+<div class="field {% if field.errors or camera.errors %}has-error{% endif %}">
+  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+  <div class="dropzone" data-dropzone>
+    <div class="dz-preview {% if square %}square{% endif %}" data-preview-box {% if not current %}hidden{% endif %}>
+      {% if current %}{% if current.url|slice:"-4:"|lower == ".pdf" %}<span class="dz-file">PDF</span>{% else %}<img src="{{ current.url }}" alt="">{% endif %}{% endif %}
+    </div>
+    <div class="dz-body">
+      <p class="dz-text"><strong>Drag a file here</strong> or choose below</p>
+      <div class="dz-actions">
+        <label class="btn sm" for="{{ field.id_for_label }}">Choose file</label>
+        {% if camera %}<label class="btn sm" for="{{ camera.id_for_label }}">Take photo</label>{% endif %}
+      </div>
+      <p class="dz-name" data-file-name>{% if current %}Saved ✓ — choose a new file to replace it{% endif %}</p>
+    </div>
+    {{ field }}{% if camera %}{{ camera }}{% endif %}
+  </div>
+  {% if hint or field.help_text %}<span class="help">{{ hint|default:field.help_text }}</span>{% endif %}
+  {% for e in field.errors %}<span class="field-error" role="alert">{{ e }}</span>{% endfor %}
+  {% for e in camera.errors %}<span class="field-error" role="alert">{{ e }}</span>{% endfor %}
+</div>

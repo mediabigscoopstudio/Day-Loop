@@ -122,3 +122,18 @@ table.table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .legend-row { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto auto; gap: 8px; align-items: center; font-size: 13px; }
 .legend-row > :nth-child(3), .legend-row > :nth-child(4) { white-space: nowrap; }
 .swatch { width: 12px; height: 12px; border-radius: 50%; }
+
+/* upload field */
+.dropzone { position: relative; display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; padding: 14px; border: 2px dashed var(--sage-300); border-radius: var(--radius-md); background: #fff; transition: background .15s, border-color .15s; }
+.dropzone.is-over { background: var(--sage-100); border-color: var(--green-700); }
+.dropzone input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.dz-preview { width: 84px; height: 84px; border-radius: 14px; overflow: hidden; background: var(--sage-100); display: grid; place-items: center; }
+.dz-preview.square img { width: 100%; height: 100%; object-fit: cover; }      /* square crop in the UI only */
+.dz-preview img { max-width: 100%; max-height: 100%; object-fit: cover; width: 100%; height: 100%; }
+.dz-file { font-weight: 800; color: var(--green-700); }
+.dz-body { grid-column: 2; }
+.dropzone:not(:has([data-preview-box]:not([hidden]))) .dz-body { grid-column: 1 / -1; }
+.dz-text { margin: 0 0 8px; color: var(--muted); font-size: 14px; }
+.dz-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.dz-name { margin: 8px 0 0; font-size: 13px; color: var(--green-700); font-weight: 600; word-break: break-all; }
+@media (hover: none) { .dz-text strong { display: none; } .dz-text { font-size: 13px; } }

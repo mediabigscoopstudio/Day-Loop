@@ -1,0 +1,22 @@
+{% load ui_tags %}{% comment %}Step 4: review and agreement.{% endcomment %}
+{% if missing %}
+  <div class="form-error" role="alert"><strong>Still missing:</strong> {{ missing|join:", " }}. Use “Back” to complete them.</div>
+{% endif %}
+<div class="review-grid">
+  <section><h3>Business</h3><dl class="kv">
+    <dt>Trade name</dt><dd>{{ seller.business_name }}</dd><dt>Legal name</dt><dd>{{ seller.legal_name|default:"—" }}</dd>
+    <dt>Type</dt><dd>{{ seller.get_business_type_display|default:"—" }}</dd><dt>Contact</dt><dd>{{ seller.contact_person|default:"—" }} · {{ seller.phone|default:"—" }}</dd>
+    <dt>Email</dt><dd>{{ seller.email|default:"—" }}</dd></dl></section>
+  <section><h3>Compliance</h3><dl class="kv">
+    <dt>GST</dt><dd>{{ seller.gst_number|default:"—" }}</dd><dt>PAN</dt><dd>{{ seller.pan_number|default:"—" }}</dd>
+    <dt>FSSAI</dt><dd>{{ seller.fssai_number|default:"—" }}{% if seller.fssai_expiry %} · expires {{ seller.fssai_expiry|date:"M j, Y" }}{% endif %}</dd>
+    <dt>Documents</dt><dd>{{ docs|length }} uploaded</dd></dl></section>
+  <section><h3>Bank &amp; operations</h3><dl class="kv">
+    <dt>Account</dt><dd>{% if bank %}{{ bank.account_holder }} · {{ bank.masked_number }}{% else %}—{% endif %}</dd>
+    <dt>IFSC</dt><dd>{{ bank.ifsc|default:"—" }}</dd><dt>Dispatch</dt><dd>{{ seller.dispatch_days }} day{{ seller.dispatch_days|pluralize }}</dd>
+    <dt>Categories</dt><dd>{% for c in seller.categories.all %}{{ c.name }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</dd></dl></section>
+</div>
+<div class="field {% if form.accept_commission.errors %}has-error{% endif %}" style="margin-top:16px">
+  <label class="agree">{{ form.accept_commission }} <span>{{ form.accept_commission.label }}</span></label>
+  {% for e in form.accept_commission.errors %}<span class="field-error" role="alert">{{ e }}</span>{% endfor %}
+</div>

@@ -1,0 +1,21 @@
+{% comment %}Step 3: bank and operations.{% endcomment %}
+<h3 style="margin-bottom:10px">Bank account for payouts</h3>
+<div class="grid cols-2" style="gap:0 18px">
+  <div>{% include "ui/partials/field.html" with field=form.account_holder %}</div>
+  <div>{% include "ui/partials/field.html" with field=form.account_number %}</div>
+  <div>{% include "ui/partials/field.html" with field=form.ifsc %}</div>
+  <div>{% include "ui/partials/field.html" with field=form.bank_name %}</div>
+</div>
+{% include "ui/partials/field.html" with field=form.upi_id %}
+{% include "ui/partials/file_field.html" with field=form.doc_cheque camera=form.doc_cheque_camera current=docs.cheque.file %}
+<h3 style="margin:8px 0 10px">What you sell</h3>
+<div class="field {% if form.categories.errors %}has-error{% endif %}">
+  <label>{{ form.categories.label }}</label>
+  <div class="check-grid">{% for c in form.categories %}<label class="check-pill">{{ c.tag }}<span>{{ c.choice_label }}</span></label>{% endfor %}</div>
+  <span class="help">{{ form.categories.help_text }}</span>
+  {% for e in form.categories.errors %}<span class="field-error" role="alert">{{ e }}</span>{% endfor %}
+</div>
+<div class="grid cols-2" style="gap:0 18px">
+  <div>{% include "ui/partials/field.html" with field=form.dispatch_days %}</div>
+  <div>{% include "ui/partials/field.html" with field=form.dispatch_address %}</div>
+</div>

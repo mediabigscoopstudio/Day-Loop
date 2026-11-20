@@ -1,0 +1,15 @@
+{% comment %}Step 1: business.{% endcomment %}
+<div class="grid cols-2" style="gap:0 18px">
+  <div>{% include "ui/partials/field.html" with field=form.legal_name %}</div>
+  <div>{% include "ui/partials/field.html" with field=form.business_name %}</div>
+  <div>{% include "ui/partials/field.html" with field=form.business_type %}</div>
+  <div>{% include "ui/partials/field.html" with field=form.year_established %}</div>
+</div>
+{% include "ui/partials/file_field.html" with field=form.logo current=seller.logo square=True %}
+<div class="grid cols-2" style="gap:0 18px">
+  <div>{% include "ui/partials/field.html" with field=form.contact_person %}</div>
+  <div>{% include "ui/partials/field.html" with field=form.phone %}</div>
+  <div>{% include "ui/partials/field.html" with field=form.email %}</div>
+  <div>{% include "ui/partials/field.html" with field=form.city %}</div>
+</div>
+{% include "ui/partials/field.html" with field=form.address %}

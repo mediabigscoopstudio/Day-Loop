@@ -1,0 +1,23 @@
+{% load ui_tags %}{% comment %}Step 2: compliance. Required documents are marked; the rest are optional certificates.{% endcomment %}
+<div class="grid cols-2" style="gap:0 18px">
+  <div>{% include "ui/partials/field.html" with field=form.gst_number %}
+    <p class="help" style="margin:-8px 0 12px">Status: <span class="chip {{ seller.gst_status|status_chip }}">{{ seller.get_gst_status_display }}</span></p></div>
+  <div>{% include "ui/partials/field.html" with field=form.pan_number %}</div>
+  <div>{% include "ui/partials/field.html" with field=form.company_pan %}</div>
+  <div>{% include "ui/partials/field.html" with field=form.mfg_licence_number %}</div>
+  <div>{% include "ui/partials/field.html" with field=form.fssai_number %}</div>
+  <div>{% include "ui/partials/field.html" with field=form.fssai_expiry %}</div>
+</div>
+<h3 style="margin:8px 0 10px">Documents</h3>
+<p class="help" style="margin-bottom:12px">Photo (JPG/PNG) or PDF, up to 5 MB each. On a phone you can take the photo directly.</p>
+{% include "ui/partials/file_field.html" with field=form.doc_gst camera=form.doc_gst_camera current=docs.gst.file %}
+{% include "ui/partials/file_field.html" with field=form.doc_pan camera=form.doc_pan_camera current=docs.pan.file %}
+{% include "ui/partials/file_field.html" with field=form.doc_fssai camera=form.doc_fssai_camera current=docs.fssai.file %}
+<details class="more-docs" {% if docs.company_pan or docs.mfg_licence or docs.gmp or docs.iso22000 or docs.haccp %}open{% endif %}>
+  <summary>Optional certificates (company PAN, manufacturing licence, GMP, ISO 22000, HACCP)</summary>
+  {% include "ui/partials/file_field.html" with field=form.doc_company_pan camera=form.doc_company_pan_camera current=docs.company_pan.file %}
+  {% include "ui/partials/file_field.html" with field=form.doc_mfg_licence camera=form.doc_mfg_licence_camera current=docs.mfg_licence.file %}
+  {% include "ui/partials/file_field.html" with field=form.doc_gmp camera=form.doc_gmp_camera current=docs.gmp.file %}
+  {% include "ui/partials/file_field.html" with field=form.doc_iso22000 camera=form.doc_iso22000_camera current=docs.iso22000.file %}
+  {% include "ui/partials/file_field.html" with field=form.doc_haccp camera=form.doc_haccp_camera current=docs.haccp.file %}
+</details>
