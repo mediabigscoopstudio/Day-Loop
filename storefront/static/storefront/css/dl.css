@@ -216,27 +216,26 @@ body.sf{background:var(--cream);color:var(--ink);padding-bottom:70px}
 .pk-chip.on{background:var(--forest);border-color:var(--forest);color:#fff}.pk-chip.on span{color:#FFC93C}
 .pk-none,.pk-empty{font-size:13px;color:#7a8a80;padding:14px 4px}
 
-/* navbar: phone layout. Row 1 = logo, address, delivery pill, cart, account. Row 2 = search. */
-.nav-row{flex-wrap:nowrap;gap:8px}
-.nav-logo{flex:none}.nav-logo .logo{height:28px;width:auto}
-.nav-search{order:5;flex:1 0 100%}
-.chip-area{flex:1 1 0;min-width:0;max-width:none;height:40px;padding:0 10px;font-size:13px;white-space:nowrap;overflow:hidden;cursor:pointer}
-.chip-area svg{flex:none}
+/* navbar. Desktop keeps the base rules. Phone: row 1 logo + cart + account, row 2 location + delivery pill, row 3 search. */
 .chip-txt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle}
 .chip-txt b{font-weight:800}
 .chev{flex:none;font-size:11px;opacity:.7}
-.chip-tier{flex:none;height:40px;padding:0 10px;font-size:12px;font-weight:700;white-space:nowrap}
-.chip-tier svg{flex:none}
 .t-short{display:none}
-.nav-ic{flex:none;min-width:40px;min-height:40px}
 @media(max-width:860px){
-  .nav-row{padding:10px 12px}
-  .nav-ic span{display:none}
+  .nav-row{display:grid;grid-template-columns:1fr 1fr 42px 42px;grid-template-areas:"logo logo cart acct" "area area tier tier" "search search search search";gap:12px 10px;align-items:center;padding:12px 16px}
+  .nav-logo{grid-area:logo;justify-self:start}
+  .nav-logo .logo{height:30px;width:auto}
+  .nav-row>.nav-ic:not(.nav-acct){grid-area:cart;justify-self:end}
+  .nav-acct{grid-area:acct;justify-self:end}
+  .nav-acct span{display:none}
+  .nav-row .chip-area{grid-area:area;min-width:0;max-width:none;height:50px;padding:0 16px;justify-content:flex-start;gap:8px;font-size:15px;overflow:hidden;white-space:nowrap}
+  .nav-row .chip-area .lbl{display:none}
+  .nav-row .chip-tier{grid-area:tier;min-width:0;height:50px;padding:0 12px;justify-content:center;gap:6px;font-size:15px;font-weight:800;background:var(--vivid);color:#fff;border:0;white-space:nowrap}
+  .nav-search{grid-area:search;width:100%;min-width:0;flex:none;order:0}
+  .nav-search input{min-height:50px}
+  .s-ico{top:15px}
 }
-@media(max-width:420px){
-  .lbl{display:none}
-  .t-full{display:none}.t-short{display:inline}
-  .chip-area{padding:0 8px;gap:4px}
-  .chip-tier{padding:0 8px;font-size:11px}
-  .nav-row{gap:6px}
+@media(max-width:360px){
+  .t-full{display:none}
+  .t-short{display:inline}
 }

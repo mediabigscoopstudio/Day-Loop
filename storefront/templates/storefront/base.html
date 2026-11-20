@@ -16,12 +16,12 @@
   <div class="nav-row">
     <a href="{% url 'storefront:home' %}" class="nav-logo">{% dayloop_logo %}</a>
     <button class="chip chip-area" hx-get="{% url 'storefront:area' %}" hx-target="#modal-root" aria-label="Change delivery area">
-      {% icon 'tag' 16 %} <span class="chip-txt"><span class="lbl">Delivering to </span><b>{{ shell.area.area }}</b></span> <span class="chev" aria-hidden="true">▾</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> <span class="chip-txt"><span class="lbl">Delivering to </span><b>{{ shell.area.area }}</b></span> <span class="chev" aria-hidden="true">▾</span>
     </button>
-    <span class="chip chip-tier tier-{{ shell.tier }}" title="{{ shell.tier_label }}">{% icon 'truck' 16 %} <span class="t-full">{{ shell.tier_label }}</span><span class="t-short">{{ shell.tier_short }}</span></span>
+    <span class="chip chip-tier tier-{{ shell.tier }}" title="{{ shell.tier_label }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="#FFC93C" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"></path></svg> <span class="t-full">{{ shell.tier_label }}</span><span class="t-short">{{ shell.tier_short }}</span></span>
     <form class="nav-search" action="{% url 'storefront:product-list' %}" role="search">
       <span class="s-ico">{% icon 'search' 18 %}</span>
-      <input type="search" name="q" placeholder="Search products and brands" autocomplete="off" aria-label="Search"
+      <input type="search" name="q" placeholder="Search supplements, brands and more" autocomplete="off" aria-label="Search"
              hx-get="{% url 'storefront:search' %}" hx-trigger="input changed delay:300ms, search" hx-target="#search-results">
       <div id="search-results" class="search-dd"></div>
     </form>
