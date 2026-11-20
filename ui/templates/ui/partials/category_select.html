@@ -1,0 +1,19 @@
+{% comment %}
+Reusable dependent Category -> Subcategory selects (dash filters now, seller product form later).
+Context: categories (top-level, active), options_url (endpoint returning subcategory_options.html),
+         selected_category, selected_sub, name_category (default "category"), name_sub (default "subcategory").
+{% endcomment %}
+<div class="field">
+  <label for="sel-category">Category</label>
+  <select class="select" id="sel-category" name="{{ name_category|default:'category' }}"
+          hx-get="{{ options_url }}" hx-target="#sel-subcategory" hx-swap="innerHTML" hx-trigger="change">
+    <option value="">— Select category —</option>
+    {% for c in categories %}<option value="{{ c.pk }}" {% if selected_category == c.pk|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+  </select>
+</div>
+<div class="field">
+  <label for="sel-subcategory">Subcategory</label>
+  <select class="select" id="sel-subcategory" name="{{ name_sub|default:'subcategory' }}">
+    {% include "ui/partials/subcategory_options.html" with subs=subs selected=selected_sub %}
+  </select>
+</div>

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import auth_views, views, views_sellers
+from . import auth_views, views, views_categories, views_sellers
 
 urlpatterns = [
     path('login/', auth_views.LoginView.as_view(), name='login'),
@@ -13,6 +13,13 @@ urlpatterns = [
     path('sellers/', views_sellers.SellerListView.as_view(), name='sellers'),
     path('sellers/<int:pk>/', views_sellers.SellerDetailModal.as_view(), name='seller-detail'),
     path('sellers/<int:pk>/<slug:action>/', views_sellers.SellerActionView.as_view(), name='seller-action'),
+    path('products/categories/', views_categories.CategoryListView.as_view(), name='categories'),
+    path('products/categories/new/', views_categories.CategoryFormView.as_view(), name='category-new'),
+    path('products/categories/<int:pk>/edit/', views_categories.CategoryFormView.as_view(), name='category-edit'),
+    path('products/categories/<int:pk>/toggle/', views_categories.CategoryToggleView.as_view(), name='category-toggle'),
+    path('products/categories/<int:pk>/delete/', views_categories.CategoryDeleteView.as_view(), name='category-delete'),
+    path('products/categories/<int:pk>/move/<slug:direction>/', views_categories.CategoryMoveView.as_view(), name='category-move'),
+    path('products/subcategory-options/', views_categories.SubcategoryOptions.as_view(), name='subcategory-options'),
     path('api/sales/', views.SalesApi.as_view(), name='api-sales'),
     path('api/category-revenue/', views.CategoryRevenueApi.as_view(), name='api-category-revenue'),
 ]

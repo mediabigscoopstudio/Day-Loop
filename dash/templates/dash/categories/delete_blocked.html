@@ -1,0 +1,10 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}Can’t delete “{{ category.name }}”{% endblock %}
+{% block body %}
+<div class="confirm warning">
+  <span class="confirm-icon">{% icon 'alert' 24 %}</span>
+  <div><h3>This {% if category.parent_id %}subcategory{% else %}category{% endif %} is in use</h3><p>{{ reason }}</p></div>
+</div>
+{% endblock %}
+{% block footer %}<button type="button" class="btn primary" data-modal-close>Got it</button>{% endblock %}

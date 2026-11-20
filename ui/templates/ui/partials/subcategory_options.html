@@ -1,0 +1,3 @@
+{% comment %}<option> list for the dependent subcategory select. Context: subs, selected.{% endcomment %}
+<option value="">— Select subcategory —</option>
+{% for s in subs %}<option value="{{ s.pk }}" {% if selected == s.pk|stringformat:"s" %}selected{% endif %}>{{ s.name }}</option>{% endfor %}

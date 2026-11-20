@@ -30,3 +30,15 @@
 
 .cols-2 { grid-template-columns: 1fr 1fr; gap: 22px; }
 @media (max-width: 720px) { .cols-2 { grid-template-columns: 1fr; } }
+
+/* categories */
+.cat-card { margin-bottom: 14px; }
+.cat-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.cat-meta { color: var(--muted); font-size: 13px; font-weight: 500; }
+.cat-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.sub-list { list-style: none; margin: 12px 0 0 40px; padding: 0; display: grid; gap: 2px; }
+.sub-list li { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 12px; border-radius: 12px; }
+.sub-list li:hover { background: var(--sage-100); }
+.btn.danger-text { color: var(--danger); }
+.btn[disabled] { opacity: .4; }
+@media (max-width: 720px) { .sub-list { margin-left: 8px; } }

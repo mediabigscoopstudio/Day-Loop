@@ -1,0 +1,48 @@
+{% extends "dash/base.html" %}
+{% load ui_tags %}
+{% block title %}Categories · Day Loop admin{% endblock %}
+{% block page %}
+<div class="page-head">
+  <div><h1>Products</h1><p>Manage the category taxonomy sellers file products under.</p></div>
+  <button class="btn primary" hx-get="/products/categories/new/" hx-target="#modal-root" hx-swap="innerHTML">{% icon 'plus' 18 %} New category</button>
+</div>
+{% include "dash/partials/products_tabs.html" with section="categories" %}
+
+<div id="list-region" hx-get="/products/categories/" hx-trigger="categories-changed from:body" hx-select="#list-region" hx-target="this" hx-swap="outerHTML">
+{% for c in categories %}
+  <section class="card cat-card" aria-label="{{ c.name }}">
+    <div class="cat-head">
+      <div class="who"><span class="badge-ico">{{ c.name|slice:":1" }}</span>
+        <div><strong>{{ c.name }}</strong> {% if not c.is_active %}<span class="chip neutral">Inactive</span>{% endif %}
+          <div class="cat-meta">{{ c.sub_count }} subcategor{{ c.sub_count|pluralize:"y,ies" }} · {{ c.pc }} product{{ c.pc|pluralize }}</div></div></div>
+      <div class="cat-actions">
+        <button class="btn sm" aria-label="Move {{ c.name }} up" hx-post="/products/categories/{{ c.pk }}/move/up/" hx-swap="none" {% if forloop.first %}disabled{% endif %}>↑</button>
+        <button class="btn sm" aria-label="Move {{ c.name }} down" hx-post="/products/categories/{{ c.pk }}/move/down/" hx-swap="none" {% if forloop.last %}disabled{% endif %}>↓</button>
+        <button class="btn sm" hx-get="/products/categories/new/?parent={{ c.pk }}" hx-target="#modal-root" hx-swap="innerHTML">+ Subcategory</button>
+        <button class="btn sm" hx-get="/products/categories/{{ c.pk }}/edit/" hx-target="#modal-root" hx-swap="innerHTML">Edit</button>
+        <button class="btn sm" hx-get="/products/categories/{{ c.pk }}/toggle/" hx-target="#modal-root" hx-swap="innerHTML">{% if c.is_active %}Deactivate{% else %}Activate{% endif %}</button>
+        <button class="btn sm danger-text" hx-get="/products/categories/{{ c.pk }}/delete/" hx-target="#modal-root" hx-swap="innerHTML">Delete</button>
+      </div>
+    </div>
+    {% if c.subs %}
+    <ul class="sub-list">
+      {% for s in c.subs %}
+      <li>
+        <span>{{ s.name }} {% if not s.is_active %}<span class="chip neutral">Inactive</span>{% endif %} <small class="cat-meta">{{ s.pc }} product{{ s.pc|pluralize }}</small></span>
+        <span class="cat-actions">
+          <button class="btn sm" aria-label="Move {{ s.name }} up" hx-post="/products/categories/{{ s.pk }}/move/up/" hx-swap="none" {% if forloop.first %}disabled{% endif %}>↑</button>
+          <button class="btn sm" aria-label="Move {{ s.name }} down" hx-post="/products/categories/{{ s.pk }}/move/down/" hx-swap="none" {% if forloop.last %}disabled{% endif %}>↓</button>
+          <button class="btn sm" hx-get="/products/categories/{{ s.pk }}/edit/" hx-target="#modal-root" hx-swap="innerHTML">Edit</button>
+          <button class="btn sm" hx-get="/products/categories/{{ s.pk }}/toggle/" hx-target="#modal-root" hx-swap="innerHTML">{% if s.is_active %}Deactivate{% else %}Activate{% endif %}</button>
+          <button class="btn sm danger-text" hx-get="/products/categories/{{ s.pk }}/delete/" hx-target="#modal-root" hx-swap="innerHTML">Delete</button>
+        </span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}<p class="cat-meta" style="margin:10px 0 0 40px">No subcategories yet.</p>{% endif %}
+  </section>
+{% empty %}
+  <div class="card">{% include "ui/partials/empty.html" with icon="tag" title="No categories yet" text="Create a category, then add subcategories sellers can file products under." %}</div>
+{% endfor %}
+</div>
+{% endblock %}

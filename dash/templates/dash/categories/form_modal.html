@@ -1,0 +1,19 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}{% if instance %}Edit {% if instance.parent_id %}subcategory{% else %}category{% endif %}{% else %}New category{% endif %}{% endblock %}
+{% block form_open %}
+<form class="modal-form" hx-post="{{ post_url }}" hx-target="#modal-root" hx-swap="innerHTML" hx-encoding="multipart/form-data">
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+{% endblock %}
+{% block body %}
+  {% if form.non_field_errors %}<div class="form-error" role="alert">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+  {% include "ui/partials/field.html" with field=form.name %}
+  {% include "ui/partials/field.html" with field=form.parent %}
+  {% include "ui/partials/field.html" with field=form.image %}
+  <div class="field"><label style="display:flex;gap:10px;align-items:center;font-weight:600">{{ form.is_active }} {{ form.is_active.label }}</label></div>
+{% endblock %}
+{% block footer %}
+  <button type="button" class="btn" data-modal-close>Cancel</button>
+  <button type="submit" class="btn primary">{% if instance %}Save changes{% else %}Create{% endif %}</button>
+{% endblock %}
+{% block form_close %}</form>{% endblock %}
