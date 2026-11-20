@@ -137,3 +137,6 @@ table.table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .dz-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .dz-name { margin: 8px 0 0; font-size: 13px; color: var(--green-700); font-weight: 600; word-break: break-all; }
 @media (hover: none) { .dz-text strong { display: none; } .dz-text { font-size: 13px; } }
+
+.kpi-note { grid-column: 1 / -1; grid-row: 3; font-size: 12px; color: var(--muted); font-weight: 600; }
+.kpi-foot { grid-row: 4; }

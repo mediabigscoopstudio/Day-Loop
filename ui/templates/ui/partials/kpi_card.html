@@ -9,5 +9,6 @@
     </svg>
     <span class="glyph">{% icon k.icon 22 %}</span>
   </div>
-  <div class="kpi-foot">{% include "ui/partials/delta.html" with delta=k.delta %} <span>vs. prior period</span></div>
+  {% if k.note and not k.no_delta %}<div class="kpi-note">{{ k.note }}</div>{% endif %}
+  <div class="kpi-foot">{% if k.no_delta %}<span>{{ k.note }}</span>{% else %}{% include "ui/partials/delta.html" with delta=k.delta %} <span>vs. prior period</span>{% endif %}</div>
 </article>

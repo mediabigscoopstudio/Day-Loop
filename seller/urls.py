@@ -46,5 +46,6 @@ urlpatterns = [
     path('onboarding/', views_onboarding.OnboardingView.as_view(), name='onboarding'),
     path('onboarding/step/<int:step>/', views_onboarding.OnboardingStepView.as_view(), name='onboarding-step'),
     path('onboarding/submit/', views_onboarding.OnboardingSubmitView.as_view(), name='onboarding-submit'),
-    path('', views.HomeView.as_view(), name='home'),
+    path('api/sales/', views.SalesApi.as_view(), name='api-sales'),
+    path('', views.DashboardView.as_view(), name='home'),
 ]

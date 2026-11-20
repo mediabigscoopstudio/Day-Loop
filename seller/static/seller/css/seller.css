@@ -118,3 +118,14 @@ dialog.modal .input, dialog.modal .select, dialog.modal .textarea { font-size: 1
 .card.mini:hover { text-decoration: none; background: var(--sage-100); }
 .card.mini strong { font-size: 26px; color: var(--green-900); }
 @media (max-width: 700px) { .mini-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* seller dashboard */
+.seller-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 1180px) { .seller-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .seller-kpis { grid-template-columns: 1fr; } }
+.seg { display: inline-flex; padding: 4px; border-radius: 999px; background: var(--sage-100); }
+.seg a { padding: 8px 16px; min-height: 40px; display: inline-flex; align-items: center; border-radius: 999px; font-weight: 700; color: var(--green-900); }
+.seg a:hover { text-decoration: none; }
+.seg a[aria-current="true"] { background: var(--green-900); color: #fff; }
+.action-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.action-list li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 14px; background: #fff; border: 1px solid var(--border); }

@@ -1,3 +1,44 @@
 {% extends "seller/base.html" %}
+{% load static ui_tags %}
 {% block title %}Overview · Day Loop sellers{% endblock %}
-{% block page %}<div class="page-head"><div><h1>Overview</h1></div></div>{% endblock %}
+{% block topbar_extra %}{% include "dash/partials/date_range.html" %}{% endblock %}
+{% block page %}
+<div class="page-head">
+  <div><h1>{% greeting %}, {{ user|first_name }}</h1><p>{{ seller.business_name }} · {{ dr.label }}</p></div>
+  <div class="seg" role="group" aria-label="Revenue basis">
+    <a href="?{{ dr.query_string }}&basis=gmv" {% if basis == 'gmv' %}aria-current="true"{% endif %}>GMV</a>
+    <a href="?{{ dr.query_string }}&basis=payout" {% if basis == 'payout' %}aria-current="true"{% endif %}>Payout</a>
+  </div>
+</div>
+
+<section class="grid kpis seller-kpis" aria-label="Key numbers">{% for k in kpis %}{% include "ui/partials/kpi_card.html" %}{% endfor %}</section>
+
+<div class="grid row-2">
+  <section class="card" aria-labelledby="rev-h"><div class="card-head"><h2 id="rev-h">{% if basis == 'gmv' %}Sales{% else %}Payout{% endif %} over time</h2></div>
+    <div class="chart-box"><canvas data-chart="sales" data-url="/api/sales/?{{ dr.query_string }}&basis={{ basis }}" role="img" aria-label="Sales over time"></canvas></div>
+    <p class="chart-empty empty" hidden>No orders in this period.</p></section>
+  <section class="card" aria-labelledby="act-h"><div class="card-head"><h2 id="act-h">Needs your action</h2><a class="link-more" href="/orders/?status=new">All new →</a></div>
+    {% if actions %}<ul class="action-list">{% for so in actions %}
+      <li><div><strong>{{ so.invoice_number }}</strong><br><small class="cat-meta">{{ so.item_count }} item{{ so.item_count|pluralize }} · {{ so.purchase_value|inr }}{% if so.accept_by %} · accept by {{ so.accept_by|date:"M j, g:i A" }}{% endif %}</small></div>
+        <button class="btn sm primary" hx-get="/orders/{{ so.pk }}/advance/" hx-target="#modal-root" hx-swap="innerHTML">Accept</button></li>{% endfor %}</ul>
+    {% else %}{% include "ui/partials/empty.html" with icon="check" title="All caught up" text="New orders that need accepting appear here." %}{% endif %}</section>
+</div>
+
+<div class="grid row-eq">
+  <section class="card" aria-labelledby="ls-h"><div class="card-head"><h2 id="ls-h">Low-stock alerts</h2><a class="link-more" href="/inventory/?filter=low">View all →</a></div>
+    {% if low_stock %}<ul class="action-list">{% for v in low_stock %}
+      <li><div><strong>{{ v.product.name }}</strong><br><small class="cat-meta">{{ v.label }} · {% if v.stock == 0 %}out of stock{% else %}{{ v.stock }} left{% endif %}</small></div>
+        <button class="btn sm" hx-get="/inventory/{{ v.pk }}/stock/" hx-target="#modal-root" hx-swap="innerHTML">Restock</button></li>{% endfor %}</ul>
+    {% else %}{% include "ui/partials/empty.html" with icon="box" title="Stock looks healthy" text="Variants running low will show up here." %}{% endif %}</section>
+  <section class="card" aria-labelledby="tp-h"><div class="card-head"><h2 id="tp-h">Top products</h2></div>
+    {% if top_products %}<div class="table-wrap"><table class="table"><thead><tr><th>Product</th><th class="num">Units</th><th class="num">Revenue</th></tr></thead><tbody>
+      {% for p in top_products %}<tr><td>{{ p.name }}</td><td class="num">{{ p.units }}</td><td class="num">{{ p.revenue|inr }}</td></tr>{% endfor %}</tbody></table></div>
+    {% else %}{% include "ui/partials/empty.html" with icon="layers" title="No sales in this period" text="Your best sellers will appear here." %}{% endif %}</section>
+</div>
+
+<section class="card" style="margin-top:18px" aria-labelledby="rp-h"><div class="card-head"><h2 id="rp-h">Recent payouts</h2><a class="link-more" href="/earnings/">Earnings →</a></div>
+  {% if recent_payouts %}<div class="table-wrap"><table class="table"><thead><tr><th>Paid on</th><th>Reference</th><th class="num">Amount</th></tr></thead><tbody>
+    {% for p in recent_payouts %}<tr><td>{{ p.settled_at|date:"M j, Y" }}</td><td>{{ p.reference|default:"—" }}</td><td class="num">{{ p.amount|inr:2 }}</td></tr>{% endfor %}</tbody></table></div>
+  {% else %}{% include "ui/partials/empty.html" with icon="rupee" title="No payouts yet" text="Once an admin settles your earnings they’re listed here." %}{% endif %}</section>
+{% endblock %}
+{% block seller_scripts %}<script src="{% static 'ui/vendor/chart.umd.min.js' %}"></script><script src="{% static 'ui/js/charts.js' %}"></script>{% endblock %}
