@@ -1,0 +1,17 @@
+{% comment %}
+Reusable modal frame. Extend it and fill blocks. Context: modal_size (sm|md|lg), slide_over (bool).
+Wrap body+footer in a form by overriding form_open / form_close.
+{% endcomment %}{% load ui_tags %}
+<dialog class="modal {{ modal_size|default:'md' }}{% if slide_over %} slide-over{% endif %}" aria-labelledby="modal-title" aria-modal="true">
+  <div class="modal-head">
+    <div>
+      <h2 id="modal-title">{% block title %}{% endblock %}</h2>
+      {% block subtitle %}{% endblock %}
+    </div>
+    <button type="button" class="modal-close" data-modal-close aria-label="Close">&times;</button>
+  </div>
+  {% block form_open %}{% endblock %}
+  <div class="modal-body">{% block body %}{% endblock %}</div>
+  <div class="modal-foot">{% block footer %}<button type="button" class="btn" data-modal-close>Close</button>{% endblock %}</div>
+  {% block form_close %}{% endblock %}
+</dialog>

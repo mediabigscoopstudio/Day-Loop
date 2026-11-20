@@ -38,3 +38,6 @@ dialog.modal.slide-over {
 .confirm.danger .consequence { background: var(--danger-bg); color: var(--danger); }
 
 body.scroll-locked { overflow: hidden; }
+
+dialog.modal .modal-form { display: flex; flex-direction: column; min-height: 0; flex: 1; }
+dialog.modal .modal-form .modal-body { flex: 1; }

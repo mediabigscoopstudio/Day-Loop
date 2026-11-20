@@ -38,12 +38,14 @@ def inr(value, decimals=0):
     d = _to_decimal(value)
     decimals = int(decimals)
     q = d.quantize(Decimal(1).scaleb(-decimals)) if decimals else d.quantize(Decimal(1))
+    sign = '-' if q < 0 else ''
+    q = abs(q)
     whole = int(q)
     out = group_indian(whole)
     if decimals:
-        frac = f'{abs(q) - abs(Decimal(whole)):.{decimals}f}'.split('.')[1]
+        frac = f'{q - Decimal(whole):.{decimals}f}'.split('.')[1]
         out = f'{out}.{frac}'
-    return f'₹{out}'
+    return f'{sign}₹{out}'
 
 
 @register.filter

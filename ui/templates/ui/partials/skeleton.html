@@ -1,0 +1,4 @@
+{% comment %}Skeleton loader: {% include "ui/partials/skeleton.html" with rows=4 %}{% endcomment %}
+<div aria-hidden="true" style="display:grid;gap:10px">
+  {% for i in "123456" %}{% if forloop.counter <= rows|default:4 %}<div class="skeleton" style="height:18px"></div>{% endif %}{% endfor %}
+</div>

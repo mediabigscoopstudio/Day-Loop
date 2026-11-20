@@ -1,0 +1,64 @@
+{% extends "ui/base.html" %}
+{% load ui_tags %}
+{% comment %}
+Reusable app shell (dash now, seller later). The view supplies:
+  nav          list of {key, label, url, icon}
+  active       the key of the current nav item
+  search_url   optional URL for the global-search dropdown (hx-get)
+  bell_url     optional URL for the notification dropdown
+Blocks: topbar_extra (date picker), menu_items (avatar menu), page.
+{% endcomment %}
+{% block body %}
+<div class="shell" data-nav-open="false">
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <a class="brand" href="{{ home_url|default:'/' }}">{% dayloop_logo %}</a>
+    <nav class="nav">
+      {% for item in nav %}
+        <a href="{{ item.url }}" {% if item.key == active %}aria-current="page"{% endif %}>
+          {% icon item.icon 20 %}<span>{{ item.label }}</span>
+        </a>
+      {% endfor %}
+    </nav>
+    <svg class="sidebar-art" viewBox="0 0 300 220" aria-hidden="true">
+      <ellipse cx="110" cy="240" rx="170" ry="150" fill="#a2c4a7" opacity=".55"/>
+      <ellipse cx="190" cy="270" rx="190" ry="140" fill="#8db796" opacity=".6"/>
+    </svg>
+  </aside>
+  <div class="scrim" aria-hidden="true"></div>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" type="button" data-toggle-nav aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false">{% icon 'menu' %}</button>
+      {% if search_url %}
+      <div class="search" role="search">
+        {% icon 'search' 18 %}
+        <input type="search" name="q" autocomplete="off" placeholder="Search orders, sellers, products or customers"
+               aria-label="Search"
+               hx-get="{{ search_url }}" hx-trigger="input changed delay:300ms, search"
+               hx-target="#search-results" hx-swap="innerHTML" hx-indicator=".search">
+        <div id="search-results" class="search-results" hx-on:click="this.innerHTML=''"></div>
+      </div>
+      {% endif %}
+      <div class="topbar-spacer"></div>
+      {% block topbar_extra %}{% endblock %}
+      {% if bell_url %}
+      <div class="menu">
+        <button class="icon-btn" type="button" data-menu-toggle aria-expanded="false" aria-label="Notifications"
+                hx-get="{{ bell_url }}" hx-target="next .menu-panel" hx-trigger="click">
+          {% icon 'bell' %}{% if bell_count %}<span class="dot"></span>{% endif %}
+        </button>
+        <div class="menu-panel" hidden><div class="menu-head">Loading…</div></div>
+      </div>
+      {% endif %}
+      <div class="menu">
+        <button class="avatar" type="button" data-menu-toggle aria-expanded="false" aria-label="Account menu">{{ user|initials }}</button>
+        <div class="menu-panel" hidden>
+          <div class="menu-head"><strong>{{ user.get_full_name|default:user.get_username }}</strong></div>
+          {% block menu_items %}{% endblock %}
+        </div>
+      </div>
+    </header>
+    <main class="page">{% block page %}{% endblock %}</main>
+  </div>
+</div>
+{% endblock %}

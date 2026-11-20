@@ -1,0 +1,38 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% comment %}
+Confirm / warning modal. Context:
+  title, message, consequence (optional), variant: neutral | warning | danger, icon (name)
+  confirm_label, post_url, extra (dict of hidden inputs), reason (bool) + reason_label + reason_error
+  form_error (optional non-field message)
+Submits with hx-post and re-renders into #modal-root; the server answers 204 + HX-Trigger on success.
+{% endcomment %}
+{% block title %}{{ title }}{% endblock %}
+{% block form_open %}
+<form class="modal-form" hx-post="{{ post_url }}" hx-target="#modal-root" hx-swap="innerHTML">
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+  {% for k, v in extra.items %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endfor %}
+{% endblock %}
+{% block body %}
+  {% if form_error %}<div class="form-error" role="alert">{{ form_error }}</div>{% endif %}
+  <div class="confirm {{ variant|default:'neutral' }}">
+    <span class="confirm-icon">{% icon icon|default:'info' 24 %}</span>
+    <div>
+      <h3>{{ message }}</h3>
+      {% if detail %}<p>{{ detail }}</p>{% endif %}
+      {% if consequence %}<div class="consequence">{{ consequence }}</div>{% endif %}
+    </div>
+  </div>
+  {% if reason %}
+  <div class="field {% if reason_error %}has-error{% endif %}" style="margin-top:16px">
+    <label for="reason">{{ reason_label|default:'Reason' }}</label>
+    <textarea class="textarea" id="reason" name="reason" rows="3" required {% if reason_error %}aria-invalid="true"{% endif %}>{{ reason_value|default:'' }}</textarea>
+    {% if reason_error %}<span class="field-error">{{ reason_error }}</span>{% endif %}
+  </div>
+  {% endif %}
+{% endblock %}
+{% block footer %}
+  <button type="button" class="btn" data-modal-close>Cancel</button>
+  <button type="submit" class="btn {% if variant == 'danger' %}danger{% else %}primary{% endif %}">{{ confirm_label|default:'Confirm' }}</button>
+{% endblock %}
+{% block form_close %}</form>{% endblock %}

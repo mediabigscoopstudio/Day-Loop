@@ -37,6 +37,7 @@
   border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-lg);
   max-height: 70vh; overflow: auto; padding: 8px;
 }
+.search-results:empty { display: none; }
 .topbar-spacer { flex: 1; }
 .icon-btn {
   position: relative; display: inline-grid; place-items: center; width: 44px; height: 44px;

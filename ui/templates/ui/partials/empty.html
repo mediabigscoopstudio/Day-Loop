@@ -1,0 +1,7 @@
+{% load ui_tags %}
+{% comment %}Empty state: {% include "ui/partials/empty.html" with icon="inbox" title="..." text="..." %}{% endcomment %}
+<div class="empty">
+  {% icon icon|default:'inbox' 44 %}
+  <h3>{{ title|default:'Nothing here yet' }}</h3>
+  <p>{{ text|default:'' }}</p>
+</div>
