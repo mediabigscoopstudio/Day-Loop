@@ -1,0 +1,6 @@
+# Excluded from graphify scanning: these folders are connected to the app
+# and are kept out of the knowledge graph.
+template/
+templates/
+static/
+media/
