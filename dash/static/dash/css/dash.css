@@ -5,7 +5,7 @@
   border-radius: 26px; box-shadow: var(--shadow-lg); padding: 34px 32px 30px;
 }
 .login-logo { display: grid; place-items: center; margin-bottom: 10px; }
-.login-logo img { width: 190px; height: auto; mix-blend-mode: multiply; }
+.login-logo .logo-crop { width: 220px; }
 .login-card h1 { font-size: 24px; font-weight: 800; color: var(--green-900); text-align: center; }
 .login-sub { text-align: center; color: var(--muted); margin: 6px 0 22px; }
 .pw { position: relative; }
@@ -22,8 +22,8 @@
 @media (max-width: 560px) { .daterange-btn span { display: none; } .custom-range { grid-template-columns: 1fr; } }
 
 /* overview */
-.donut-wrap { display: grid; grid-template-columns: 190px 1fr; gap: 18px; align-items: center; }
-.donut-box { position: relative; height: 190px; }
+.donut-wrap { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 16px; align-items: center; }
+.donut-box { position: relative; height: 170px; }
 .donut-center { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; font-weight: 800; font-size: 19px; pointer-events: none; }
 .donut-center small { display: block; font-weight: 600; font-size: 12px; color: var(--muted); }
 @media (max-width: 560px) { .donut-wrap { grid-template-columns: 1fr; } }

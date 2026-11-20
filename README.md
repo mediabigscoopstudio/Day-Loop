@@ -34,6 +34,23 @@ Then open:
 `localhost:8000` (bare) redirects to `www.localhost:8000`. The `*.localhost`
 names resolve to 127.0.0.1 in modern browsers and on macOS.
 
+## Admin dashboard (dash host)
+
+`dash.localhost:8000` is the internal admin panel: Overview, Orders, Sellers, Products
+(with a Categories tab), Customers and Analytics, plus global search and a notification bell.
+
+- **Access:** active superusers only. Enforced three ways: `dash.middleware.DashAccessMiddleware`
+  (host-scoped), `SuperuserRequiredMixin` on every view (HTMX and JSON requests get 403), and the
+  login view itself. Failed logins are throttled (5 per 15 minutes per IP + username).
+  Django's own admin is at `/admin/` under the same rule.
+- **Popups:** add/edit/confirm flows are `<dialog>` modals loaded with HTMX into `#modal-root`.
+  Reusable pieces live in the `ui` app (`ui/templates/ui/`, `ui/static/ui/`) so the seller portal can reuse them.
+  HTMX and Chart.js are vendored in `ui/static/ui/vendor/` (no CDN at runtime).
+- **Environment:** the database password is read from `DJANGO_DB_PASSWORD`.
+- **Demo data (optional):** `python manage.py seed_dash_demo` seeds categories, and sellers/products/orders
+  attached to *existing* non-superuser accounts. It never creates users and is never run automatically.
+- **Tests:** `python manage.py test dash`
+
 ## Sessions and CSRF
 
 - Each surface has its own session cookie: `dl_www_sid`, `dl_seller_sid`,

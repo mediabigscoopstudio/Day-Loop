@@ -7,16 +7,17 @@
 .card-head h2 { font-size: 19px; font-weight: 800; color: var(--green-900); }
 .link-more { font-size: 13px; font-weight: 600; white-space: nowrap; }
 
-/* KPI card with progress ring */
-.kpi { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; padding: 18px; }
-.kpi-label { font-weight: 700; font-size: 14px; color: var(--green-900); grid-column: 1 / -1; }
-.kpi-value { font-size: 25px; font-weight: 800; letter-spacing: -.02em; align-self: center; }
-.ring { position: relative; width: 56px; height: 56px; display: grid; place-items: center; }
-.ring svg.arc { position: absolute; inset: 0; transform: rotate(-90deg); }
+/* KPI card with progress ring: label + ring on top, value gets the full width */
+.kpi { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; padding: 18px; }
+.kpi-label { font-weight: 700; font-size: 14px; color: var(--green-900); grid-column: 1; grid-row: 1; align-self: center; }
+.kpi-value { grid-column: 1 / -1; grid-row: 2; font-size: clamp(21px, 1.7vw, 26px); font-weight: 800; letter-spacing: -.02em; min-width: 0; white-space: nowrap; }
+.ring { grid-column: 2; grid-row: 1; position: relative; width: 44px; height: 44px; display: grid; place-items: center; }
+.ring svg.arc { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
 .ring .track { stroke: var(--sage-200); }
 .ring .bar { stroke: var(--green-700); stroke-linecap: round; transition: stroke-dasharray .6s ease; }
-.ring .glyph { width: 22px; height: 22px; color: var(--green-700); position: relative; }
-.kpi-foot { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.ring .glyph { width: 20px; height: 20px; color: var(--green-700); position: relative; }
+.ring .glyph svg { width: 20px; height: 20px; }
+.kpi-foot { grid-row: 3; grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
 
 /* chips */
 .chip {
@@ -118,5 +119,6 @@ table.table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .kv dd { margin: 0; font-weight: 600; word-break: break-word; }
 .chart-box { position: relative; height: 260px; }
 .legend { display: grid; gap: 10px; align-content: center; }
-.legend-row { display: grid; grid-template-columns: 14px 1fr auto auto; gap: 10px; align-items: center; font-size: 14px; }
+.legend-row { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto auto; gap: 8px; align-items: center; font-size: 13px; }
+.legend-row > :nth-child(3), .legend-row > :nth-child(4) { white-space: nowrap; }
 .swatch { width: 12px; height: 12px; border-radius: 50%; }
