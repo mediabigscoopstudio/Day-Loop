@@ -1,12 +1,17 @@
 from django.urls import path
 
-from . import auth_views, views, views_earnings, views_inventory, views_media, views_onboarding, views_orders, views_product_list, views_products, views_variants
+from . import views_account, auth_views, views, views_earnings, views_inventory, views_media, views_onboarding, views_orders, views_product_list, views_products, views_variants
 
 urlpatterns = [
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('register/', auth_views.RegisterView.as_view(), name='register'),
     path('logout/confirm/', auth_views.LogoutConfirmView.as_view(), name='logout-confirm'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('account/', views_account.AccountView.as_view(), name='account'),
+    path('account/profile/', views_account.ProfileEditView.as_view(), name='account-profile'),
+    path('account/bank/', views_account.BankEditView.as_view(), name='account-bank'),
+    path('account/password/', views_account.PasswordView.as_view(), name='account-password'),
+    path('account/documents/', views_account.DocumentReplaceView.as_view(), name='account-documents'),
     path('earnings/', views_earnings.EarningsView.as_view(), name='earnings'),
     path('orders/', views_orders.OrderListView.as_view(), name='orders'),
     path('orders/<int:pk>/', views_orders.OrderDetailModal.as_view(), name='order-detail'),

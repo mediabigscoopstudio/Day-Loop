@@ -1,0 +1,53 @@
+{% extends "seller/base.html" %}
+{% load ui_tags %}
+{% block title %}Account · Day Loop sellers{% endblock %}
+{% block page %}
+<div class="page-head"><div><h1>Account</h1><p>{{ seller.business_name }} · <span class="chip {{ seller.status|status_chip }}">{{ seller.get_status_display }}</span></p></div>
+  <button class="btn" hx-get="/logout/confirm/" hx-target="#modal-root" hx-swap="innerHTML">{% icon 'logout' 18 %} Sign out</button></div>
+
+<div id="account-region" hx-get="/account/" hx-trigger="account-changed from:body" hx-select="#account-region" hx-target="this" hx-swap="outerHTML">
+{% for w in warnings %}<div class="form-error" role="alert" style="background:var(--amber-bg);color:var(--amber-ink)">⚠ {{ w }}. Upload the renewed document below.</div>{% endfor %}
+
+<div class="grid row-eq" style="margin-top:0">
+  <section class="card" aria-labelledby="pf-h">
+    <div class="card-head"><h2 id="pf-h">Profile</h2>{% if can_edit %}<button class="btn sm" hx-get="/account/profile/" hx-target="#modal-root" hx-swap="innerHTML">Edit</button>{% endif %}</div>
+    <div class="acct-logo">{% if seller.logo %}<img src="{{ seller.logo.url }}" alt="{{ seller.business_name }} logo">{% else %}<span>{{ seller.business_name|slice:":1" }}</span>{% endif %}</div>
+    <dl class="kv"><dt>Trade name</dt><dd>{{ seller.business_name }}</dd><dt>Legal name</dt><dd>{{ seller.legal_name|default:"—" }}</dd>
+      <dt>Type</dt><dd>{{ seller.get_business_type_display|default:"—" }}</dd><dt>Contact</dt><dd>{{ seller.contact_person|default:"—" }}</dd>
+      <dt>Phone</dt><dd>{{ seller.phone|default:"—" }}</dd><dt>Email</dt><dd>{{ seller.email|default:"—" }}</dd>
+      <dt>Address</dt><dd>{{ seller.address|default:"—" }}{% if seller.city %}, {{ seller.city }}{% endif %}</dd></dl>
+    {% if not can_edit %}<p class="cat-meta">You can edit these once your application is approved. Until then use onboarding.</p>{% endif %}
+  </section>
+
+  <section class="card" aria-labelledby="bk-h">
+    <div class="card-head"><h2 id="bk-h">Bank details</h2>{% if can_edit %}<button class="btn sm" hx-get="/account/bank/" hx-target="#modal-root" hx-swap="innerHTML">Edit</button>{% endif %}</div>
+    {% if bank %}<dl class="kv"><dt>Account holder</dt><dd>{{ bank.account_holder }}</dd><dt>Account number</dt><dd>{{ bank.masked_number }}</dd>
+      <dt>IFSC</dt><dd>{{ bank.ifsc }}</dd><dt>Bank</dt><dd>{{ bank.bank_name }}</dd><dt>UPI</dt><dd>{{ bank.upi_id|default:"—" }}</dd>
+      <dt>Status</dt><dd><span class="chip {% if bank.verified %}up{% else %}warn{% endif %}">{% if bank.verified %}Verified{% else %}Pending verification{% endif %}</span></dd></dl>
+    {% else %}<p class="cat-meta">Add your bank details during onboarding.</p>{% endif %}
+  </section>
+</div>
+
+<div class="grid row-eq">
+  <section class="card" aria-labelledby="co-h"><div class="card-head"><h2 id="co-h">Business &amp; compliance</h2></div>
+    <dl class="kv"><dt>GST</dt><dd>{{ seller.gst_number|default:"—" }} <span class="chip {{ seller.gst_status|status_chip }}">{{ seller.get_gst_status_display }}</span></dd>
+      <dt>PAN</dt><dd>{{ seller.pan_number|default:"—" }}</dd>
+      <dt>FSSAI</dt><dd>{{ seller.fssai_number|default:"—" }}{% if seller.fssai_expiry %} · <span class="chip {% if fssai_state == 'expired' %}danger{% elif fssai_state == 'soon' %}amber{% else %}neutral{% endif %}">{% if fssai_state == 'expired' %}Expired{% else %}Expires{% endif %} {{ seller.fssai_expiry|date:"M j, Y" }}</span>{% endif %}</dd>
+      <dt>Dispatch</dt><dd>{{ seller.dispatch_days }} day{{ seller.dispatch_days|pluralize }}</dd>
+      <dt>Categories</dt><dd>{% for c in categories %}{{ c.name }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</dd></dl>
+    <p class="cat-meta">To change legal name, GST or PAN, contact support so they can be re-verified.</p></section>
+  <section class="card" aria-labelledby="sec-h"><div class="card-head"><h2 id="sec-h">Security &amp; payouts</h2></div>
+    <div class="vc-actions" style="flex-wrap:wrap"><button class="btn" hx-get="/account/password/" hx-target="#modal-root" hx-swap="innerHTML">Change password</button>
+      {% if can_edit %}<a class="btn" href="/earnings/">Payout history</a>{% endif %}</div></section>
+</div>
+
+<section class="card" style="margin-top:18px" aria-labelledby="dc-h">
+  <div class="card-head"><h2 id="dc-h">Documents</h2>{% if can_edit %}<button class="btn sm primary" hx-get="/account/documents/" hx-target="#modal-root" hx-swap="innerHTML">Upload / replace</button>{% endif %}</div>
+  {% if docs %}<div class="table-wrap"><table class="table"><thead><tr><th>Document</th><th>Uploaded</th><th>Expiry</th><th></th></tr></thead><tbody>
+    {% for d, st in docs %}<tr><td>{{ d.get_kind_display }}</td><td>{{ d.uploaded_at|date:"M j, Y" }}</td>
+      <td>{% if d.expires_on %}<span class="chip {% if st == 'expired' %}danger{% elif st == 'soon' %}amber{% else %}neutral{% endif %}">{% if st == 'expired' %}Expired {% endif %}{{ d.expires_on|date:"M j, Y" }}</span>{% else %}—{% endif %}</td>
+      <td><a class="btn sm" href="{{ d.file.url }}" target="_blank" rel="noopener noreferrer">View</a>{% if can_edit %} <button class="btn sm" hx-get="/account/documents/?kind={{ d.kind }}" hx-target="#modal-root" hx-swap="innerHTML">Replace</button>{% endif %}</td></tr>{% endfor %}</tbody></table></div>
+  {% else %}{% include "ui/partials/empty.html" with icon="doc" title="No documents yet" text="Documents you upload in onboarding appear here." %}{% endif %}
+</section>
+</div>
+{% endblock %}

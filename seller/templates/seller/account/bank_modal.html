@@ -1,0 +1,17 @@
+{% extends "ui/modal_base.html" %}
+{% load ui_tags %}
+{% block title %}Bank details{% endblock %}
+{% block form_open %}
+<form class="modal-form" hx-post="/account/bank/" hx-target="#modal-root" hx-swap="innerHTML" autocomplete="off">
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+{% endblock %}
+{% block body %}
+  <div class="consequence" style="margin-bottom:14px">Changed bank details are re-verified before your next payout. Confirm your password to continue.</div>
+  {% if form.errors %}<div class="form-error" role="alert">Please fix the highlighted fields.</div>{% endif %}
+  {% include "ui/partials/field.html" with field=form.account_holder %}
+  <div class="form-cols">{% include "ui/partials/field.html" with field=form.account_number %}{% include "ui/partials/field.html" with field=form.ifsc %}
+    {% include "ui/partials/field.html" with field=form.bank_name %}{% include "ui/partials/field.html" with field=form.upi_id %}</div>
+  {% include "ui/partials/field.html" with field=form.current_password %}
+{% endblock %}
+{% block footer %}<button type="button" class="btn" data-modal-close>Cancel</button><button type="submit" class="btn primary">Save bank details</button>{% endblock %}
+{% block form_close %}</form>{% endblock %}

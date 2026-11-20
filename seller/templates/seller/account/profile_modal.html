@@ -1,0 +1,16 @@
+{% extends "ui/modal_base.html" %}
+{% block title %}Edit profile{% endblock %}
+{% block form_open %}
+<form class="modal-form" hx-post="/account/profile/" hx-target="#modal-root" hx-swap="innerHTML" hx-encoding="multipart/form-data">
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+{% endblock %}
+{% block body %}
+  {% if form.errors %}<div class="form-error" role="alert">Please fix the highlighted fields.</div>{% endif %}
+  {% include "ui/partials/file_field.html" with field=form.logo current=seller.logo square=True %}
+  {% include "ui/partials/field.html" with field=form.business_name %}
+  <div class="form-cols">{% include "ui/partials/field.html" with field=form.contact_person %}{% include "ui/partials/field.html" with field=form.phone %}
+    {% include "ui/partials/field.html" with field=form.email %}{% include "ui/partials/field.html" with field=form.city %}</div>
+  {% include "ui/partials/field.html" with field=form.address %}
+{% endblock %}
+{% block footer %}<button type="button" class="btn" data-modal-close>Cancel</button><button type="submit" class="btn primary">Save</button>{% endblock %}
+{% block form_close %}</form>{% endblock %}

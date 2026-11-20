@@ -1,0 +1,14 @@
+{% extends "ui/modal_base.html" %}
+{% block title %}Upload a document{% endblock %}
+{% block form_open %}
+<form class="modal-form" hx-post="/account/documents/" hx-target="#modal-root" hx-swap="innerHTML" hx-encoding="multipart/form-data">
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+{% endblock %}
+{% block body %}
+  {% include "ui/partials/field.html" with field=form.kind %}
+  {% include "ui/partials/file_field.html" with field=form.file hint="Photo (JPG/PNG) or PDF, up to 5 MB. On a phone you can take the photo directly." %}
+  {% include "ui/partials/field.html" with field=form.expires_on %}
+  <p class="help">Uploading replaces the current document of the same type.</p>
+{% endblock %}
+{% block footer %}<button type="button" class="btn" data-modal-close>Cancel</button><button type="submit" class="btn primary">Upload</button>{% endblock %}
+{% block form_close %}</form>{% endblock %}
