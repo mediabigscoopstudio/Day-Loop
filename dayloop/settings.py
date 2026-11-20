@@ -180,6 +180,8 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+# collectstatic output. In production nginx serves this folder; Django does not serve static files when DEBUG is off.
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Base url to serve media files  
 MEDIA_URL = '/media/'  
