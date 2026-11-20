@@ -1,0 +1,7 @@
+{% extends "ui/shell.html" %}
+{% load static %}
+{% block head %}<link rel="stylesheet" href="{% static 'dash/css/dash.css' %}">{% block dash_head %}{% endblock %}{% endblock %}
+{% block menu_items %}
+  <a href="/admin/">Django admin</a>
+  <button type="button" hx-get="/logout/confirm/" hx-target="#modal-root" hx-swap="innerHTML">Log out</button>
+{% endblock %}

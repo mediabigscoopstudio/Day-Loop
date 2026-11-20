@@ -1,3 +1,6 @@
-from django.shortcuts import render
+from .base import DashPageView
 
-# Create your views here.
+
+class OverviewView(DashPageView):
+    active = 'overview'
+    template_name = 'dash/overview.html'

@@ -1,0 +1,6 @@
+{% extends "dash/base.html" %}
+{% load ui_tags %}
+{% block title %}Overview · Day Loop admin{% endblock %}
+{% block page %}
+<div class="page-head"><div><h1>{% greeting %}, {{ user|first_name }}</h1><p>Here’s what’s happening across your marketplace today.</p></div></div>
+{% endblock %}
