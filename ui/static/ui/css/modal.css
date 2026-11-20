@@ -1,0 +1,40 @@
+/* Native <dialog> modal system. Frosted blur is used on the backdrop only. */
+dialog.modal {
+  border: 0; padding: 0; margin: auto; background: var(--card); color: var(--text);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+  width: min(560px, calc(100vw - 24px)); max-height: calc(100vh - 32px); overflow: hidden;
+}
+dialog.modal[open] { display: flex; flex-direction: column; animation: modal-in .18s ease; }
+dialog.modal.sm { width: min(440px, calc(100vw - 24px)); }
+dialog.modal.md { width: min(600px, calc(100vw - 24px)); }
+dialog.modal.lg { width: min(860px, calc(100vw - 24px)); }
+dialog.modal::backdrop {
+  background: rgba(10, 30, 20, .38); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+dialog.modal.slide-over {
+  margin: 0 0 0 auto; height: 100vh; max-height: 100vh; width: min(520px, 100vw);
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg); animation: slide-in .22s ease;
+}
+@keyframes modal-in { from { opacity: 0; transform: translateY(10px) scale(.98); } }
+@keyframes slide-in { from { transform: translateX(40px); opacity: 0; } }
+
+.modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 20px 24px 8px; }
+.modal-head h2 { font-size: 21px; font-weight: 800; color: var(--green-900); }
+.modal-head p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+.modal-close { border: 0; background: var(--sage-100); width: 34px; height: 34px; border-radius: 50%; font-size: 18px; line-height: 1; flex: none; }
+.modal-body { padding: 12px 24px 8px; overflow-y: auto; }
+.modal-foot { display: flex; justify-content: flex-end; gap: 10px; padding: 14px 24px 20px; flex-wrap: wrap; }
+.modal-foot .left { margin-right: auto; }
+
+/* confirm / warning variants */
+.confirm { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start; }
+.confirm-icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; background: var(--sage-100); color: var(--green-700); }
+.confirm-icon svg { width: 24px; height: 24px; }
+.confirm.warning .confirm-icon { background: var(--amber-bg); color: var(--amber-ink); }
+.confirm.danger .confirm-icon { background: var(--danger-bg); color: var(--danger); }
+.confirm h3 { font-size: 18px; margin-bottom: 4px; }
+.confirm p { margin: 0 0 6px; color: var(--muted); }
+.consequence { margin-top: 8px; padding: 10px 12px; border-radius: 12px; background: var(--amber-bg); color: var(--amber-ink); font-size: 14px; font-weight: 600; }
+.confirm.danger .consequence { background: var(--danger-bg); color: var(--danger); }
+
+body.scroll-locked { overflow: hidden; }

@@ -1,0 +1,47 @@
+/* Day Loop design tokens. Colors sampled from design-reference/dashboard.png. */
+:root {
+  --cream: #f8f3eb;
+  --sidebar: #f5f0e9;
+  --card: #fbf7f1;
+  --border: #dfe3d6;
+  --sage-100: #e6efe2;
+  --sage-200: #c5d9c5;
+  --sage-300: #a2c4a7;
+  --green-500: #47866a;
+  --green-700: #0a6b3f;
+  --green-900: #0e4a35;
+  --orange: #ed9f3b;
+  --amber-bg: #fbe9cf;
+  --amber-ink: #8a5a14;
+  --delta-bg: #e4f6d8;
+  --danger: #b3382c;
+  --danger-bg: #fbe4e0;
+  --text: #0d2a1f;
+  --muted: #5d7066;
+
+  --radius-lg: 22px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 2px rgba(14, 74, 53, .05), 0 6px 18px rgba(14, 74, 53, .05);
+  --shadow-lg: 0 24px 60px rgba(14, 40, 30, .28);
+  --font: "Inter", ui-rounded, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --sidebar-w: 232px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--cream); color: var(--text);
+  font: 15px/1.5 var(--font); -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { margin: 0; line-height: 1.2; letter-spacing: -.01em; }
+a { color: var(--green-700); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--green-700); outline-offset: 2px; border-radius: 6px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+[hidden] { display: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
